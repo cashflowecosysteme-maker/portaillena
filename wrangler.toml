@@ -1,0 +1,19 @@
+name = "portail-spirituel-worker"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+[assets]
+directory = "."
+
+[[kv_namespaces]]
+binding = "SPIRITUEL_KV"
+id = "3e730b1c49f94e32a97cceff3b60a773"
+
+# Bibliothèque (livres PDF + audios) — à committer/déployer UNE FOIS le bucket créé sur Cloudflare
+[[r2_buckets]]
+binding = "SPIRITUEL_R2"
+bucket_name = "nyxia-bibliotheque"
+
+# Secrets à définir après le déploiement (jamais dans ce fichier, jamais dans GitHub) :
+#   wrangler secret put OPENROUTER_API_KEY
+#   wrangler secret put ADMIN_INITIAL_PASSWORD
