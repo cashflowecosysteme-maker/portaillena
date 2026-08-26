@@ -1,4 +1,4 @@
-name = "portail-alex"
+name = "portaillena"
 main = "_worker.js"
 compatibility_date = "2026-08-25"
 workers_dev = false
@@ -10,7 +10,7 @@ directory = "."
 binding = "ASSETS"
 
 [[routes]]
-pattern = "https://portaillena.nyxia.top/"
+pattern = "portaillena.nyxia.top"
 zone_name = "nyxia.top"
 custom_domain = true
 
