@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" type="image/png" href="/FavIcon.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NyXia — Portail Alex · Devenir Écrivain</title>
+  <title>NyXia — Portail Léna · À la découverte de tes dons</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -291,10 +291,10 @@
       </div>
     </div>
     <div class="header-center">
-      <div class="welcome-text">Bienvenue dans Devenir Écrivain ✦ <strong id="header-username"></strong></div>
+      <div class="welcome-text">Bienvenue dans le Portail de Léna ✦ <strong id="header-username"></strong></div>
     </div>
     <div class="header-actions">
-      <span class="btn-header btn-pro">✍️ Portail Alex</span>
+      <span class="btn-header btn-pro">✍️ Portail Léna</span>
       <button class="btn-header btn-logout" onclick="logout()">Déconnexion</button>
     </div>
   </header>
@@ -302,7 +302,7 @@
 
   <div class="app-body">
     <aside>
-      <!-- PERSONNAGES DU PORTAIL ALEX -->
+      <!-- PERSONNAGES DU PORTAIL Léna -->
       <div class="sidebar-section">
         <div class="sidebar-label">Mes Conversations</div>
         <div class="nav-item active" id="nav-diane" onclick="openAgentTab('diane')">
@@ -423,10 +423,10 @@
     var VOICE_PRIORITY = {
       nyxia:  ['Microsoft Denise','Microsoft Hortense','Google français','Amélie','Audrey','Virginie','Sophie','Marie','Alice'],
       diane:  ['Audrey','Virginie','Microsoft Hortense','Sophie','Marie','Alice','Amélie','Microsoft Denise','Google français'],
-      alex:   ['Julie','Audrey','Ariane','Microsoft Julie','Amélie','Caroline','Microsoft Hortense']
+      lena:   ['Julie','Audrey','Ariane','Microsoft Julie','Amélie','Caroline','Microsoft Hortense']
     }
     var AGENT_VOICE_GENDER = {
-      nyxia: 'feminine', diane: 'feminine', alex: 'feminine', aimee: 'feminine',
+      nyxia: 'feminine', diane: 'feminine', lena: 'feminine', aimee: 'feminine',
       alibi: 'feminine', constance: 'feminine', fripouille: 'feminine',
       melusine: 'feminine', abime: 'feminine'
     }
@@ -835,7 +835,7 @@
     var ALPHA_INFO = {
       diane:      { name: 'Diane',      icon: '👑', sub: 'Créatrice & accompagnement', greeting: '👋 Dis-moi : **qu’aimerais-tu enfin oser écrire aujourd’hui ?** 💜' },
       nyxia:      { name: 'NyXia',      icon: '✦',  sub: 'Orientation & technique', greeting: '👋 Dis-moi : **que veux-tu retrouver ou comprendre dans le portail ?** 💜' },
-      alex:       { name: 'Alex',       icon: '✍️', sub: 'Écriture & storytelling', greeting: '👋 Dis-moi : **quel projet d’écriture aimerais-tu faire avancer aujourd’hui ?** ✨' },
+      alex:       { name: 'Léna',       icon: '✍️', sub: 'Spiritualité', greeting: '👋 Dis-moi : **quel dons crois-tu avoir ?** ✨' },
       aimee:      { name: 'Aimée',      icon: '🌹', sub: 'Romans d’amour', greeting: '🌹 Parle-moi de ton histoire et de ses personnages : nous allons lui donner un cœur.' },
       alibi:      { name: 'Alibi',      icon: '🔎', sub: 'Policier & juridique', greeting: '🔎 Quel mystère, quelle enquête ou quelle incohérence veux-tu travailler ?' },
       constance:  { name: 'Constance',  icon: '🎭', sub: 'Drames humains', greeting: '🎭 Quelle émotion ou quel conflit humain veux-tu rendre inoubliable ?' },
@@ -846,7 +846,7 @@
     var AGENT_IMAGES = {
       nyxia: '/NyXia.png',
       diane: '/Diane.png',
-      alex: '/Alex.png',
+      alex: '/Lena.png',
       aimee: '/Aimee.png',
       alibi: '/Alibi.png',
       constance: '/Constance.png',
@@ -905,7 +905,7 @@
       }
     }
 
-    // Vidéo de bienvenue (Alexya.ia) — jouée automatiquement une fois, avec ses
+    // Vidéo de bienvenue  — jouée automatiquement une fois, avec ses
     // propres contrôles pour la réécouter ensuite. Toujours suivie du texte.
     function addVideoMessage(videoUrl, agentKey) {
       var msgs = document.getElementById('chat-messages-' + agentKey)
@@ -1215,7 +1215,7 @@
       speakViaHeyGen(btn, text, _currentAgent)
     }
 
-    // Voix serveur du personnage actif via le Worker : identités ElevenLabs du portail Alex.
+    // Voix serveur du personnage actif via le Worker : identités ElevenLabs du portail Léna.
     // Aucun repli navigateur pour préserver l'identité sonore de la marque (règle NyXia).
     function speakViaHeyGen(btn, text, agentKey) {
       var clean = cleanForSpeech(text)
