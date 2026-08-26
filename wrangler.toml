@@ -26,7 +26,7 @@ binding = "VECTORIZE_INDEX"
 index_name = "univers-livres"
 
 [vars]
-SITE_URL = "https://portaillena.nyxia.top/"
+SITE_URL = "portaillena.nyxia.top"
 [[kv_namespaces]]
 binding = "SPIRITUEL_KV"
 id = "3e730b1c49f94e32a97cceff3b60a773"
