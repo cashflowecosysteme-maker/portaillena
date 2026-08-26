@@ -320,14 +320,6 @@
           <span class="nav-text"><span class="nav-name">Léna</span><span class="nav-sub">Médium & dons</span></span>
           <span class="nav-arrow">›</span>
         </div>
-        <div class="nav-item" id="nav-ovilus" onclick="openAgentTab('ovilus')">
-          <span class="nav-avatar" style="display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(123,92,255,0.15);border-radius:50%">🔮</span>
-          <span class="nav-text"><span class="nav-name">Ovilus</span><span class="nav-sub">Communication spirite</span></span>
-          <span class="nav-arrow">›</span>
-        </div>
-       
-          </div>
-        </div>
       </div>
       
       <div class="sidebar-section">
@@ -338,6 +330,13 @@
           <span id="unread-badge" style="display:none;margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#ff4b6e;color:#fff;font-size:11px;font-weight:700;line-height:20px;text-align:center"></span>
           <span class="nav-arrow">›</span>
         </div>
+
+        <div class="nav-item" id="nav-ovilus" onclick="openAgentTab('ovilus')">
+          <span class="nav-avatar" style="display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(123,92,255,0.15);border-radius:50%">🔮</span>
+          <span class="nav-text"><span class="nav-name">Ovilus</span><span class="nav-sub">Communication spirite</span></span>
+          <span class="nav-arrow">›</span>
+        </div>
+
         <div class="nav-item" id="nav-medias" onclick="showPanel('medias')">
           <span class="nav-icon">✨</span> Banque d'images - Sons et Vidéos <span class="nav-arrow">›</span>
         </div>
@@ -348,7 +347,7 @@
           <div class="user-avatar" id="sidebar-avatar">D</div>
           <div class="user-info">
             <div class="user-name" id="sidebar-username">Chargement...</div>
-            <div class="user-plan">✦ Devenir Écrivain</div>
+            <div class="user-plan">✦ Découvrir ces dons</div>
           </div>
         </div>
       </div>
@@ -825,9 +824,9 @@
     function sendWelcome() {
       var name = clientName || 'Membre'
       var welcome = '✦ Allô ' + name + ' 💜\n\n' +
-        'Bienvenue dans Devenir Écrivain, ton atelier vivant pour imaginer, structurer et écrire.\n\n' +
+        'Bienvenue dans le portail de Léna, ton atelier vivant pour découvrir tes capacités et dons innés.\n\n' +
         'Diane t’accompagne, NyXia t’oriente, Alex veille sur ton projet et chaque assistante possède sa spécialité littéraire.\n\n' +
-        'Dis-moi simplement ce que tu rêves d’écrire aujourd’hui. ✦'
+        'Dis-moi simplement ce que tu aimerais découvrir aujourd'hui aujourd’hui. ✦'
       addBotMessage(welcome)
       addAlphaChoiceButtons()
     }
