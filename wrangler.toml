@@ -10,7 +10,7 @@ directory = "."
 binding = "ASSETS"
 
 [[routes]]
-pattern = "portailalex.nyxia.top"
+pattern = "https://portaillena.nyxia.top/"
 zone_name = "nyxia.top"
 custom_domain = true
 
@@ -26,7 +26,7 @@ binding = "VECTORIZE_INDEX"
 index_name = "univers-livres"
 
 [vars]
-SITE_URL = "https://portailalex.nyxia.top"
+SITE_URL = "https://portaillena.nyxia.top/"
 [[kv_namespaces]]
 binding = "SPIRITUEL_KV"
 id = "3e730b1c49f94e32a97cceff3b60a773"
