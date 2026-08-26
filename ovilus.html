@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ovilus — NyXia</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--p:#7B5CFF;--p2:#5A6CFF;--p3:#4FA3FF;--gold:#F4C842;--t:#fff;--t2:#D6D9F0;--t3:#8891B8}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+canvas#starry-canvas{position:fixed;inset:0;z-index:-1;pointer-events:none}
+body{font-family:'Outfit',sans-serif;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(60,20,120,0.45),transparent 70%),#0a0a18;color:var(--t2);min-height:100vh}
+.ov-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px 20px}
+
+.ovilus-device{width:100%;max-width:380px;background:linear-gradient(160deg,#17122b 0%,#0c0a17 100%);
+  border:1px solid rgba(123,92,255,0.35);border-radius:28px;padding:22px 20px 26px;
+  box-shadow:0 0 60px rgba(123,92,255,0.25), inset 0 1px 0 rgba(255,255,255,0.05);position:relative}
+.ovilus-brand{text-align:center;font-family:'Space Grotesk',sans-serif;letter-spacing:4px;font-size:13px;
+  color:var(--gold);margin-bottom:14px}
+.ovilus-screen{background:#050308;border:1px solid rgba(123,92,255,0.3);border-radius:12px;
+  padding:20px 16px;min-height:100px;display:flex;align-items:center;justify-content:center;text-align:center;
+  box-shadow:inset 0 0 20px rgba(0,0,0,0.8)}
+.ovilus-screen-text{font-family:'Space Grotesk',sans-serif;color:var(--p3);font-size:17px;line-height:1.5;
+  text-shadow:0 0 10px rgba(79,163,255,0.6)}
+.ovilus-screen-text.lit{color:#c9b6ff;text-shadow:0 0 14px rgba(123,92,255,0.85)}
+.ovilus-status{text-align:center;font-size:10px;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-top:8px}
+.ovilus-mode{display:flex;gap:0;margin:16px 0 4px;border:1px solid rgba(123,92,255,0.25);border-radius:10px;overflow:hidden}
+.ovilus-mode button{flex:1;padding:9px;border:none;background:rgba(15,28,63,0.6);color:var(--t3);font-size:11px;font-weight:700;cursor:pointer}
+.ovilus-mode button.active{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff}
+.ovilus-crystal-wrap{display:flex;justify-content:center;margin:20px 0 14px}
+.ovilus-crystal{width:92px;height:92px;border-radius:50%;
+  background:radial-gradient(circle at 40% 35%, #b48cff, #4a2fb0 70%);
+  box-shadow:0 0 30px rgba(123,92,255,0.55), 0 0 60px rgba(123,92,255,0.25);
+  display:flex;align-items:center;justify-content:center;font-size:30px;border:none;color:#fff;cursor:pointer;
+  animation:crystalPulse 3s ease-in-out infinite}
+.ovilus-crystal.listening{animation:crystalListen .6s ease-in-out infinite}
+@keyframes crystalPulse{0%,100%{box-shadow:0 0 30px rgba(123,92,255,0.55),0 0 60px rgba(123,92,255,0.2)}50%{box-shadow:0 0 45px rgba(123,92,255,0.8),0 0 80px rgba(123,92,255,0.35)}}
+@keyframes crystalListen{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.ovilus-question{text-align:center;font-size:12px;color:var(--t3);min-height:16px;margin-bottom:4px;padding:0 10px}
+.ovilus-type-row{display:flex;gap:8px;margin-top:6px}
+.ovilus-type-row input{flex:1;background:rgba(15,28,63,0.6);border:1px solid rgba(123,92,255,0.2);
+  border-radius:10px;color:var(--t);font-size:13px;padding:10px 12px;outline:none}
+.ovilus-type-row button{padding:0 16px;border-radius:10px;border:1px solid rgba(123,92,255,0.3);
+  background:rgba(123,92,255,0.12);color:var(--t2);font-size:12px;font-weight:700;cursor:pointer}
+.ovilus-log{margin-top:16px;max-height:110px;overflow-y:auto;font-size:11px}
+.ovilus-log-entry{color:var(--t3);padding:5px 0;border-bottom:1px dashed rgba(123,92,255,0.15)}
+.ovilus-log-entry b{color:var(--gold)}
+</style>
+</head>
+<body>
+<script>(function(){var t=new URLSearchParams(location.search).get("token");if(!t){location.replace("/login.html");return;}fetch("/api/check-auth",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:t})}).then(function(r){return r.json();}).then(function(d){if(!d.valid)location.replace("/login.html");}).catch(function(){location.replace("/login.html");});})();</script>
+<canvas id="starry-canvas"></canvas>
+
+<div class="ov-wrap">
+  <div style="width:100%;max-width:380px">
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button id="deviceTypePhone" onclick="setOvilusDeviceType('phone')" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(123,92,255,0.3);background:rgba(123,92,255,0.1);color:var(--t2);font-size:12px;font-weight:700;cursor:pointer">📱 Téléphone intelligent</button>
+      <button id="deviceTypeComputer" onclick="setOvilusDeviceType('computer')" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(123,92,255,0.3);background:rgba(123,92,255,0.1);color:var(--t2);font-size:12px;font-weight:700;cursor:pointer">💻 Ordinateur</button>
+    </div>
+    <p id="deviceTypeHint" style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:14px;line-height:1.5">L'expérience est plus immersive sur téléphone (secousse réelle).</p>
+
+    <div class="ovilus-device" style="margin:auto">
+      <div class="ovilus-brand">OVILUS · NYXIA</div>
+      <div class="ovilus-screen"><div class="ovilus-screen-text" id="ovilusScreen">— — —</div></div>
+      <div class="ovilus-status" id="ovilusStatus">En attente</div>
+      <div class="ovilus-mode">
+        <button id="modeMots" onclick="setOvilusMode('mots')">Mots distincts</button>
+        <button id="modeFluide" class="active" onclick="setOvilusMode('fluide')">Phrase fluide</button>
+      </div>
+      <div class="ovilus-crystal-wrap">
+        <button class="ovilus-crystal" id="ovilusCrystal" onclick="ovilusListen()">🎙</button>
+      </div>
+      <div class="ovilus-question" id="ovilusQuestion">Appuie sur le cristal et parle ta question</div>
+      <button id="motionBtn" onclick="enableOvilusMotion()" style="display:none;width:100%;margin-top:10px;padding:10px;border-radius:10px;border:1px solid rgba(123,92,255,0.3);background:rgba(123,92,255,0.1);color:var(--t2);font-size:12px;font-weight:700;cursor:pointer">📳 Activer la détection de mouvement</button>
+      <div class="ovilus-type-row">
+        <input type="text" id="ovilusTypedQuestion" placeholder="…ou écris-la ici">
+        <button onclick="ovilusConsult()">Consulter</button>
+      </div>
+      <div class="ovilus-log" id="ovilusLog"><div class="ovilus-log-entry">Aucune consultation.</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/starry-bg.js"></script>
+<script>
+var token = new URLSearchParams(location.search).get('token') || new URLSearchParams(location.search).get('t') || '';
+
+function setOvilusDeviceType(type){
+  var phoneBtn = document.getElementById('deviceTypePhone');
+  var computerBtn = document.getElementById('deviceTypeComputer');
+  var hint = document.getElementById('deviceTypeHint');
+  var motionBtnEl = document.getElementById('motionBtn');
+  phoneBtn.style.background = type === 'phone' ? 'rgba(123,92,255,0.35)' : 'rgba(123,92,255,0.1)';
+  computerBtn.style.background = type === 'computer' ? 'rgba(123,92,255,0.35)' : 'rgba(123,92,255,0.1)';
+  if(type === 'phone'){
+    hint.textContent = '📱 Idéal ! Appuie sur "Activer la détection de mouvement" ci-dessous.';
+    if(motionBtnEl){ motionBtnEl.style.display = 'block'; motionBtnEl.style.boxShadow = '0 0 16px rgba(123,92,255,0.5)'; }
+  } else {
+    hint.textContent = '💻 Sur ordinateur, utilise simplement le micro ou écris ta question.';
+    if(motionBtnEl){ motionBtnEl.style.display = 'none'; motionBtnEl.style.boxShadow = 'none'; }
+  }
+}
+
+var ovilusMode = 'fluide';
+var ovilusBusy = false;
+
+function setOvilusMode(m){
+  ovilusMode = m;
+  document.getElementById('modeMots').classList.toggle('active', m==='mots');
+  document.getElementById('modeFluide').classList.toggle('active', m==='fluide');
+}
+
+function ovilusLog(text){
+  var log = document.getElementById('ovilusLog');
+  if(log.children.length === 1 && log.children[0].textContent.indexOf('Aucune') === 0) log.innerHTML = '';
+  var entry = document.createElement('div');
+  entry.className = 'ovilus-log-entry';
+  entry.innerHTML = '<b>' + text.replace(/</g,'&lt;') + '</b>';
+  log.prepend(entry);
+}
+
+if('speechSynthesis' in window){
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = function(){ window.speechSynthesis.getVoices(); };
+}
+function speakBrowser(text){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  var utter = new SpeechSynthesisUtterance(text);
+  var voices = window.speechSynthesis.getVoices();
+  var frFr = voices.filter(function(v){ return v.lang && v.lang.toLowerCase() === 'fr-fr'; });
+  var maleHints = ['thomas','paul','daniel','nicolas','antoine','henri','guillaume','male','homme'];
+  var picked = frFr.find(function(v){
+    var n = v.name.toLowerCase();
+    return maleHints.some(function(hint){ return n.indexOf(hint) !== -1; });
+  }) || frFr[0];
+  if(picked) utter.voice = picked;
+  utter.lang = 'fr-FR';
+  if(!picked || !maleHints.some(function(hint){ return picked.name.toLowerCase().indexOf(hint) !== -1; })){
+    utter.pitch = 0.75;
+  }
+  window.speechSynthesis.speak(utter);
+}
+
+function unlockOvilusSpeech(){
+  if(!('speechSynthesis' in window)) return;
+  var u = new SpeechSynthesisUtterance('');
+  u.volume = 0;
+  window.speechSynthesis.speak(u);
+}
+
+var ovilusHistory = [];
+var OVILUS_SILENCE_CHANCE = 0.18; // ~18% du temps, l'Entité ne répond pas (mode "mots")
+
+// ═══ Arc de session Ovilus (mode "phrase fluide") ═══
+var ovMsgCount = 0;
+var ovPhase = 'silence_initial';
+var ovSparseTick = 0;
+var ovEmergenceDone = 0;
+var ovPresenceDone = 0;
+var ovPresenceTarget = 20;
+var ovTransitionTick = 0;
+var ovDormantTick = 0;
+var ovManifestation = 0;
+var ovEndingType = 'lumiere';
+var ovPendingNewEntity = false;
+var OV_INITIAL_SILENCE = 3 + Math.floor(Math.random() * 8); // aléatoire à chaque session : 3 à 10 questions de silence avant la 1re présence
+var OV_EMERGENCE_RESPONSES = 3;
+var OV_EMERGENCE_RATIO = 3;
+var OV_TRANSITION_SILENCE = 3;
+var OV_DORMANT_SILENCE = 4;
+var OV_PONCTUAL_SILENCE = 0.18;
+
+function ovilusConsult(){
+  if(ovilusBusy) return;
+  unlockOvilusSpeech();
+  var typed = document.getElementById('ovilusTypedQuestion');
+  var question = typed.value.trim();
+  if(!question && ovilusMode !== 'mots'){ document.getElementById('ovilusStatus').textContent = 'Pose une question d\'abord'; return; }
+  typed.value = '';
+  ovilusBusy = true;
+  var screen = document.getElementById('ovilusScreen');
+  screen.classList.remove('lit');
+  document.getElementById('ovilusStatus').textContent = 'Écoute du voile…';
+
+  var thinkDelay = 1400 + Math.random() * 2600;
+  if(Math.random() < 0.22) thinkDelay += 3000 + Math.random() * 2000;
+
+  setTimeout(function(){
+    var phaseHint = 'presence', newEntity = false, silenceMsg = null;
+    var MUTES = ['Silence — elle n\'a rien voulu dire.', 'Elle se tait sur cette question.', 'Pas de réponse… ce fil reste scellé.', 'Elle détourne le voile… rien cette fois.'];
+    function randMute(){ return MUTES[Math.floor(Math.random() * MUTES.length)]; }
+
+    if(ovilusMode === 'fluide'){
+      ovMsgCount++;
+      if(ovPhase === 'silence_initial'){
+        silenceMsg = 'Aucune présence… le voile reste immobile.';
+        if(ovMsgCount >= OV_INITIAL_SILENCE){ ovPhase = 'emergence'; ovSparseTick = 0; ovEmergenceDone = 0; ovManifestation = 1; ovPendingNewEntity = true; }
+      }
+      else if(ovPhase === 'emergence'){
+        ovSparseTick++;
+        if(ovSparseTick % OV_EMERGENCE_RATIO !== 0){
+          silenceMsg = 'Quelque chose frémit… sans se dire encore.';
+        } else if(Math.random() < OV_PONCTUAL_SILENCE){
+          silenceMsg = randMute();
+        } else {
+          phaseHint = 'emergence';
+          newEntity = ovPendingNewEntity; ovPendingNewEntity = false;
+          ovEmergenceDone++;
+          if(ovEmergenceDone >= OV_EMERGENCE_RESPONSES){ ovPhase = 'presence'; ovPresenceDone = 0; ovPresenceTarget = 18 + Math.floor(Math.random() * 7); }
+        }
+      }
+      else if(ovPhase === 'presence'){
+        if(Math.random() < OV_PONCTUAL_SILENCE){
+          silenceMsg = randMute();
+        } else {
+          ovPresenceDone++;
+          if(ovPresenceDone >= ovPresenceTarget){
+            var r = Math.random();
+            ovEndingType = (r < 0.34) ? 'lumiere' : (r < 0.78 ? 'reste' : 'brusque');
+            if(ovEndingType === 'brusque'){
+              silenceMsg = '⋯';
+              ovPhase = 'transition'; ovTransitionTick = 0;
+            } else if(ovEndingType === 'lumiere'){
+              phaseHint = 'adieu';
+              ovPhase = 'transition'; ovTransitionTick = 0;
+            } else {
+              phaseHint = 'adieu_reste';
+              ovPhase = 'dormant'; ovDormantTick = 0;
+            }
+          } else {
+            phaseHint = 'presence';
+          }
+        }
+      }
+      else if(ovPhase === 'dormant'){
+        ovDormantTick++;
+        if(ovDormantTick <= OV_DORMANT_SILENCE){
+          silenceMsg = 'Elle s\'est tue… mais elle est encore là, quelque part.';
+        } else {
+          ovPhase = 'presence'; ovPresenceDone = 0; ovPresenceTarget = 8 + Math.floor(Math.random() * 7);
+          phaseHint = 'retour'; newEntity = false;
+        }
+      }
+      else if(ovPhase === 'transition'){
+        ovTransitionTick++;
+        if(ovTransitionTick <= OV_TRANSITION_SILENCE){
+          if(ovTransitionTick === 1) silenceMsg = (ovEndingType === 'lumiere') ? 'Elle s\'en est allée vers la lumière…' : 'Le silence l\'a happée d\'un coup…';
+          else silenceMsg = 'Le vide reprend… une autre présence approche peut-être.';
+        } else {
+          ovPhase = 'emergence'; ovSparseTick = 0; ovEmergenceDone = 1; ovManifestation++;
+          ovilusHistory = [];
+          phaseHint = 'emergence'; newEntity = true;
+        }
+      }
+    } else {
+      if(Math.random() < OVILUS_SILENCE_CHANCE) silenceMsg = randMute();
+    }
+
+    if(silenceMsg){
+      screen.textContent = '· · ·';
+      screen.classList.remove('lit');
+      document.getElementById('ovilusStatus').textContent = silenceMsg;
+      ovilusLog('(silence)');
+      ovilusBusy = false;
+      return;
+    }
+
+    document.getElementById('ovilusStatus').textContent = 'Consultation…';
+    fetch('/api/ovilus/consult', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ question: question, mode: ovilusMode, token: token, history: ovilusHistory, phase: phaseHint, newEntity: newEntity })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      ovilusBusy = false;
+      if(data.response){
+        if(ovilusMode === 'fluide'){
+          ovilusHistory.push({ role:'user', content: question });
+          ovilusHistory.push({ role:'assistant', content: data.response });
+          if(ovilusHistory.length > 16) ovilusHistory = ovilusHistory.slice(-16);
+        }
+        screen.textContent = data.response;
+        screen.classList.add('lit');
+        document.getElementById('ovilusStatus').textContent = 'Réponse captée';
+        ovilusLog(data.response);
+        speakBrowser(data.response);
+      } else {
+        document.getElementById('ovilusStatus').textContent = data.error || 'Erreur';
+      }
+    })
+    .catch(function(){ ovilusBusy = false; document.getElementById('ovilusStatus').textContent = 'Erreur de connexion'; });
+  }, thinkDelay);
+}
+
+/* ═══════ Détection de mouvement (secousse déclenche une consultation) ═══════ */
+var ovilusLastAccel = null;
+var OVILUS_SHAKE_THRESHOLD = 9;
+var OVILUS_SHAKE_COOLDOWN = 1400;
+var ovilusShakeCooling = false;
+
+function handleOvilusMotion(e){
+  var a = e.accelerationIncludingGravity || e.acceleration;
+  if(!a || a.x === null) return;
+  if(ovilusLastAccel){
+    var delta = Math.abs(a.x - ovilusLastAccel.x) + Math.abs(a.y - ovilusLastAccel.y) + Math.abs(a.z - ovilusLastAccel.z);
+    var statusEl = document.getElementById('ovilusStatus');
+    if(statusEl && delta > 2 && !ovilusBusy && !ovilusShakeCooling){
+      statusEl.textContent = 'Mouvement détecté… (' + delta.toFixed(1) + '/' + OVILUS_SHAKE_THRESHOLD + ')';
+    }
+    if(delta > OVILUS_SHAKE_THRESHOLD && !ovilusShakeCooling && !ovilusBusy){
+      ovilusShakeCooling = true;
+      document.getElementById('ovilusCrystal').classList.add('listening');
+      setTimeout(function(){ document.getElementById('ovilusCrystal').classList.remove('listening'); ovilusShakeCooling = false; }, OVILUS_SHAKE_COOLDOWN);
+      ovilusConsult();
+    }
+  }
+  ovilusLastAccel = { x:a.x, y:a.y, z:a.z };
+}
+
+function enableOvilusMotion(){
+  var btn = document.getElementById('motionBtn');
+  if(typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'){
+    DeviceMotionEvent.requestPermission().then(function(state){
+      if(state === 'granted'){
+        window.addEventListener('devicemotion', handleOvilusMotion);
+        btn.textContent = '📳 Mouvement activé — secoue pour consulter';
+        btn.disabled = true;
+      } else {
+        document.getElementById('ovilusStatus').textContent = 'Accès au mouvement refusé';
+      }
+    }).catch(function(){ document.getElementById('ovilusStatus').textContent = 'Mouvement indisponible sur cet appareil'; });
+  } else if('DeviceMotionEvent' in window){
+    window.addEventListener('devicemotion', handleOvilusMotion);
+    btn.textContent = '📳 Mouvement activé — secoue pour consulter';
+    btn.disabled = true;
+  } else {
+    document.getElementById('ovilusStatus').textContent = 'Mouvement non supporté sur cet appareil';
+    btn.disabled = true;
+  }
+}
+
+var SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+var recognition = null;
+var ovilusListening = false;
+var ovilusFinalTranscript = '';
+var ovilusSilenceTimer = null;
+var OVILUS_SILENCE_MS = 3500;
+
+function ovilusResetSilence(){
+  if(ovilusSilenceTimer) clearTimeout(ovilusSilenceTimer);
+  ovilusSilenceTimer = setTimeout(function(){
+    if(ovilusListening){ try{ recognition.stop(); }catch(e){} }
+  }, OVILUS_SILENCE_MS);
+}
+if(SpeechRecognitionCtor){
+  recognition = new SpeechRecognitionCtor();
+  recognition.lang = 'fr-FR';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.onstart = function(){ ovilusResetSilence(); };
+  recognition.onresult = function(e){
+    var interim = '';
+    for(var i = e.resultIndex; i < e.results.length; i++){
+      var chunk = e.results[i][0].transcript;
+      if(e.results[i].isFinal) ovilusFinalTranscript += chunk + ' ';
+      else interim += chunk;
+    }
+    var live = (ovilusFinalTranscript + interim).trim();
+    if(live) document.getElementById('ovilusQuestion').textContent = '« ' + live + ' »';
+    ovilusResetSilence();
+  };
+  recognition.onend = function(){
+    ovilusListening = false;
+    if(ovilusSilenceTimer) clearTimeout(ovilusSilenceTimer);
+    document.getElementById('ovilusCrystal').classList.remove('listening');
+    var full = ovilusFinalTranscript.trim();
+    if(full){
+      document.getElementById('ovilusTypedQuestion').value = full;
+      ovilusConsult();
+    } else {
+      document.getElementById('ovilusStatus').textContent = 'En attente';
+    }
+  };
+  recognition.onerror = function(){
+    ovilusListening = false;
+    if(ovilusSilenceTimer) clearTimeout(ovilusSilenceTimer);
+    document.getElementById('ovilusCrystal').classList.remove('listening');
+    document.getElementById('ovilusStatus').textContent = 'Micro indisponible';
+  };
+}
+function ovilusListen(){
+  if(!recognition){ document.getElementById('ovilusStatus').textContent = 'Dictée non supportée — écris ta question'; return; }
+  if(ovilusListening){ try{ recognition.stop(); }catch(e){} return; }
+  unlockOvilusSpeech();
+  ovilusFinalTranscript = '';
+  ovilusListening = true;
+  document.getElementById('ovilusCrystal').classList.add('listening');
+  document.getElementById('ovilusStatus').textContent = 'Je t\'écoute…';
+  try{ recognition.start(); }catch(e){}
+}
+</script>
+</body>
+</html>
