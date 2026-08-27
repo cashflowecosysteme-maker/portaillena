@@ -4513,7 +4513,7 @@ async function handleMediaFile(request, env, url) {
 }
 
 // ───────────── VOIX — liste IMMUABLE (sauf demande explicite) ─────────────
-// NyXia, Diane, Léna  → ElevenLabs exclusivement.
+// NyXia, Diane, Léna, Sophia, Cassandre, Aletheia, Céleste  → ElevenLabs exclusivement.
 // Éric, Kael, et Séléna → OpenAI TTS tant qu'aucun identifiant
 // ElevenLabs ne leur est explicitement attribué.
 //
@@ -4530,6 +4530,7 @@ const AGENT_ELEVENLABS_VOICE_ID_KEYS = {
   aletheia: 'ELEVENLABS_ALETHEIA_VOICE_ID',
   cassandre: 'ELEVENLABS_CASSANDRE_VOICE_ID',
   celeste: 'ELEVENLABS_CELESTE_VOICE_ID',
+  
 };
 
 // Defaults si le secret Cloudflare n'est pas encore défini
@@ -4558,9 +4559,16 @@ const AGENT_VOICE_ID_KEYS = {
 
 // OpenAI TTS — mapping figé
 const OPENAI_VOICE_MAP = {
-  eric:   'echo',
-  kael:   'onyx',
-  selena: 'shimmer'
+  eric:      'echo',
+  kael:      'onyx',
+  selena:    'shimmer',
+  sophia:    'nova',
+  aletheia:  'sage',
+  cassandre: 'shimmer',
+  celeste:   'nova',
+  lena:      'nova',
+  diane:     'nova',
+  nyxia:     'shimmer'
 };
 
 async function sha256Hex(str) {
@@ -4959,7 +4967,10 @@ async function handleIngestBook(request, env) {
 }
 
 async function handleTTSNyxia(request, env) {
-  const { token, text, agent } = await request.json();
+  const body = await request.json();
+  const token = body.token;
+  const text = body.text;
+  const agent = String(body.agent || 'nyxia').trim().toLowerCase();
   const session = await getSessionOrNull(token, env);
   if (!session) return json({ error: 'Session expirée.' }, 401);
   if (!text) return json({ error: 'Texte requis.' }, 400);
@@ -4997,16 +5008,16 @@ async function handleTTSNyxia(request, env) {
 
     if (!resp.ok) {
       const errText = await resp.text();
-      return json({ error: 'Erreur ElevenLabs (' + resp.status + ') : ' + errText.slice(0, 300) }, 502);
+      console.log('ElevenLabs fail agent=' + agent + ' status=' + resp.status + ' ' + errText.slice(0, 200));
+      // Ne bloque pas : on bascule sur HeyGen / OpenAI
+    } else {
+      const audioBuf = await resp.arrayBuffer();
+      await env.CASHFLOW_KV.put(cacheKey, audioBuf, { expirationTtl: 60 * 60 * 24 * 30 });
+      return json({
+        success: true,
+        proxyUrl: '/api/tts/cached-audio?key=' + encodeURIComponent(cacheKey) + '&token=' + encodeURIComponent(token)
+      });
     }
-
-    const audioBuf = await resp.arrayBuffer();
-    await env.CASHFLOW_KV.put(cacheKey, audioBuf, { expirationTtl: 60 * 60 * 24 * 30 });
-
-    return json({
-      success: true,
-      proxyUrl: '/api/tts/cached-audio?key=' + encodeURIComponent(cacheKey) + '&token=' + encodeURIComponent(token)
-    });
   }
 
   const voiceIdKey = AGENT_VOICE_ID_KEYS[agent];
