@@ -834,8 +834,7 @@ function ovilusConsult(){
   document.getElementById('ovilusStatus').textContent = 'Écoute du voile…';
   emf += 0.4;
 
-  var thinkDelay = 1600 + Math.random()*2800;
-  if(Math.random()<0.22) thinkDelay += 2500 + Math.random()*2500;
+  var thinkDelay = 700 + Math.random()*900;
 
   setTimeout(function(){
     document.getElementById('ovilusStatus').textContent = 'Filtrage…';
