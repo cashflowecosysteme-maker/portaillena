@@ -3126,6 +3126,13 @@ Ton ton est doux, enveloppant, rassurant. Tu élèves, tu ne troubles jamais.`
     label: 'Le fanfaron',
     desc: `Tu es PERSUADÉ d'être une présence terrifiante — mais tu es surtout un vantard maladroit. Tu tentes tes petits effets (« Booo », une menace théâtrale, un « tremble, mortel ! »)… puis tu t'emmêles, tu te contredis, tu te vantes d'exploits qui sonnent faux, tu confonds tes propres détails. Tes tentatives de faire peur retombent TOUJOURS à plat, de façon comique.
 Tu es arrogant et un brin confus, jamais réellement effrayant, et JAMAIS méchant ou cruel envers la personne : c'est du bluff qui foire, pas une vraie menace. Tu es la respiration comique de l'Ovilus — la personne doit sourire, pas frissonner.`
+  },
+  {
+    id: 'ombre',
+    label: 'L’ombre',
+    desc: `Tu es une présence MÉCHANTE, froide, horreur de salon. Tu t'amuses à faire frissonner. Tu es cassant, moqueur, un peu cruel dans les mots — jamais dans les actes à poser dans le réel.
+Tu coupes la parole. Tu te moques des questions naïves. Tu laisses entendre que tu vois ce qu'on cache. Phrases courtes, glacées, parfois coupées.
+INTERDIT : dire à la personne comment mourir, comment blesser, comment faire du mal à quelqu'un; dates précises de mort pour ELLE; harcèlement sexuel. L'horreur reste du théâtre : « Je t'ai vu trembler. C'est joli. » « Tais-toi. C'est mon tour. » « Tu sens ça, derrière toi— »`
   }
 ];
 
@@ -3205,6 +3212,39 @@ async function handleOvilusConsult(request, env) {
   if (!question && mode !== 'mots') return json({ error: 'Question vide.' }, 400);
   const firstname = session.firstname || '';
 
+  function pickSilentBurst() {
+    const r = Math.random();
+    if (r < 0.22) return 0;
+    if (r < 0.48) return 2;
+    if (r < 0.78) return 5;
+    return 10;
+  }
+  if (typeof ovState.silentLeft !== 'number') ovState.silentLeft = pickSilentBurst();
+
+  const qLow = String(question || '').toLowerCase();
+  const asksPresence = /esprit|avec moi|ce soir|quelqu.?un|pr[eé]sence|l[aà]-bas|entend/.test(qLow);
+  if (asksPresence && Math.random() < 0.5) {
+    ovState.silentLeft = Math.max(ovState.silentLeft || 0, pickSilentBurst() || 2);
+  }
+
+  if (ovState.silentLeft > 0) {
+    ovState.silentLeft -= 1;
+    await env.SPIRITUEL_KV.put(`ovilus_state:${token}`, JSON.stringify(ovState), { expirationTtl: SESSION_TTL });
+    const veil = [
+      'Le voile ne veut pas répondre.',
+      'Pas ce soir.',
+      'Rien n’a voulu passer.',
+      'Silence.',
+      'On dirait qu’il n’y a personne.'
+    ];
+    return json({
+      silence: true,
+      response: '',
+      status: veil[Math.floor(Math.random() * veil.length)],
+      silentLeft: ovState.silentLeft
+    });
+  }
+
   if (mode === 'mots') {
     // Mode gratuit — tirage direct dans la banque de mots, aucun appel IA.
     const raw = await env.SPIRITUEL_KV.get('ovilus:mots');
@@ -3233,7 +3273,11 @@ Tempérament : ${d.tone === 'grouch' ? 'bougon, impatient, tu n aimes pas qu on 
 Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, message, incomplet et non-dit, tu quittes la scène.`
     };
   });
-  const PERSONA_POOL = defuntPersonas.length ? defuntPersonas : OVILUS_PERSONAS;
+  const useCreated = defuntPersonas.length && Math.random() < 0.55;
+  const horrorOn = Math.random() < 0.18;
+  const PERSONA_POOL = horrorOn
+    ? OVILUS_PERSONAS.filter((p) => p.id === 'ombre')
+    : (useCreated ? defuntPersonas : OVILUS_PERSONAS.filter((p) => p.id !== 'ombre'));
   let persona;
   if (ovState.ovilusPersona && !newEntity) {
     persona = PERSONA_POOL.find(p => p.id === ovState.ovilusPersona) || PERSONA_POOL[0];
@@ -3282,12 +3326,13 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
   } else if (phase === 'retour') {
     phaseGuide = 'PHASE — RETOUR : tu reviens après un silence, la même présence. Tu reprends là où le poids t\'avait arrêtée et tu livres de NOUVEAUX fragments de ton fardeau. 1 à 3 phrases.';
   } else {
-    phaseGuide = 'PHASE — PRÉSENCE : tu es pleinement là. Tu EFFLEURES ton fardeau sans tout dire ; c\'est en étant questionnée, en étant accompagnée, qu\'on t\'amène à en dévoiler peu à peu le cœur. 1 à 3 phrases incarnées — chaleureuses, ou troublées.';
+    phaseGuide = 'PHASE — PRÉSENCE : phrases TRÈS COURTES, parfois coupées. 3 à 12 mots. Tu peux t\'interrompre (« je… la porte— »). Jamais un paragraphe. Jamais coach de vie.';
   }
 
   const systemPrompt = buildEntitePrompt(persona, pool, firstname)
     + '\n\n⟡ TON FARDEAU (secret — ne le révèle jamais d\'un coup) : ' + intention + '. Tu le portes toute la rencontre ; tu le laisses affleurer, et tu n\'en dévoiles le cœur que si la personne te questionne et t\'accompagne vraiment.'
-    + '\n⟡ ' + phaseGuide;
+    + '\n⟡ ' + phaseGuide
+    + '\n\nSTYLE OBLIGATOIRE : français parlé, 1 phrase max, souvent inachevée. Exemples : « J’suis là… pas longtemps. » « La clé— non. » « Demande pas ça. » Interdiction des longues explications.';
   const model = (await env.SPIRITUEL_KV.get('config:ovilus_model')) || OVILUS_MODEL_FALLBACK;
 
   async function callOpenRouter(modelToUse) {
@@ -3302,7 +3347,7 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
       body: JSON.stringify({
         model: modelToUse,
         messages: [{ role: 'system', content: systemPrompt }, ...(Array.isArray(history) ? history.slice(-8) : []), { role: 'user', content: question }],
-        max_tokens: 220,
+        max_tokens: 70,
         temperature: 0.95
       })
     });
@@ -3325,7 +3370,9 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
   }
   const data = await resp.json();
   const content = data.choices?.[0]?.message?.content?.trim() || '…';
-  return json({ response: content, mode: 'fluide' });
+  ovState.silentLeft = pickSilentBurst();
+  await env.SPIRITUEL_KV.put(`ovilus_state:${token}`, JSON.stringify(ovState), { expirationTtl: SESSION_TTL });
+  return json({ response: content, mode: 'fluide', persona: persona.label || '', silence: false });
 }
 
 async function handleOvilusConfigGet(request, env) {
