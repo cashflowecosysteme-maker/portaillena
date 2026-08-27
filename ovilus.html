@@ -308,8 +308,9 @@ var emf = 0.12, temp = baseTemp, veil = 0;
 
 function pickNextVeilMood(){
   var r = Math.random();
-  if(r < 0.38) veilSilentLeft = 0;
-  else if(r < 0.72) veilSilentLeft = 5;
+  if(r < 0.22) veilSilentLeft = 0;
+  else if(r < 0.48) veilSilentLeft = 2;
+  else if(r < 0.78) veilSilentLeft = 5;
   else veilSilentLeft = 10;
 }
 pickNextVeilMood();
@@ -859,15 +860,20 @@ function ovilusConsult(){
     .then(function(r){ return r.json(); })
     .then(function(data){
       ovilusBusy = false;
-      var txt;
-      if(data.response && Math.random()<0.3){
-        txt = compactSpirit(data.response);
-      } else {
-        txt = localOvilusReply(lastAsked);
-        if(!data.response) document.getElementById('demoBanner').style.display='block';
+      if(data && data.silence){
+        document.getElementById('ovilusScreen').textContent = '· · ·';
+        document.getElementById('ovilusScreen').classList.remove('lit');
+        document.getElementById('ovilusStatus').textContent = data.status || 'Le voile ne veut pas répondre.';
+        ovilusLog('(silence)');
+        return;
       }
+      if(data && data.error){
+        document.getElementById('ovilusStatus').textContent = data.error;
+        return;
+      }
+      var txt = (data && data.response) ? compactSpirit(data.response) : localOvilusReply(lastAsked);
+      if(!data || !data.response) document.getElementById('demoBanner').style.display='block';
       showOvilusAnswer(txt);
-      pickNextVeilMood();
     })
     .catch(function(){
       ovilusBusy = false;
