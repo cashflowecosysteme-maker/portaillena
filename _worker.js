@@ -2837,6 +2837,7 @@ const url = new URL(request.url);
 
       // ── Ovilus (branché au dashboard ; données sur SPIRITUEL_KV) ──
       if (path === '/api/ovilus/consult' && request.method === 'POST') return await handleOvilusConsult(request, env);
+      if (path === '/api/ovilus/cast' && request.method === 'GET') return await handleOvilusCast(request, env);
       if (path === '/api/admin/ovilus/config' && request.method === 'GET') return await handleOvilusConfigGet(request, env);
       if (path === '/api/admin/ovilus/config' && request.method === 'POST') return await handleOvilusConfigSet(request, env);
       if (path === '/api/admin/ovilus/mots' && request.method === 'GET') return await handleOvilusMotsGet(request, env);
@@ -2889,6 +2890,17 @@ const url = new URL(request.url);
       if (path === '/api/tts/cached-audio' && request.method === 'GET') return await handleTTSCachedAudio(request, env, url);
     } catch (e) {
       return json({ error: 'Erreur serveur inattendue : ' + e.message }, 500);
+    }
+
+    // Pages membres : session obligatoire (token ?t= ou session KV).
+    const PROTECTED_PAGES = ['/dashbord.html', '/ovilus.html'];
+    const isProtected = PROTECTED_PAGES.includes(path) || path.startsWith('/chat-');
+    if (isProtected && env.CASHFLOW_KV) {
+      const tok = url.searchParams.get('t') || url.searchParams.get('token') || '';
+      const session = tok ? await getSessionFromToken(env, tok) : null;
+      if (!session) {
+        return Response.redirect(url.origin + '/login', 302);
+      }
     }
 
     // Fichiers statiques : index.html (vente), login, tableau de bord, chats et images.
@@ -3163,6 +3175,26 @@ const DEFAULT_PRENOMS = {
   masculins: ["Joseph","Alphonse","Ovide","Ferdinand","Théodore","Wilfrid","Arthur","Edmond","Léopold","Anselme","Aristide","Casimir","Hector","Ludger","Napoléon","Rosaire","Zénon","Télesphore","Adélard","Damase","Isidore","Elzéar","Origène","Ernest","Émile","Gustave","Eugène","Albert","Henri","Gilles","Réjean","Marcel","Roland","Yvon","Normand","Gaétan","Denis","Claude","Robert","Raymond","Fernand","Gérard","Bertrand","Nathan","Noah","Liam","Félix","Xavier","Olivier","Gabriel","Mathis","Zachary","Antoine","Théo","Léo","Jules","Elliot","Louis","William","Thomas","Alexis","Mathieu","Simon"]
 };
 
+
+async function loadDefuntCast(env) {
+  try {
+    const raw = await env.CASHFLOW_KV.get('ovilus:defunts');
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    const list = Array.isArray(parsed) ? parsed : [];
+    return list.filter((d) => d && d.active !== false && d.active !== 0 && d.active !== '0');
+  } catch (_) { return []; }
+}
+
+async function handleOvilusCast(request, env) {
+  const url = new URL(request.url);
+  const token = url.searchParams.get('t') || url.searchParams.get('token') || '';
+  const session = await getSessionFromToken(env, token);
+  if (!session) return json({ error: 'Session expirée. Reconnecte-toi.' }, 401);
+  const defunts = await loadDefuntCast(env);
+  return json({ defunts });
+}
+
 async function handleOvilusConsult(request, env) {
   const { question, mode, token, history, phase, newEntity } = await request.json();
   const session = await getSessionFromToken(env, token);
@@ -3184,15 +3216,33 @@ async function handleOvilusConsult(request, env) {
   }
 
   // Mode "phrase fluide" — l'Entité, via OpenRouter
+  const defuntCast = await loadDefuntCast(env);
+  const defuntPersonas = defuntCast.map((d) => {
+    const name = [d.prenom, d.nom].filter(Boolean).join(' ') || d.name || 'Présence';
+    const born = d.born || (d.birth || '').slice(0, 4);
+    const died = d.died || (d.death || '').slice(0, 4);
+    return {
+      id: 'defunt:' + d.id,
+      label: name,
+      desc: `Tu es ${name}, né(e) en ${born || '?'}, parti(e) en ${died || '?'}.
+Circonstance de ta mort : ${d.circumstance || 'tu ne la dis pas tout de suite'}.
+Message que tu veux dire : ${d.message || 'un mot resté coincé'}.
+Ce qui est incomplet : ${d.incomplete || 'une affaire non close'}.
+Ce que tu n'as pas pu dire ou faire : ${d.unsaid || 'un non-dit'}.
+Tempérament : ${d.tone === 'grouch' ? 'bougon, impatient, tu n aimes pas qu on te questionne comme un spectacle' : 'tu veux raconter ton histoire, une brique à la fois'}.
+Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, message, incomplet et non-dit, tu quittes la scène.`
+    };
+  });
+  const PERSONA_POOL = defuntPersonas.length ? defuntPersonas : OVILUS_PERSONAS;
   let persona;
   if (ovState.ovilusPersona && !newEntity) {
-    persona = OVILUS_PERSONAS.find(p => p.id === ovState.ovilusPersona) || OVILUS_PERSONAS[0];
+    persona = PERSONA_POOL.find(p => p.id === ovState.ovilusPersona) || PERSONA_POOL[0];
   } else {
     // Nouvelle manifestation → nouvelle entité (différente de la précédente si possible)
-    let candidates = OVILUS_PERSONAS;
-    if (newEntity && ovState.ovilusPersona && OVILUS_PERSONAS.length > 1) {
-      candidates = OVILUS_PERSONAS.filter(p => p.id !== ovState.ovilusPersona);
-      if (!candidates.length) candidates = OVILUS_PERSONAS;
+    let candidates = PERSONA_POOL;
+    if (newEntity && ovState.ovilusPersona && PERSONA_POOL.length > 1) {
+      candidates = PERSONA_POOL.filter(p => p.id !== ovState.ovilusPersona);
+      if (!candidates.length) candidates = PERSONA_POOL;
     }
     persona = candidates[Math.floor(Math.random() * candidates.length)];
     ovState.ovilusPersona = persona.id;
