@@ -24,7 +24,7 @@
     #starry-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
     header {
-      position: relative; z-index: 120; height: 56px;
+      position: relative; z-index: 200; height: 56px;
       background: rgba(8,15,34,0.95); border-bottom: 1px solid rgba(123,92,255,0.12);
       backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px 0 10px; flex-shrink: 0;
     }
@@ -45,7 +45,7 @@
     .btn-logout { background: rgba(255,75,110,0.1); border: 1px solid rgba(255,75,110,0.25); color: #ff8fab; }
     .btn-logout:hover { background: rgba(255,75,110,0.2); }
 
-    .app-body { display: flex; flex: 1; overflow: hidden; position: relative; z-index: 1; }
+    .app-body { display: flex; flex: 1; overflow: hidden; position: relative; z-index: auto; }
     aside { width: 240px; flex-shrink: 0; background: rgba(8,15,34,0.97); border-right: 1px solid rgba(123,92,255,0.1); display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
     aside::-webkit-scrollbar { width: 6px; }
     aside::-webkit-scrollbar-track { background: transparent; }
@@ -244,10 +244,13 @@
     #mobile-menu-backdrop {
       display: none;
       position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      z-index: 140;
-      backdrop-filter: blur(2px);
+      top: 56px;
+      right: 0;
+      bottom: 0;
+      left: min(300px, 86vw);
+      background: rgba(0,0,0,0.35);
+      z-index: 160;
+      pointer-events: auto;
     }
     #mobile-menu-backdrop.mobile-open { display: block !important; }
 
@@ -257,29 +260,32 @@
       .header-center { display: none; }
       .app-body { position: relative; }
       aside {
+        display: none !important;
         position: fixed !important;
-        top: 0;
-        left: -110% !important;
-        height: 100%;
-        height: 100dvh;
+        top: 56px;
+        left: 0 !important;
+        height: calc(100% - 56px);
+        height: calc(100dvh - 56px);
         width: min(300px, 86vw);
-        z-index: 150;
-        background: #0c1430 !important;
+        z-index: 200;
+        background: #152044 !important;
         transform: none !important;
-        transition: left .28s ease;
         box-shadow: none;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        pointer-events: auto !important;
       }
       aside.mobile-open {
-        left: 0 !important;
-        transform: none !important;
+        display: flex !important;
+        flex-direction: column !important;
         box-shadow: 8px 0 40px rgba(0,0,0,0.45);
+        pointer-events: auto !important;
       }
-      aside .nav-name { color: #fff !important; }
-      aside .nav-sub { color: #c5cbe8 !important; opacity: 1 !important; }
-      aside .sidebar-label { color: #9aa3c7 !important; }
-      aside .nav-item { color: #e8eaf8 !important; }
+      aside .nav-item, aside .nav-item * { pointer-events: auto !important; }
+      aside .nav-name { color: #ffffff !important; }
+      aside .nav-sub { color: #d0d6f0 !important; opacity: 1 !important; }
+      aside .sidebar-label { color: #b7c0e0 !important; }
+      aside .nav-item { color: #ffffff !important; }
 
       .main-content, .content, .panels, [class*="panel-wrap"] {
         /* full width when sidebar is overlay */
