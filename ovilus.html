@@ -627,20 +627,19 @@ function openSeance(){
 function beginSeanceVoice(){
   document.body.classList.add('seance-on');
   setControls(true);
-  veil = 22; emf = 0.6; temp = baseTemp - 0.4;
-  attachSpirit(Math.random() < 0.22);
+  veil = 18; emf = 0.35; temp = baseTemp - 0.2;
+  currentSpirit = null;
+  spiritStoryIndex = 0;
+  pickNextVeilMood();
   var box = document.getElementById('ovilusScreenBox');
   box.classList.add('scan');
-  var openLine = currentSpirit.intro;
-  typeOnScreen(openLine, function(){
-    document.getElementById('ovilusStatus').textContent = currentSpirit.name + ' · ' + currentSpirit.born + '–' + currentSpirit.died;
-    document.getElementById('ovilusQuestion').textContent = currentSpirit.tone==='grouch'
-      ? 'Une voix aigre tient le micro. Une question, si tu insistes.'
-      : 'Une histoire cherche à passer. Une question à la fois.';
-    speakBrowser(openLine);
-  });
-  ovilusLog('Cercle ouvert' + (username ? ' — ' + username : '') + ' · ' + currentSpirit.name + ' (' + currentSpirit.born + '–' + currentSpirit.died + ')');
-  playKnock(2);
+  var screen = document.getElementById('ovilusScreen');
+  screen.classList.remove('lit');
+  screen.textContent = '— — —';
+  document.getElementById('ovilusStatus').textContent = 'Cercle ouvert — le voile est silencieux';
+  document.getElementById('ovilusQuestion').textContent = 'Attends. Pose une question si tu veux. Rien ne garantit une réponse.';
+  ovilusLog('Cercle ouvert' + (username ? ' — ' + username : '') + '. Silence.');
+  playKnock(1);
   if(!noiseOn) toggleNoise();
 }
 
