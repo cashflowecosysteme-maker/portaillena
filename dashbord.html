@@ -732,7 +732,6 @@
     }
 
     function toggleMobileMenu(e) {
-      if (e && e.preventDefault) { e.preventDefault(); e.stopPropagation(); }
       var aside = document.querySelector('aside')
       var bd = document.getElementById('mobile-menu-backdrop')
       if (!aside) return false
@@ -755,10 +754,6 @@
     }
     window.toggleMobileMenu = toggleMobileMenu
     window.closeMobileMenu = closeMobileMenu
-    document.addEventListener('click', function(ev) {
-      var btn = ev.target.closest ? ev.target.closest('#mobile-menu-btn') : null
-      if (btn) toggleMobileMenu(ev)
-    })
 
 
     /* ═══════ MESSAGES DES IFRAMES → personnage ═══════ */
