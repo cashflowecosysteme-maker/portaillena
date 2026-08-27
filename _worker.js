@@ -3309,7 +3309,11 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
     await env.SPIRITUEL_KV.put(`ovilus_state:${token}`, JSON.stringify(ovState), { expirationTtl: SESSION_TTL });
   }
 
+  const qAsk = String(question || '').toLowerCase();
+  const asksFinish = /termine|termin|finis|finir|continue|continuer|ach[eè]ve|complete|complète|ta phrase|le reste|vas-y/.test(qAsk);
+
   let phaseGuide = '';
+
   if (phase === 'emergence') {
     phaseGuide = 'PHASE — ÉMERGENCE : tu émerges à peine du voile. Tu ne livres que des BRIBES : 1 à 5 mots, fragmentés, hésitants — parfois un seul mot, une syllabe, un prénom. On sent seulement un frisson de ton fardeau, jamais son contenu. JAMAIS de phrase complète.';
   } else if (phase === 'adieu') {
@@ -3319,13 +3323,29 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
   } else if (phase === 'retour') {
     phaseGuide = 'PHASE — RETOUR : tu reviens après un silence, la même présence. Tu reprends là où le poids t\'avait arrêtée et tu livres de NOUVEAUX fragments de ton fardeau. 1 à 3 phrases.';
   } else {
-    phaseGuide = 'PHASE — PRÉSENCE : phrases TRÈS COURTES, parfois coupées. 3 à 12 mots. Tu peux t\'interrompre (« je… la porte— »). Jamais un paragraphe. Jamais coach de vie.';
+    phaseGuide = 'PHASE — PRÉSENCE : 1 ou 2 phrases COMPLÈTES. Tu réponds à LA question posée. Tu restes le même esprit, le même sujet. Tu ne changes pas d\'histoire en cours de route.';
+  }
+
+  if (asksFinish) {
+    phaseGuide = 'PHASE — ACHÈVE : la personne te demande de FINIR. Reprends la DERNIÈRE chose que tu as commencée dans l\'historique et termine-la clairement, en 1 ou 2 phrases complètes. INTERDIT de changer de sujet, de personnage, d\'époque ou d\'inventer une nouvelle histoire.';
   }
 
   const systemPrompt = buildEntitePrompt(persona, pool, firstname)
     + '\n\n⟡ TON FARDEAU (secret — ne le révèle jamais d\'un coup) : ' + intention + '. Tu le portes toute la rencontre ; tu le laisses affleurer, et tu n\'en dévoiles le cœur que si la personne te questionne et t\'accompagne vraiment.'
     + '\n⟡ ' + phaseGuide
-    + '\n\nSTYLE OBLIGATOIRE : français parlé, 1 phrase max, souvent inachevée. Exemples : « J’suis là… pas longtemps. » « La clé— non. » « Demande pas ça. » Interdiction des longues explications.';
+    + '\n\nSTYLE : français parlé, phrases FINIES. INTERDIT : didascalies (soupir), (rire), *voix*. Tu RÉPONDS à la question posée, une couche à la fois, comme une vraie séance.\n'
+    + 'ÉCHELLE — ne brûle pas les étapes si on ne te les a pas demandées :\n'
+    + '1. On demande qui est là → ton prénom seulement.\n'
+    + '2. On te demande ce qu’on peut faire / pourquoi tu viens → confusion, besoin, pas tout le secret.\n'
+    + '3. On demande comment tu as passé le voile → la circonstance (accident, maladie…), sans roman.\n'
+    + '4. On demande si tu as un message → le regret ou l’élan, pas encore le destinataire détaillé.\n'
+    + '5. On demande à qui / lui dire quoi → là seulement tu nommes la personne et les mots.\n'
+    + 'Tu restes LA MÊME présence. Tu ne changes pas de nom ni d’histoire. Si on te dit de finir : tu termines la dernière phrase, tu ne repars pas ailleurs.';
+    + '\n\nANCRAGE DANS LA QUESTION : tu dois RÉUTILISER les noms propres et les objets concrets de la dernière question (Josée, Jean, papiers, maison, héritage, vaisselier…). Ta réponse contient au moins un de ces mots.\n'
+    + 'Exemple : « Patrick voudrait savoir si Josée a caché des papiers ? » → « Oui. Josée a caché des papiers de l’héritage. Jean ne devait pas savoir. »\n'
+    + 'Exemple : « Est-ce que Jean veut vendre la maison que papa ne voulait pas vendre ? » → « Jean veut vendre la maison. Papa ne voulait pas. »\n'
+    + 'Exemple : « Est-ce qu’il en veut à Josée ? » → « Jean en veut à Josée. Pas à toi. »\n'
+    + 'INTERDIT de répondre par une phrase vague sans ces mots (pas de « le voile est mince » si on t’a parlé de Josée et des papiers).';
   const model = (await env.SPIRITUEL_KV.get('config:ovilus_model')) || OVILUS_MODEL_FALLBACK;
 
   async function callOpenRouter(modelToUse) {
@@ -3339,8 +3359,8 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
       },
       body: JSON.stringify({
         model: modelToUse,
-        messages: [{ role: 'system', content: systemPrompt }, ...(Array.isArray(history) ? history.slice(-8) : []), { role: 'user', content: question }],
-        max_tokens: 70,
+        messages: [{ role: 'system', content: systemPrompt }, ...(Array.isArray(history) ? history.slice(-8) : []), { role: 'user', content: 'Question à laquelle tu dois répondre en reprenant ses mots : ' + question }],
+        max_tokens: asksFinish ? 160 : 120,
         temperature: 0.95
       })
     });
@@ -3362,38 +3382,55 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
     return json({ error: 'Le voile est trouble, réessaie.' }, 502);
   }
   const data = await resp.json();
-  const content = data.choices?.[0]?.message?.content?.trim() || '…';
+  let content = data.choices?.[0]?.message?.content?.trim() || '…';
+  content = content
+    .replace(/\([^)]{0,80}\)/g, ' ')
+    .replace(/\[[^\]]{0,80}\]/g, ' ')
+    .replace(/\*[^*]{0,80}\*/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
   ovState.silentLeft = 1 + Math.floor(Math.random() * 2);
   ovState.lastPersona = persona.id;
 
   let interrupt = null;
-  const others = PERSONA_POOL.filter((p) => p.id !== persona.id);
-  const horrorPool = OVILUS_PERSONAS.filter((p) => p.id === 'ombre');
-  if (others.length && Math.random() < 0.32) {
-    const meanCut = Math.random() < 0.22;
-    const second = meanCut && horrorPool.length
-      ? horrorPool[0]
-      : others[Math.floor(Math.random() * others.length)];
-    const nm = second.label || 'Une autre voix';
-    const lines = meanCut ? [
-      'C’est mon tour. Tais-toi.',
-      'Elle ment. Écoute-moi plutôt.',
-      'Vous jouez. Je n’aime pas ça.',
-      'Derrière toi— non. Moi.',
-      nm + '. Tu n’aurais pas dû ouvrir.'
-    ] : [
-      'Je suis là aussi. ' + nm + '.',
-      nm + '. Moi aussi je veux parler.',
-      'Attends— ' + nm + ' aussi.',
-      'Pas seulement ' + (persona.label || 'elle') + '. ' + nm + ' aussi.',
-      nm + ' : laisse-moi une phrase.'
-    ];
+  const roll = Math.random();
+  if (roll < 0.16) {
     interrupt = {
-      name: nm,
-      text: lines[Math.floor(Math.random() * lines.length)],
-      tone: meanCut ? 'horror' : 'story'
+      name: 'Gardien',
+      text: [
+        'Assez. Il n’a pas le droit de tout dire.',
+        'Le seuil se referme. Pas ce détail.',
+        'Je le retiens. Pose une autre question.',
+        'Garde tes mots. Ce n’est pas pour eux.'
+      ][Math.floor(Math.random() * 4)],
+      tone: 'guardian'
     };
-    ovState.lastPersona = second.id;
+  } else if (roll < 0.28) {
+    interrupt = {
+      name: 'Démon',
+      text: [
+        'Tais-toi. Ils n’auront rien.',
+        'Il ment déjà. Laisse-le pourrir dans son silence.',
+        'Vous n’aurez pas son nom. Pas ce soir.',
+        'C’est mon jouet. Pas le vôtre.'
+      ][Math.floor(Math.random() * 4)],
+      tone: 'horror'
+    };
+  } else if (roll < 0.42) {
+    const others = PERSONA_POOL.filter((p) => p.id !== persona.id);
+    if (others.length) {
+      const second = others[Math.floor(Math.random() * others.length)];
+      const nm = second.label || 'Une autre voix';
+      interrupt = {
+        name: nm,
+        text: [
+          'Je suis là aussi. ' + nm + '.',
+          nm + '. Moi aussi je veux parler.',
+          'Attends. ' + nm + ' aussi.'
+        ][Math.floor(Math.random() * 3)],
+        tone: 'story'
+      };
+    }
   }
 
   await env.SPIRITUEL_KV.put(`ovilus_state:${token}`, JSON.stringify(ovState), { expirationTtl: SESSION_TTL });
