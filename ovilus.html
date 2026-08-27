@@ -306,14 +306,9 @@ var veilSilentLeft = 0;
 var baseTemp = 21.2 + Math.random()*0.8;
 var emf = 0.12, temp = baseTemp, veil = 0;
 
-function pickNextVeilMood(){
-  var r = Math.random();
-  if(r < 0.22) veilSilentLeft = 0;
-  else if(r < 0.48) veilSilentLeft = 2;
-  else if(r < 0.78) veilSilentLeft = 5;
-  else veilSilentLeft = 10;
-}
-pickNextVeilMood();
+function pickNextVeilMood(){ veilSilentLeft = 0; }
+var seanceFresh = false;
+
 
 var DICT = [
   'oui','non','ici','près','loin','mère','père','fils','fille','nom','maison','eau','feu',
@@ -631,6 +626,7 @@ function beginSeanceVoice(){
   currentSpirit = null;
   spiritStoryIndex = 0;
   pickNextVeilMood();
+  seanceFresh = true;
   var box = document.getElementById('ovilusScreenBox');
   box.classList.add('scan');
   var screen = document.getElementById('ovilusScreen');
@@ -842,19 +838,12 @@ function ovilusConsult(){
   if(Math.random()<0.22) thinkDelay += 2500 + Math.random()*2500;
 
   setTimeout(function(){
-    if(veilSilentLeft>0){
-      veilSilentLeft--;
-      document.getElementById('ovilusScreen').textContent = '· · ·';
-      document.getElementById('ovilusScreen').classList.remove('lit');
-      document.getElementById('ovilusStatus').textContent = 'Silence — rien n\'a voulu passer.';
-      ovilusLog('(silence)');
-      ovilusBusy = false;
-      return;
-    }
     document.getElementById('ovilusStatus').textContent = 'Filtrage…';
+    var isNew = seanceFresh;
+    seanceFresh = false;
     fetch('/api/ovilus/consult', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({question:lastAsked, mode:ovilusMode, token:token, history:ovilusHistory})
+      body: JSON.stringify({question:lastAsked, mode:ovilusMode, token:token, history:ovilusHistory, newSeance: isNew})
     })
     .then(function(r){ return r.json(); })
     .then(function(data){
