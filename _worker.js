@@ -4513,7 +4513,7 @@ async function handleMediaFile(request, env, url) {
 }
 
 // ───────────── VOIX — liste IMMUABLE (sauf demande explicite) ─────────────
-// NyXia, Diane, Léna  → ElevenLabs exclusivement.
+// NyXia, Diane, Léna, Sophia, Cassandre, Aletheia, Céleste  → ElevenLabs exclusivement.
 // Éric, Kael, et Séléna → OpenAI TTS tant qu'aucun identifiant
 // ElevenLabs ne leur est explicitement attribué.
 //
@@ -4526,6 +4526,11 @@ const AGENT_ELEVENLABS_VOICE_ID_KEYS = {
   diane: 'ELEVENLABS_DIANE_VOICE_ID',
   alex: 'ELEVENLABS_ALEX_VOICE_ID',
   lena: 'ELEVENLABS_LENA_VOICE_ID',
+  sophia: 'ELEVENLABS_SOPHIA_VOICE_ID',
+  aletheia: 'ELEVENLABS_ALETHEIA _VOICE_ID',
+  cassandre: 'ELEVENLABS_CASSANDRE _VOICE_ID',
+  celeste: 'ELEVENLABS_CELESTE _VOICE_ID',
+  
 };
 
 // Defaults si le secret Cloudflare n'est pas encore défini
@@ -4539,7 +4544,11 @@ const ELEVENLABS_VOICE_ID_DEFAULTS = {
   alibi: 'K7gx0ylJdff0yjM2uVQS',
   constance: 'u5l0VNCfzO5oqrKTuA1e',
   fripouille: 'piI8Kku0DcvcL6TTSeQt',
-  melusine: 'iB0Pwf5VYt7UDBrGrMqH'
+  melusine: 'iB0Pwf5VYt7UDBrGrMqH',
+  sophia: 'WQKwBV2Uzw1gSGr69N8I',
+  aletheia: 'taOhVGnnfgm0gEJnfB0f',
+  cassandre: 'YxrwjAKoUKULGd0g8K9Y',
+  celeste: '7VoxpuBC4ZIcnW14yi9m'
 };
 
 // HeyGen en réserve uniquement (non utilisé si ElevenLabs répond)
