@@ -798,8 +798,9 @@ function typeOnScreen(text, done){
   }, 38 + Math.random()*50);
 }
 
-function showOvilusAnswer(response){
+function showOvilusAnswer(response, extra){
   lastAsked = lastAsked || '(voix)';
+  extra = extra || null;
   if(ovilusMode==='fluide'){
     ovilusHistory.push({role:'user', content:lastAsked});
     ovilusHistory.push({role:'assistant', content:response});
@@ -808,11 +809,21 @@ function showOvilusAnswer(response){
   emf = Math.min(4.8, emf + 0.8 + Math.random());
   temp = Math.max(16.6, temp - (0.4+Math.random()*0.8));
   veil = Math.min(96, veil + 8);
-  document.getElementById('ovilusStatus').textContent = 'Mot capté';
+  document.getElementById('ovilusStatus').textContent = extra && extra.name ? extra.name + ' coupe' : 'Mot capté';
   ovilusLog(response);
   typeOnScreen(response, function(){
     speakBrowser(response);
     if(Math.random()<0.45) playKnock(1+Math.floor(Math.random()*2));
+    if(extra && extra.text){
+      setTimeout(function(){
+        playKnock(2);
+        ovilusLog((extra.tone==='horror' ? '⚠ ' : '↪ ') + extra.name + ' : ' + extra.text);
+        typeOnScreen(extra.text, function(){ speakBrowser(extra.text); });
+        document.getElementById('ovilusStatus').textContent = extra.tone==='horror'
+          ? 'Une voix froide a pris le micro'
+          : extra.name + ' est aussi là';
+      }, 900 + Math.random()*700);
+    }
   });
 }
 
@@ -860,7 +871,7 @@ function ovilusConsult(){
       }
       var txt = (data && data.response) ? compactSpirit(data.response) : localOvilusReply(lastAsked);
       if(!data || !data.response) document.getElementById('demoBanner').style.display='block';
-      showOvilusAnswer(txt);
+      showOvilusAnswer(txt, data.interrupt || null);
     })
     .catch(function(){
       ovilusBusy = false;
