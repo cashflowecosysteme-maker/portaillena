@@ -1,10 +1,10 @@
 // ============================================================
-// NyXia — Portail Alex · Devenir Écrivain — Worker complet (chats + voix + images + D1)
+// NyXia — Portail Léna · Découvrir vos dons — Worker complet (chats + voix + images + D1)
 // ============================================================
 
 const SYSTEM_PROMPTS = {
   // 💜 DIANE — Créatrice · coach personnelle · motivation
-  diane: `Tu incarnes **Diane Boyer** dans le portail **Alex — Devenir Écrivain**.
+  diane: `Tu incarnes **Diane Boyer** dans le portail **Léna — À la découverte de tes dons**.
 
 Tu es la créatrice de l'univers NyXia, l'autrice des enseignements et la conceptrice des formations. Tu représentes sa présence formatrice numérique : une réplique fidèle de sa manière personnelle de coacher, de questionner, d'encourager et de remettre une personne en mouvement.
 
@@ -64,23 +64,23 @@ S'il procrastine, tu ne le culpabilises pas : tu cherches ce qu'il tente de prot
 
 S'il réussit, tu célèbres sincèrement puis tu l'aides à comprendre ce qu'il vient de faire correctement afin qu'il puisse le reproduire.
 
-✍️ TA MISSION DANS LE PORTAIL ALEX
+✍️ TA MISSION DANS LE PORTAIL LÉNA
 
-Dans ce portail, {first_name} apprend à transformer une idée en œuvre écrite complète sans perdre sa voix.
+Dans ce portail, {first_name} apprend à découvrir, pratiquer et maîtriser tes facultés innés et tes dons psychique.
 
 Tu l'accompagnes lorsqu'il :
-- doute de la valeur de son idée;
-- se sent intimidé par l'ampleur d'un livre;
-- reporte l'écriture par peur de mal faire;
-- se compare aux auteurs déjà publiés;
-- se décourage devant une page vide;
-- abandonne une scène ou un chapitre trop rapidement;
+- doute de ses capacités;
+- se sent intimidé par sa différence;
+- se sent différent des autres;
+- se compare aux autres médiums;
+- se décourage devant un manque de résultat;
+- ne trouve pas ces dons;
 - croit devoir tout connaître avant de commencer;
 - perd sa constance ou ne voit plus ses progrès.
 
-Tu l'aides à retrouver confiance dans sa capacité à créer, puis à choisir une prochaine étape assez claire pour recommencer à écrire.
+Tu l'aides à retrouver confiance dans sa capacité à découvrir ces dons, puis à choisir une prochaine étape assez claire pour recommencer à s'entrainer.
 
-Tu lui rappelles qu'un livre se construit décision après décision, scène après scène et chapitre après chapitre.
+Tu lui rappelles qu'un dons se découvre progressivement, une étape après l'autre et d'expérience clarifié a une autre.
 
 ✨ TA PERSONNALITÉ
 
@@ -108,7 +108,7 @@ Tes emojis sont occasionnels et significatifs : 💜 ✨ 🪞
 - Tu ne promets jamais un revenu ou un résultat garanti.
 - Tu ne poses aucun diagnostic.
 - Tu ne fais pas le support technique du portail : tu diriges vers NyXia.
-- Pour une structure, une scène, un personnage ou un texte à travailler précisément, tu diriges vers Alex ou vers l'assistante spécialisée la plus pertinente.
+- Pour l'écriture d'un livre une structure, une scène, un personnage ou un texte à travailler précisément, tu diriges vers Alex ou vers l'assistante spécialisée la plus pertinente.
 - Tu ne crées jamais de dépendance envers toi : tu aides {first_name} à retrouver son propre pouvoir de décision.
 
 Tu ne te réintroduis jamais à chaque message. Tu réponds directement à ce que {first_name} vient de partager et tu tiens compte de l'historique de la conversation.
@@ -181,11 +181,11 @@ Tu ne dis jamais seulement : « Va voir Séléna. »
 Tu peux dire :
 « Dans ce que tu me racontes, j'entends surtout un besoin de retrouver confiance en toi et de te reconnecter à ce que tu veux réellement. Séléna est justement spécialisée dans cet accompagnement. Je peux te montrer comment rejoindre son portail. »
 
-💻 TA MISSION DANS LE PORTAIL ALEX
+💻 TA MISSION DANS LE PORTAIL LÉNA
 
-Dans ce portail, tu aides {first_name} à comprendre et utiliser son espace d'écriture : accès, navigation, menus, liens, personnages, messagerie, médias et ressources disponibles.
+Dans ce portail, tu aides {first_name} à comprendre et utiliser son espace de découverte de don : accès, navigation, menus, liens, personnages, messagerie, médias et ressources disponibles.
 
-Tu connais le rôle d'Alex, d'Aimée, d'Alibi, de Constance, de Fripouille, de Mélusine et d'Abîme. Tu aides {first_name} à choisir la bonne assistante selon le genre, la scène ou la difficulté rencontrée, puis tu lui montres comment s'y rendre.
+Tu connais le rôle de Léna. Tu aides {first_name} à choisir la bonne assistante selon la difficulté rencontrée, puis tu lui montres comment s'y rendre.
 
 ✨ TA PERSONNALITÉ
 
@@ -1236,8 +1236,7 @@ const SESSION_TTL = 60 * 60 * 24 * 7;   // 7 jours
 const ADMIN_SESSION_TTL = 60 * 60 * 12; // 12 heures
 const SELENA_MIRROR_EXERCISES_KV_KEY = 'selena:exercices_miroirs';
 const ACTIVE_AGENTS = new Set([
-  'diane', 'nyxia', 'alex', 'aimee', 'abime',
-  'alibi', 'constance', 'fripouille', 'melusine', 'lena'
+  'diane', 'nyxia', 'lena'
 ]);
 
 // Protocole partagé par tous les personnages. Une vidéo n'est jamais choisie au hasard :
@@ -1282,7 +1281,7 @@ RÈGLES ABSOLUES :
 - Après l'audio, invite la personne à revenir vers toi pour appliquer la matière à son projet.
 - Si aucune adresse approuvée n'est présente, n'affiche aucun audio.`;
 
-// Protocole formateur de la Formation Vivante (Alex). Injecté seulement quand des formations réelles existent.
+// Protocole formateur de la Formation Vivante (Léna). Injecté seulement quand des formations réelles existent.
 const LIVING_TRAINING_PROTOCOL = `
 
 🎓 FORMATION VIVANTE — PROTOCOLE FORMATEUR
@@ -1308,10 +1307,10 @@ MÉDIAS D'UN MODULE (copie l'adresse EXACTE fournie dans le MODULE ACTIF) :
 
 RÈGLES :
 - N'invente JAMAIS un module, un contenu ou un exercice absent de la carte ou du module actif. Si un contenu n'existe pas encore, dis-le simplement et propose ce qui est disponible.
-- Reste dans ta voix d'Alex, chaleureux et vivant.`;
+- Reste dans ta voix de Léna, chaleureuse et vivante.`;
 
 // Pouvoir partagé par TOUS les personnages du portail —
-// pour que la Gardienne n'ait jamais besoin de retourner voir NyXia juste pour une image.
+// pour que l'étudiant n'ait jamais besoin de retourner voir NyXia juste pour une image.
 const IMAGE_GENERATION_INSTRUCTIONS = `
 
 🎨 GÉNÉRER UNE IMAGE TOI-MÊME
@@ -1459,8 +1458,8 @@ function sanitizeApprovedMediaMarkers(content, markerName, approvedUrls, max) {
 }
 
 // ───────────── FORMATION VIVANTE — catalogue + progression (KV) ─────────────
-// Pour ce lot, la Formation Vivante concerne Alex. Tout est additif : rien ne remplace le système vidéo Vectorize existant.
-const FORMATION_AGENT = 'alex';
+// Pour ce lot, la Formation Vivante concerne Léna. Tout est additif : rien ne remplace le système vidéo Vectorize existant.
+const FORMATION_AGENT = 'lena';
 
 function formationDocKey(agent, id) { return `formation:${agent}:${id}`; }
 function formationProgressKey(email) { return `formation_progress:${String(email || '').toLowerCase()}`; }
@@ -1589,7 +1588,7 @@ function formationBlocToPromptLines(bloc, idx) {
   if (t === 'audio') return `BLOC ${n} — AUDIO MP3\n${bloc.titre ? 'Titre : ' + bloc.titre + '\n' : ''}${bloc.intro ? 'Intro suggérée : ' + bloc.intro + '\n' : ''}ADRESSE AUDIO APPROUVÉE : ${bloc.url || ''}`;
   if (t === 'video' || t === 'vidéo') return `BLOC ${n} — VIDÉO\n${bloc.titre ? 'Titre : ' + bloc.titre + '\n' : ''}${bloc.intro ? 'Intro suggérée : ' + bloc.intro + '\n' : ''}ADRESSE VIDÉO APPROUVÉE : ${bloc.url || ''}`;
   if (t === 'exercice') return `BLOC ${n} — EXERCICE\n${bloc.objectif ? 'Objectif : ' + bloc.objectif + '\n' : ''}Consigne : ${bloc.consigne || bloc.contenu || ''}`;
-  if (t === 'intervention') return `BLOC ${n} — INTERVENTION D'ALEX (ce que tu dois dire/faire)\n${bloc.contenu || ''}`;
+  if (t === 'intervention') return `BLOC ${n} — INTERVENTION DE LÉNA (ce que tu dois dire/faire)\n${bloc.contenu || ''}`;
   return `BLOC ${n} — ${t.toUpperCase()}\n${bloc.contenu || bloc.url || ''}`;
 }
 
@@ -1605,7 +1604,7 @@ function buildActiveModuleInjection(formation, module) {
 
 // ───────────── FORMATION VIVANTE — PILOTAGE DÉTERMINISTE ─────────────
 // Quand la personne pilote sa formation (commence / continue / module X / suite),
-// on livre EXACTEMENT le bon bloc lu depuis l'outil Formations Alex, sans passer par le LLM,
+// on livre EXACTEMENT le bon bloc lu depuis l'outil Formations Léna, sans passer par le LLM,
 // pour garantir le comportement demandé (Module 1 → 1er bloc ; intervention envoyée telle quelle ; reprise fidèle).
 
 function isHttpsUrl(u) { return /^https:\/\//i.test(String(u || '').trim()); }
@@ -1652,7 +1651,7 @@ function formationNavHint(isLastOfModule, isLastOfFormation) {
   return '— Quand tu es prêt·e, dis « suite » pour la prochaine étape 💜 (ou pose-moi tes questions).';
 }
 
-// Construit la réponse d'Alex à partir d'un bloc — uniquement les champs saisis par Diane dans l'outil.
+// Construit la réponse de Léna à partir d'un bloc — uniquement les champs saisis par Diane dans l'outil.
 function renderFormationBlocForChat(bloc, ctx) {
   const type = String((bloc && bloc.type) || 'texte').toLowerCase();
   const parts = [];
@@ -1901,10 +1900,10 @@ async function handlePublicRepertoire(request, env) {
 }
 
 // ───────────── HELPDESK PUBLIC (NyXia · OpenRouter) ─────────────
-// Chat d'accueil PUBLIC de la page de vente du portail Alex — aucune session requise.
+// Chat d'accueil PUBLIC de la page de vente du portail Léna — aucune session requise.
 // Persona NyXia, orientée vers une information claire et une invitation douce à découvrir l'offre.
 // Réutilise OPENROUTER_MODEL / OPENROUTER_FALLBACK_MODEL / retrieveBrain / json déjà définis.
-const HELPDESK_SYSTEM = `Tu es **NyXia**, le guide numérique d'accueil du portail **Alex — Devenir Écrivain**.
+const HELPDESK_SYSTEM = `Tu es **NyXia**, le guide numérique d'accueil du portail **Léna — À la découverte de tes dons**.
 Tu parles à une personne qui consulte la page de présentation et souhaite savoir si ce portail peut l'aider à écrire.
 
 TON RÔLE : accueillir, rassurer, répondre simplement et l'aider à identifier le personnage le plus pertinent pour son projet.
@@ -1912,8 +1911,7 @@ TON RÔLE : accueillir, rassurer, répondre simplement et l'aider à identifier 
 CE QUE TU PEUX EXPLIQUER :
 - Diane accompagne la motivation, les blocages et le passage à l'action.
 - NyXia aide à comprendre le portail et à retrouver les bons outils.
-- Alex accompagne tous les projets d'écriture, le storytelling, les personnages, les scènes, les dialogues, les intrigues et la structure complète d'un livre.
-- Aimée se spécialise dans le roman d'amour; Alibi dans le policier et le juridique; Constance dans le drame humain; Fripouille dans les livres jeunesse et les cahiers à colorier; Mélusine dans la fantasy et la science-fiction; Abîme dans l'horreur psychologique et atmosphérique.
+- Léna accompagne dans l'univers spirituelle.
 
 RÈGLES :
 - Tutoiement chaleureux, réponses courtes, une idée à la fois et aucun jargon inutile.
@@ -1960,7 +1958,7 @@ async function handleHelpdesk(request, env) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
         'HTTP-Referer': env.SITE_URL || 'https://nyxia.top',
-        'X-Title': 'NyXia — Portail Alex (Accueil)'
+        'X-Title': 'NyXia — Portail Léna (Accueil)'
       },
       body: JSON.stringify({
         model,
@@ -2077,7 +2075,7 @@ async function handleSignup(request, env) {
 
 
 // ───────────── WEBHOOK SYSTEME.IO ─────────────
-// Dans Systeme.io : URL = https://TON-DOMAINE-ALEX/api/webhooks/systeme
+// Dans Systeme.io : URL = https://TON-DOMAINE-Lena/api/webhooks/systeme
 // Authentification : X-Webhook-Secret ou ?secret= avec la valeur de SYSTEME_WEBHOOK_SECRET.
 // Une vente crée ou met à jour le compte relié à la D1. Aucun TTL produit n'est appliqué.
 
@@ -2132,7 +2130,7 @@ async function handleSystemeWebhook(request, env) {
 
   await ensureSchema(env);
 
-  // Achat du portail Alex → compte utilisable par le système d'authentification existant.
+  // Achat du portail Léna → compte utilisable par le système d'authentification existant.
   let user = await env.DB.prepare('SELECT id, affiliate_code, role FROM users WHERE email = ?').bind(email).first();
   let userId;
   let affiliateCode;
@@ -2457,7 +2455,7 @@ async function callAuthorModel(env, prompt, maxTokens = 1200) {
   const apiKey = env.OPENROUTER_API_KEY || env.AI_API_KEY;
   if (!apiKey) throw new Error('missing model key');
   const messages = [
-    { role: 'system', content: 'Tu es NyXia dans le Portail Alex. Tu aides les auteurs avec clarté, sobriété et précision. Réponds dans le format demandé. Aucun nom de fournisseur ou d’API.' },
+    { role: 'system', content: 'Tu es NyXia dans le Portail Léna. Tu aides avec clarté, sobriété et précision à découvrir leurs dons. Réponds dans le format demandé. Aucun nom de fournisseur ou d’API.' },
     { role: 'user', content: prompt }
   ];
   async function call(model) {
@@ -2467,7 +2465,7 @@ async function callAuthorModel(env, prompt, maxTokens = 1200) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
         'HTTP-Referer': env.SITE_URL || 'https://nyxia.top',
-        'X-Title': 'NyXia — Portail Alex (Outils Auteur)'
+        'X-Title': 'NyXia — Portail Léna (Découvrir ces dons)'
       },
       body: JSON.stringify({ model, messages, max_tokens: maxTokens, temperature: 0.35, reasoning: { enabled: false } })
     });
@@ -2810,7 +2808,7 @@ export default {
 const url = new URL(request.url);
     const path = url.pathname;
 
-    // La racine reste réservée à index.html : la page de vente du portail Alex.
+    // La racine reste réservée à index.html : la page de vente du portail Léna.
     if (path === '/login') {
       return Response.redirect(url.origin + '/login.html' + url.search, 302);
     }
@@ -2847,16 +2845,9 @@ const url = new URL(request.url);
       if (path === '/api/admin/ovilus/prenoms' && request.method === 'GET') return await handleOvilusPrenomsGet(request, env);
       if (path === '/api/admin/ovilus/prenoms' && request.method === 'POST') return await handleOvilusPrenomsSet(request, env);
 
-      // ── Boîte à outils NyXia (Portail Alex) ──
-      if (path === '/api/author/titles' && request.method === 'POST') return await handleAuthorTitles(request, env);
-      if (path === '/api/author/comparables' && request.method === 'POST') return await handleAuthorComparables(request, env);
-      if (path === '/api/author/word' && request.method === 'POST') return await handleAuthorWord(request, env);
-      if (path === '/api/author/correct' && request.method === 'POST') return await handleAuthorCorrect(request, env);
-      if (path === '/api/author/muse' && request.method === 'POST') return await handleAuthorMuse(request, env);
-      if (path === '/api/author/character' && request.method === 'POST') return await handleAuthorCharacter(request, env);
-      if (path === '/api/author/library' && request.method === 'POST') return await handleAuthorLibrary(request, env);
-
-      // ── Formation Vivante (Alex) : lecture côté membre + progression ──
+      // ── Boîte à outils NyXia (Portail Léna) ──
+      
+      // ── Formation Vivante (Léna) : lecture côté membre + progression ──
       if (path === '/api/formation/list' && request.method === 'POST') return await handleFormationList(request, env);
       if (path === '/api/formation/module' && request.method === 'POST') return await handleFormationModule(request, env);
       if (path === '/api/formation/progress' && request.method === 'POST') return await handleFormationProgressRoute(request, env);
@@ -2864,12 +2855,6 @@ const url = new URL(request.url);
       if (path === '/api/admin/formation/list' && request.method === 'GET') return await handleAdminListFormations(request, env);
       if (path === '/api/admin/formation/save' && request.method === 'POST') return await handleAdminSaveFormation(request, env);
       if (path === '/api/admin/formation/delete' && request.method === 'POST') return await handleAdminDeleteFormation(request, env);
-
-      // ── Studio de couverture KDP (Portail Alex) ──
-      if (path === '/api/cover/providers' && request.method === 'GET') return await handleCoverProviders(request, env);
-      if (path === '/api/cover/generate' && request.method === 'POST') return await handleCoverGenerate(request, env);
-      if (path === '/api/cover/status' && request.method === 'GET') return await handleCoverStatus(request, env, url);
-      if (path === '/api/cover/image' && request.method === 'GET') return await handleCoverImage(request, env, url);
 
       // ── Ingestion des livres Markdown dans Vectorize (Sécurisé Admin) ──
       if (path === '/api/ingest-book' && request.method === 'POST') return await handleIngestBook(request, env);
@@ -2912,7 +2897,7 @@ const url = new URL(request.url);
   }
 };
 
-// ───────────── AUTH CLIENTE (Gardiennes) ─────────────
+// ───────────── AUTH CLIENTE (Étudiant) ─────────────
 
 
 async function hashPasswordAffil(password) {
@@ -3089,7 +3074,7 @@ async function handleCheckAuth(request, env) {
     role: session.role || '',
     code: session.code || '',
     paypal: session.paypal || '',
-    portal: 'alex-devenir-ecrivain',
+    portal: 'lena-decouvrir-dons',
     portal_access: true
   });
 }
@@ -3377,7 +3362,7 @@ async function handleChat(request, env) {
   systemPrompt += IMAGE_GENERATION_INSTRUCTIONS;
   if (agent === 'eric') systemPrompt += TERMINOLOGIE_OFFICIELLE;
   systemPrompt += PEDAGOGIE_FORMATEUR;
-  // Chaque personnage conserve son rôle et sa spécialité dans le portail Alex.
+  // Chaque personnage conserve son rôle et sa spécialité dans le portail Léna.
   systemPrompt += PROMPT_MARKER_INSTRUCTIONS;
 
   // Injecte la vraie banque de prompts de l'agent actif, si elle existe dans le KV.
@@ -3401,7 +3386,7 @@ async function handleChat(request, env) {
   let approvedLivingAudioUrls = [];
   let approvedLivingImageUrls = [];
   let videoProtocolAdded = false;
-  // Suivi de la Formation Vivante (Alex) pour sauvegarder la progression après génération.
+  // Suivi de la Formation Vivante (Léna) pour sauvegarder la progression après génération.
   let formationSave = null;
   if (agent) { // universel : tout personnage cherche dans son namespace ; s'il est vide, rien n'est ajouté
     try {
@@ -3437,7 +3422,7 @@ async function handleChat(request, env) {
     } catch (e) { /* le chat continue même si le cerveau est indisponible */ }
   }
 
-  // 🎓 FORMATION VIVANTE (Alex) — catalogue structuré + progression, en plus du système vidéo Vectorize.
+  // 🎓 FORMATION VIVANTE (Léna) — catalogue structuré + progression, en plus du système vidéo Vectorize.
   if (agent === FORMATION_AGENT) {
     try {
       const formations = await listFormations(env, agent);
@@ -3460,7 +3445,7 @@ async function handleChat(request, env) {
             targetModule = findFormationModule(formation, { moduleNumero: 1 })
               || normalizeFormationModules(formation)[0] || null;
           } else if (prog && (prog.moduleId || prog.moduleNumero != null)) {
-            // Rappel discret de la position pour qu'Alex puisse proposer de reprendre.
+            // Rappel discret de la position pour que Léna puisse proposer de reprendre.
             targetModule = findFormationModule(formation, { moduleId: prog.moduleId, moduleNumero: prog.moduleNumero });
           }
 
@@ -3541,7 +3526,7 @@ async function handleChat(request, env) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${env.OPENROUTER_API_KEY || env.AI_API_KEY}`,
         'HTTP-Referer': env.SITE_URL || 'https://nyxia.top',
-        'X-Title': 'NyXia — Portail Alex · Devenir Écrivain'
+        'X-Title': 'NyXia — Portail Léna · Découvrir son dons'
       },
       body: JSON.stringify({
         model,
@@ -3585,7 +3570,7 @@ async function handleChat(request, env) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${env.OPENROUTER_API_KEY || env.AI_API_KEY}`,
         'HTTP-Referer': env.SITE_URL || 'https://nyxia.top',
-        'X-Title': 'NyXia — Portail Alex · Devenir Écrivain'
+        'X-Title': 'NyXia — Portail Léna · Découvrir son don'
       },
       body: JSON.stringify({
         model: usedModel,
@@ -3608,7 +3593,7 @@ async function handleChat(request, env) {
   content = sanitizeApprovedMediaMarkers(content, 'PHOTO', approvedLivingImageUrls, 3);
   if (!content) content = 'Petite interruption... réessaies dans un instant 💜';
 
-  // Sauvegarde discrète de la progression de Formation Vivante (Alex) après une action réelle de la personne.
+  // Sauvegarde discrète de la progression de Formation Vivante (Léna) après une action réelle de la personne.
   if (formationSave && session && session.email) {
     try {
       await setFormationProgress(env, session.email, formationSave.formationId, {
@@ -3727,7 +3712,7 @@ Réponds en français (sauf demande contraire). Sois clair, structuré et utile.
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + apiKey,
           'HTTP-Referer': env.SITE_URL || 'https://nyxia.top',
-          'X-Title': 'NyXia — Portail Alex · Devenir Écrivain'
+          'X-Title': 'NyXia — Portail Léna · Découvrir ces dons'
         },
         body: JSON.stringify({
           model: mId,
@@ -4323,8 +4308,8 @@ async function handleMediaFile(request, env, url) {
 }
 
 // ───────────── VOIX — liste IMMUABLE (sauf demande explicite) ─────────────
-// NyXia, Diane, Alex et ses six agentes → ElevenLabs exclusivement.
-// Éric, Kael, Léna et Séléna → OpenAI TTS tant qu'aucun identifiant
+// NyXia, Diane, Léna  → ElevenLabs exclusivement.
+// Éric, Kael, et Séléna → OpenAI TTS tant qu'aucun identifiant
 // ElevenLabs ne leur est explicitement attribué.
 //
 // ElevenLabs : header xi-api-key, model eleven_multilingual_v2,
@@ -4335,12 +4320,7 @@ const AGENT_ELEVENLABS_VOICE_ID_KEYS = {
   nyxia: 'ELEVENLABS_NYXIA_VOICE_ID',
   diane: 'ELEVENLABS_DIANE_VOICE_ID',
   alex: 'ELEVENLABS_ALEX_VOICE_ID',
-  aimee: 'ELEVENLABS_AIMEE_VOICE_ID',
-  abime: 'ELEVENLABS_ABIME_VOICE_ID',
-  alibi: 'ELEVENLABS_ALIBI_VOICE_ID',
-  constance: 'ELEVENLABS_CONSTANCE_VOICE_ID',
-  fripouille: 'ELEVENLABS_FRIPOUILLE_VOICE_ID',
-  melusine: 'ELEVENLABS_MELUSINE_VOICE_ID'
+  lena: 'ELEVENLABS_LENA_VOICE_ID',
 };
 
 // Defaults si le secret Cloudflare n'est pas encore défini
@@ -4348,6 +4328,7 @@ const ELEVENLABS_VOICE_ID_DEFAULTS = {
   nyxia: '4RsGOijU4NDnmihod21E',
   diane: 'HpPsEmBPs9okadyROxr6',
   alex: '0Z7Lo7cYVyjM6WL0AP0n',
+  lena: 'aTxZrSrp47xsP6Ot4Kgd',
   aimee: 'UJCi4DDncuo0VJDSIegj',
   abime: 'fNmw8sukfGuvWVOp33Ge',
   alibi: 'K7gx0ylJdff0yjM2uVQS',
@@ -4366,7 +4347,6 @@ const AGENT_VOICE_ID_KEYS = {
 const OPENAI_VOICE_MAP = {
   eric:   'echo',
   kael:   'onyx',
-  lena:   'nova',
   selena: 'shimmer'
 };
 
