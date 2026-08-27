@@ -221,26 +221,25 @@
       display: none;
       align-items: center;
       justify-content: center;
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      border: 1px solid rgba(244,200,66,0.55);
-      background: linear-gradient(135deg, #7B5CFF, #5A6CFF);
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.28);
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       color: #fff;
-      font-size: 22px;
-      line-height: 1;
+      font-size: 20px;
       cursor: pointer;
       flex-shrink: 0;
       margin-right: 8px;
       z-index: 130;
       position: relative;
-      box-shadow: 0 0 18px rgba(123,92,255,0.45);
       transition: all .15s;
-      -webkit-tap-highlight-color: rgba(123,92,255,0.35);
     }
     #mobile-menu-btn:hover, #mobile-menu-btn:active {
-      background: linear-gradient(135deg, #9577ff, #7B5CFF);
-      border-color: #F4C842;
+      background: rgba(255,255,255,0.16);
+      border-color: rgba(255,255,255,0.45);
     }
     #mobile-menu-backdrop {
       display: none;
@@ -258,23 +257,30 @@
       .header-center { display: none; }
       .app-body { position: relative; }
       aside {
-        position: fixed;
-        top: 0; left: 0;
+        position: fixed !important;
+        top: 0;
+        left: -110% !important;
         height: 100%;
         height: 100dvh;
         width: min(300px, 86vw);
         z-index: 150;
-        background: #080f22;
-        transform: translateX(-105%);
-        transition: transform .28s ease;
+        background: #0c1430 !important;
+        transform: none !important;
+        transition: left .28s ease;
         box-shadow: none;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
       }
       aside.mobile-open {
-        transform: translateX(0);
+        left: 0 !important;
+        transform: none !important;
         box-shadow: 8px 0 40px rgba(0,0,0,0.45);
       }
+      aside .nav-name { color: #fff !important; }
+      aside .nav-sub { color: #c5cbe8 !important; opacity: 1 !important; }
+      aside .sidebar-label { color: #9aa3c7 !important; }
+      aside .nav-item { color: #e8eaf8 !important; }
+
       .main-content, .content, .panels, [class*="panel-wrap"] {
         /* full width when sidebar is overlay */
       }
