@@ -3364,8 +3364,46 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
   const data = await resp.json();
   const content = data.choices?.[0]?.message?.content?.trim() || '…';
   ovState.silentLeft = 1 + Math.floor(Math.random() * 2);
+  ovState.lastPersona = persona.id;
+
+  let interrupt = null;
+  const others = PERSONA_POOL.filter((p) => p.id !== persona.id);
+  const horrorPool = OVILUS_PERSONAS.filter((p) => p.id === 'ombre');
+  if (others.length && Math.random() < 0.32) {
+    const meanCut = Math.random() < 0.22;
+    const second = meanCut && horrorPool.length
+      ? horrorPool[0]
+      : others[Math.floor(Math.random() * others.length)];
+    const nm = second.label || 'Une autre voix';
+    const lines = meanCut ? [
+      'C’est mon tour. Tais-toi.',
+      'Elle ment. Écoute-moi plutôt.',
+      'Vous jouez. Je n’aime pas ça.',
+      'Derrière toi— non. Moi.',
+      nm + '. Tu n’aurais pas dû ouvrir.'
+    ] : [
+      'Je suis là aussi. ' + nm + '.',
+      nm + '. Moi aussi je veux parler.',
+      'Attends— ' + nm + ' aussi.',
+      'Pas seulement ' + (persona.label || 'elle') + '. ' + nm + ' aussi.',
+      nm + ' : laisse-moi une phrase.'
+    ];
+    interrupt = {
+      name: nm,
+      text: lines[Math.floor(Math.random() * lines.length)],
+      tone: meanCut ? 'horror' : 'story'
+    };
+    ovState.lastPersona = second.id;
+  }
+
   await env.SPIRITUEL_KV.put(`ovilus_state:${token}`, JSON.stringify(ovState), { expirationTtl: SESSION_TTL });
-  return json({ response: content, mode: 'fluide', persona: persona.label || '', silence: false });
+  return json({
+    response: content,
+    mode: 'fluide',
+    persona: persona.label || '',
+    silence: false,
+    interrupt: interrupt
+  });
 }
 
 async function handleOvilusConfigGet(request, env) {
