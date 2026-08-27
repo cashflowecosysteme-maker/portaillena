@@ -3203,7 +3203,7 @@ async function handleOvilusCast(request, env) {
 }
 
 async function handleOvilusConsult(request, env) {
-  const { question, mode, token, history, phase, newEntity } = await request.json();
+  const { question, mode, token, history, phase, newEntity, newSeance } = await request.json();
   const session = await getSessionFromToken(env, token);
   const ovStateRaw = await env.SPIRITUEL_KV.get(`ovilus_state:${token}`);
   let ovState = {};
@@ -3212,20 +3212,13 @@ async function handleOvilusConsult(request, env) {
   if (!question && mode !== 'mots') return json({ error: 'Question vide.' }, 400);
   const firstname = session.firstname || '';
 
-  function pickSilentBurst() {
-    const r = Math.random();
-    if (r < 0.22) return 0;
-    if (r < 0.48) return 2;
-    if (r < 0.78) return 5;
-    return 10;
+  if (newSeance) {
+    ovState.silentLeft = 1 + Math.floor(Math.random() * 5);
+    ovState.spokenOnce = false;
+  } else if (typeof ovState.silentLeft !== 'number') {
+    ovState.silentLeft = 0;
   }
-  if (typeof ovState.silentLeft !== 'number') ovState.silentLeft = pickSilentBurst();
 
-  const qLow = String(question || '').toLowerCase();
-  const asksPresence = /esprit|avec moi|ce soir|quelqu.?un|pr[eé]sence|l[aà]-bas|entend/.test(qLow);
-  if (asksPresence && Math.random() < 0.5) {
-    ovState.silentLeft = Math.max(ovState.silentLeft || 0, pickSilentBurst() || 2);
-  }
 
   if (ovState.silentLeft > 0) {
     ovState.silentLeft -= 1;
@@ -3370,7 +3363,7 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
   }
   const data = await resp.json();
   const content = data.choices?.[0]?.message?.content?.trim() || '…';
-  ovState.silentLeft = pickSilentBurst();
+  ovState.silentLeft = 1 + Math.floor(Math.random() * 2);
   await env.SPIRITUEL_KV.put(`ovilus_state:${token}`, JSON.stringify(ovState), { expirationTtl: SESSION_TTL });
   return json({ response: content, mode: 'fluide', persona: persona.label || '', silence: false });
 }
