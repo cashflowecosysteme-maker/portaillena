@@ -4513,7 +4513,7 @@ async function handleMediaFile(request, env, url) {
 }
 
 // ───────────── VOIX — liste IMMUABLE (sauf demande explicite) ─────────────
-// NyXia, Diane, Léna, Sophia, Cassandre, Aletheia, Céleste  → ElevenLabs exclusivement.
+// NyXia, Diane, Léna  → ElevenLabs exclusivement.
 // Éric, Kael, et Séléna → OpenAI TTS tant qu'aucun identifiant
 // ElevenLabs ne leur est explicitement attribué.
 //
@@ -4530,7 +4530,6 @@ const AGENT_ELEVENLABS_VOICE_ID_KEYS = {
   aletheia: 'ELEVENLABS_ALETHEIA_VOICE_ID',
   cassandre: 'ELEVENLABS_CASSANDRE_VOICE_ID',
   celeste: 'ELEVENLABS_CELESTE_VOICE_ID',
-  
 };
 
 // Defaults si le secret Cloudflare n'est pas encore défini
