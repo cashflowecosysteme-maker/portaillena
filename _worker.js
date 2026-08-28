@@ -1713,7 +1713,7 @@ function pickLatestProgressFormation(formations, progressAll) {
 
 // Petit repère de navigation (pas du contenu de formation : simple accompagnement du formateur).
 function formationNavHint(isLastOfModule, isLastOfFormation) {
-  if (isLastOfFormation) return '— Tu arrives au bout de cette formation ✨ Dis-moi « suite » pour la conclure, ou pose-moi tes questions pour appliquer tout ça à ton Grimoire.📖';
+  if (isLastOfFormation) return '— Tu arrives au bout de cette formation ✨ Dis-moi « suite » pour la conclure, ou pose-moi tes questions pour appliquer tout ça à ton livre.';
   if (isLastOfModule) return '— Tu as terminé ce module 🎉 Dis « suite » pour passer au suivant, ou pose-moi tes questions sur cette étape.';
   return '— Quand tu es prêt·e, dis « suite » pour la prochaine étape 💜 (ou pose-moi tes questions).';
 }
@@ -3469,39 +3469,21 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
     interrupt = {
       name: 'Gardien',
       text: [
-        'Je suis ici pour te protéger',
-        'Je veille sur toi.',
-        'Je protège ton chemin.',
-        'La lumière t’accompagne.'
-                'Tu peux avancer.',
-        'Je veille dans l’ombre.',
-        'Ta lumière te guide.'
-        'Je garde le passage.',
-        'Rien n’éteint ta lumière.',
-        'Je marche à tes côtés.'
+        'Assez. Il n’a pas le droit de tout dire.',
+        'Le seuil se referme. Pas ce détail.',
+        'Je le retiens. Pose une autre question.',
+        'Garde tes mots. Ce n’est pas pour eux.'
       ][Math.floor(Math.random() * 4)],
       tone: 'guardian'
     };
   } else if (roll < 0.28) {
     interrupt = {
-      name: 'Ombre',
+      name: 'Démon',
       text: [
         'Tais-toi. Ils n’auront rien.',
-        'Le seuil se referme. Pas ce détail.',
         'Il ment déjà. Laisse-le pourrir dans son silence.',
         'Vous n’aurez pas son nom. Pas ce soir.',
-        'Vous devez me parlé a moi.',
         'C’est mon jouet. Pas le vôtre.'
-        'Je le retiens. Pose une autre question.',
-        'Garde tes mots. Ce n’est pas pour eux.'
-        'Je connais tes peurs.',
-        'L’ombre te regarde.',
-        'Tu m’as laissé entrer.',
-        'La lumière faiblit.',
-        'Je suis déjà là.',
-        'Tu ne me vois pas.'
-        'L’ombre gagne du terrain.',
-        'Je connais tes faiblesses.'
       ][Math.floor(Math.random() * 4)],
       tone: 'horror'
     };
