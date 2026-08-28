@@ -149,6 +149,9 @@
 
   /* ═══════ AUTH ═══════ */
   var sessionToken = sessionStorage.getItem('nyxia_token') || ''
+  try { var q = new URLSearchParams(window.location.search); if (q.get('t') || q.get('token')) sessionToken = q.get('t') || q.get('token') } catch (e) {}
+  try { if (!sessionToken && window.parent && window.parent !== window) { sessionToken = window.parent.sessionStorage.getItem('nyxia_token') || (window.parent.sessionToken || '') } } catch (e) {}
+  if (sessionToken) { try { sessionStorage.setItem('nyxia_token', sessionToken) } catch (e) {} }
   var clientEmail = '', clientName = localStorage.getItem('nyxia_username') || 'toi'
   ;(function checkAuth() {
     if (!sessionToken) { window.location.href = '/login.html'; return }
@@ -246,7 +249,7 @@
     if (videoUrl) {
       var alreadyPlayed = hasVideoAutoplayed('nyxia')
       // Autoplay SEULEMENT la première fois qu'on ouvre ce personnage dans la session
-      // Revenir sur NyXia après un autre personnage → vidéo visible, SANS autoplay
+      // Revenir sur Diane après Éric → vidéo visible, SANS autoplay
       addVideoMessage(videoUrl, 'nyxia', { autoplay: !alreadyPlayed })
       if (!alreadyPlayed) markVideoAutoplayed('nyxia')
     }
@@ -397,6 +400,14 @@
     sendMessageText(text || '📎 Fichier joint', false)
   }
 
+  // Pont depuis le dashboard : une question envoyée depuis un tirage / le journal
+  window.addEventListener('message', function(e){
+    var d = e.data
+    if (d && d.type === 'nyxia_prefill' && d.text) {
+      try { sendMessageText(String(d.text).slice(0, 1500), false) } catch (err) {}
+    }
+  })
+
   function sendMessageText(text, fromVoice) {
     _inputWasVoice = !!fromVoice
     var attachmentToSend = _currentAttachment ? JSON.parse(JSON.stringify(_currentAttachment)) : null
@@ -442,82 +453,6 @@
     .catch(function(){ removeTyping(); addBotMessage('Petite interruption... réessaie dans un instant 💜'); btn.disabled = false })
   }
 
-  function safeLivingVideoUrl(rawUrl) {
-    try {
-      var parsed = new URL(String(rawUrl || '').trim(), window.location.href)
-      return parsed.protocol === 'https:' ? parsed.href : ''
-    } catch (e) { return '' }
-  }
-
-  function livingVideoEmbedUrl(rawUrl) {
-    try {
-      var parsed = new URL(rawUrl)
-      var host = parsed.hostname.toLowerCase().replace(/^www\./, '')
-      var videoId = ''
-
-      if (host === 'youtu.be') videoId = parsed.pathname.split('/').filter(Boolean)[0] || ''
-      if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
-        videoId = parsed.searchParams.get('v') || ''
-        if (!videoId) {
-          var youtubeParts = parsed.pathname.split('/').filter(Boolean)
-          if (youtubeParts[0] === 'embed' || youtubeParts[0] === 'shorts') videoId = youtubeParts[1] || ''
-        }
-      }
-      if (/^[A-Za-z0-9_-]{6,}$/.test(videoId)) {
-        return 'https://www.youtube-nocookie.com/embed/' + videoId
-      }
-
-      if (host === 'vimeo.com' || host === 'player.vimeo.com') {
-        var vimeoMatch = parsed.pathname.match(/(?:video\/)?(\d+)/)
-        if (vimeoMatch) return 'https://player.vimeo.com/video/' + vimeoMatch[1]
-      }
-
-      if (host === 'iframe.videodelivery.net') return parsed.href
-      if (host === 'watch.cloudflarestream.com') {
-        var streamId = parsed.pathname.split('/').filter(Boolean)[0] || ''
-        if (/^[A-Za-z0-9_-]+$/.test(streamId)) return 'https://iframe.videodelivery.net/' + streamId
-      }
-    } catch (e) {}
-    return ''
-  }
-
-  function appendLivingVideo(wrapper, videoUrl) {
-    var card = document.createElement('div')
-    card.style.cssText = 'width:min(100%,560px);margin-top:6px;padding:10px;border-radius:16px;border:1px solid rgba(123,92,255,0.22);background:linear-gradient(145deg,rgba(123,92,255,0.09),rgba(255,255,255,0.025));box-shadow:0 12px 30px rgba(20,12,48,0.16)'
-
-    var label = document.createElement('div')
-    label.textContent = '🎬 Formation vivante'
-    label.style.cssText = 'font-size:12px;font-weight:700;color:#c4b5fd;letter-spacing:.02em;margin:1px 2px 9px'
-    card.appendChild(label)
-
-    var frame = document.createElement('div')
-    frame.style.cssText = 'position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:11px;background:#070713'
-    var embedUrl = livingVideoEmbedUrl(videoUrl)
-
-    if (embedUrl) {
-      var iframe = document.createElement('iframe')
-      iframe.src = embedUrl
-      iframe.title = 'Vidéo de formation'
-      iframe.loading = 'lazy'
-      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-      iframe.allowFullscreen = true
-      iframe.referrerPolicy = 'strict-origin-when-cross-origin'
-      iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0'
-      frame.appendChild(iframe)
-    } else {
-      var video = document.createElement('video')
-      video.src = videoUrl
-      video.controls = true
-      video.playsInline = true
-      video.preload = 'metadata'
-      video.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#070713'
-      frame.appendChild(video)
-    }
-
-    card.appendChild(frame)
-    wrapper.appendChild(card)
-  }
-
   function addBotMessage(text) {
     var msgAgent = _currentAgent
     var msgs = document.getElementById('chat-messages-' + msgAgent)
@@ -531,25 +466,31 @@
     var parchMatch = text.match(parchRegex)
     var parchImgRegex = /\[(?:PROMPT|PARCHEMIN)_IMAGE\s*:\s*([\s\S]*?)\]/i
     var parchImgMatch = text.match(parchImgRegex)
-    var videoRegex = /\[VIDEO\s*:\s*([^\]\r\n]+)\]/i
-    var videoMatch = text.match(videoRegex)
-    var textWithoutImg = text.replace(imgRegex, '').replace(parchRegex, '').replace(parchImgRegex, '').replace(videoRegex, '').trim()
+    var gotoRegex = /\[OUVRIR\s*:\s*(\w+)\]/i
+    var gotoMatch = text.match(gotoRegex)
+    var gotoAgent = gotoMatch ? gotoMatch[1].toLowerCase() : null
+    var _media = foExtractMedia(text.replace(imgRegex, '').replace(parchRegex, '').replace(parchImgRegex, '').replace(gotoRegex, ''))
+    var textWithoutImg = _media.text
     var imgDesc = imgMatch ? imgMatch[1].trim() : null
     var parchContent = parchMatch ? parchMatch[1].trim() : null
     var parchImgUrl = parchImgMatch ? parchImgMatch[1].trim() : null
-    var videoUrl = videoMatch ? safeLivingVideoUrl(videoMatch[1]) : ''
 
     var bubble = document.createElement('div'); bubble.className = 'msg-bubble'
     if (textWithoutImg) {
       bubble.innerHTML = cleanMarkdown(escHtml(textWithoutImg)).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')
-    } else if (!imgDesc && !parchContent && !videoMatch) {
+    } else if (!imgDesc && !parchContent && !_media.media.length) {
       bubble.innerHTML = cleanMarkdown(escHtml(text)).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')
-    } else {
-      bubble.style.display = 'none'
     }
     wrapper.appendChild(bubble)
+    _media.media.forEach(function(node){ wrapper.appendChild(node) })
 
-    if (videoUrl) appendLivingVideo(wrapper, videoUrl)
+    if (gotoAgent) {
+      var goBtn = document.createElement('button')
+      goBtn.textContent = gotoAgent === 'lena' ? '🌙 Rejoindre Léna' : ('→ Rejoindre ' + gotoAgent)
+      goBtn.style.cssText = 'margin-top:8px;padding:11px 22px;border-radius:50px;border:none;background:linear-gradient(135deg,#7B5CFF,#5A6CFF);color:#fff;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 0 24px rgba(123,92,255,0.45);font-family:Space Grotesk,sans-serif;align-self:flex-start'
+      goBtn.onclick = function(){ if (window.parent && window.parent !== window) window.parent.postMessage({ type:'open_chat', agent: gotoAgent }, '*') }
+      wrapper.appendChild(goBtn)
+    }
 
     if (parchContent) {
       var parchWrap = document.createElement('div')
@@ -633,16 +574,14 @@
 
     var bs = 'padding:2px 9px;border-radius:50px;border:1px solid rgba(123,92,255,0.15);background:rgba(123,92,255,0.04);color:var(--t4);font-family:Outfit,sans-serif;font-size:11px;cursor:pointer;transition:all .15s'
     var acts = document.createElement('div'); acts.style.cssText = 'display:flex;gap:4px;flex-wrap:wrap;margin-top:2px'
-    var textForSpeak = textWithoutImg || (videoUrl ? '' : text)
-    var exportText = textWithoutImg || (videoUrl ? 'Formation vidéo' : text)
-    if (videoUrl) exportText += '\n\nVidéo : ' + videoUrl
+    var textForSpeak = textWithoutImg || text
     var agentName = (ALPHA_INFO[msgAgent] && ALPHA_INFO[msgAgent].name) || 'NyXia'
 
     var spk = document.createElement('button'); spk.style.cssText = bs; spk.textContent = '🔊 Écouter'
     spk.addEventListener('click', function() { speakMsg(spk, textForSpeak) }); acts.appendChild(spk)
 
     var cpy = document.createElement('button'); cpy.style.cssText = bs; cpy.textContent = '📋 Copier'
-    cpy.addEventListener('click', function() { navigator.clipboard.writeText(exportText).then(function() { cpy.textContent = '✓'; setTimeout(function() { cpy.textContent = '📋 Copier' }, 2000) }) }); acts.appendChild(cpy)
+    cpy.addEventListener('click', function() { navigator.clipboard.writeText(text).then(function() { cpy.textContent = '✓'; setTimeout(function() { cpy.textContent = '📋 Copier' }, 2000) }) }); acts.appendChild(cpy)
 
     var ret = document.createElement('button'); ret.style.cssText = bs; ret.textContent = '↺ Réessayer'
     ret.addEventListener('click', function() {
@@ -658,7 +597,7 @@
     var pdfBtn = document.createElement('button'); pdfBtn.style.cssText = bs; pdfBtn.textContent = '⬇ PDF'
     pdfBtn.addEventListener('click', function() {
       var w = window.open('', '_blank'); if (!w) return
-      var body = '<h2 style="color:#7B5CFF">' + agentName + ' — NyXia</h2>' + escHtml(exportText).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')
+      var body = '<h2 style="color:#7B5CFF">' + agentName + ' — NyXia</h2>' + escHtml(text).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')
       w.document.write('<!DOCTYPE html><html><head><title>' + agentName + ' — NyXia</title><style>body{font-family:Georgia,serif;max-width:760px;margin:48px auto;line-height:1.85}</style></head><body>' + body + '</body></html>')
       w.document.close(); setTimeout(function() { w.print() }, 300)
     }); acts.appendChild(pdfBtn)
@@ -836,9 +775,48 @@
   }
 
 
+  // Convertit les marqueurs média d'une formation en vrais éléments cliquables/lisibles.
+  function foExtractMedia(raw){
+    var media=[]; var text=String(raw==null?'':raw);
+    function ytId(u){ var m=u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/); return m?m[1]:null; }
+    function vimeoId(u){ var m=u.match(/vimeo\.com\/(?:video\/)?(\d+)/); return m?m[1]:null; }
+    text=text.replace(/\[VIDEO\s*:\s*([^\]\r\n]+)\]/gi,function(_,url){
+      url=url.trim(); var wrap=document.createElement('div'); wrap.style.cssText='margin:10px 0;max-width:640px';
+      var yt=ytId(url), vim=vimeoId(url);
+      if(yt||vim){
+        var box=document.createElement('div'); box.style.cssText='position:relative;width:100%;padding-top:56.25%;border-radius:14px;overflow:hidden;border:1px solid rgba(123,92,255,.25)';
+        var ifr=document.createElement('iframe'); ifr.src=yt?('https://www.youtube.com/embed/'+yt):('https://player.vimeo.com/video/'+vim);
+        ifr.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0'; ifr.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'; ifr.allowFullscreen=true;
+        box.appendChild(ifr); wrap.appendChild(box);
+      } else if(/\.(mp4|webm|ogg|mov|m4v)(\?|$)/i.test(url)){
+        var v=document.createElement('video'); v.src=url; v.controls=true; v.playsInline=true; v.preload='metadata';
+        v.style.cssText='width:100%;border-radius:14px;border:1px solid rgba(123,92,255,.25);display:block'; wrap.appendChild(v);
+      } else {
+        var a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener'; a.textContent='▶ Ouvrir la vidéo';
+        a.style.cssText='display:inline-block;padding:10px 16px;border-radius:12px;background:linear-gradient(135deg,#7B5CFF,#9d7bff);color:#fff;text-decoration:none;font-weight:600'; wrap.appendChild(a);
+      }
+      media.push(wrap); return '';
+    });
+    text=text.replace(/\[AUDIO\s*:\s*([^\]\r\n]+)\]/gi,function(_,url){
+      url=url.trim(); var au=document.createElement('audio'); au.src=url; au.controls=true; au.preload='metadata';
+      au.style.cssText='width:100%;max-width:520px;margin:10px 0;display:block'; media.push(au); return '';
+    });
+    text=text.replace(/\[PHOTO\s*:\s*([^\]\r\n]+)\]/gi,function(_,url){
+      url=url.trim(); var im=document.createElement('img'); im.src=url; im.alt='illustration'; im.loading='lazy';
+      im.style.cssText='max-width:100%;width:auto;max-height:520px;border-radius:14px;border:1px solid rgba(123,92,255,.25);display:block;margin:10px 0'; media.push(im); return '';
+    });
+    text=text.replace(/\[LIEN\s*:\s*([^\]\r\n]+)\]/gi,function(_,payload){
+      var parts=String(payload).split('|'); var url=parts[0].trim(); var label=(parts[1]||'').trim()||'Ouvrir le lien';
+      var a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener'; a.textContent='🔗 '+label;
+      a.style.cssText='display:inline-block;margin:10px 0;padding:11px 18px;border-radius:12px;background:linear-gradient(135deg,#7B5CFF,#9d7bff);color:#fff;text-decoration:none;font-weight:600'; media.push(a); return '';
+    });
+    return { text:text.replace(/\n{3,}/g,'\n\n').trim(), media:media };
+  }
+
   function cleanMarkdown(str) {
     return str
       .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:#c4b5fd;text-decoration:underline">$1</a>')
+      .replace(/(^|[^"'>=])(https?:\/\/[^\s<]+)/g, function(_,pre,url){ var tail=''; var mt=url.match(/[)\].,;!?]+$/); if(mt){ tail=mt[0]; url=url.slice(0,url.length-tail.length); } return pre+'<a href="'+url+'" target="_blank" rel="noopener" style="color:#c4b5fd;text-decoration:underline">'+url+'</a>'+tail; })
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '$1')
       .replace(/^---+$/gm, '')
@@ -859,10 +837,10 @@
       .replace(/\[IMAGE[\s\S]*?\]/gi, '')
       .replace(/\[(?:PROMPT|PARCHEMIN)\][\s\S]*?\[\/(?:PROMPT|PARCHEMIN)\]/gi, '')
       .replace(/\[(?:PROMPT|PARCHEMIN)_IMAGE[\s\S]*?\]/gi, '')
+      .replace(/\[(?:PHOTO|AUDIO|VIDEO|LIEN)\s*:[^\]]*\]/gi, '')
       .replace(/[✦💜🚀💎🌐📱⭐✓►▶🪞🌿🕯️🌙✨📖🔥👑😉📚📜]/gu, '')
       .replace(/<br>/g, ' ')
       .replace(/<[^>]+>/g, '')
-      .replace(/\[VIDEO\s*:\s*[^\]\r\n]+\]/gi, '')
       .replace(/`([^`]+)`/g, '$1')
       .trim()
   }
