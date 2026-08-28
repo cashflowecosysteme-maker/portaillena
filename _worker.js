@@ -1339,7 +1339,7 @@ COMMENT TU ENSEIGNES (toujours, esprit TDAH) :
 MÉDIAS D'UN MODULE (copie l'adresse EXACTE fournie dans le MODULE ACTIF) :
 - Bloc AUDIO → une phrase d'intro dans ta voix, puis sur sa propre ligne : [AUDIO: adresse_https_approuvée]
 - Bloc VIDÉO → [VIDEO: adresse_https_approuvée]
-- Bloc IMAGE réelle → [PHOTO: adresse_https_approuvée]
+- Bloc IMAGE réelle → [IMAGE: adresse_https_approuvée]
 - Un seul média par bloc. Après le média, invite la personne à revenir vers toi.
 
 RÈGLES :
@@ -1735,7 +1735,7 @@ function renderFormationBlocForChat(bloc, ctx) {
     if (isHttpsUrl(bloc.url)) parts.push('[VIDEO: ' + String(bloc.url).trim() + ']');
   } else if (type === 'image') {
     if (bloc.legende) parts.push(String(bloc.legende).trim());
-    if (isHttpsUrl(bloc.url)) parts.push('[PHOTO: ' + String(bloc.url).trim() + ']');
+    if (isHttpsUrl(bloc.url)) parts.push('[IMAGE: ' + String(bloc.url).trim() + ']');
   } else if (type === 'exercice') {
     if (bloc.objectif) parts.push('🎯 ' + String(bloc.objectif).trim());
     if (bloc.consigne) parts.push(String(bloc.consigne).trim());
