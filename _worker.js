@@ -1,6 +1,6 @@
 // ============================================================
 // NyXia — Portail Léna · Découvrir vos dons — Worker complet (chats + voix + images + D1)
-// ============================================================
+// ========================— Tu arrives au bout de cette formation ✨ Dis-moi « suite » pour la conclure, ou pose-moi tes questions pour appliquer tout ça à ton grimoire.— Tu arrives au bout de cette formation ✨ Dis-moi « suite » pour la conclure, ou pose-moi tes questions pour appliquer tout ça à ton grimoire.====================================
 
 const SYSTEM_PROMPTS = {
   // 💜 DIANE — Créatrice · coach personnelle · motivation
