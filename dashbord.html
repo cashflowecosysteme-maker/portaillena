@@ -1049,6 +1049,16 @@
       div.style.cssText = 'display:flex;gap:10px;align-items:flex-start'
       var wrapper = document.createElement('div'); wrapper.style.cssText = 'display:flex;flex-direction:column;gap:4px;max-width:100%;flex:1'
 
+      text = String(text == null ? '' : text)
+      var photoUrl = ''
+      var photoRe = /\[PHOTO\s*:\s*(https?:\/\/[^\]\s]+)\s*\]/ig
+      var pm
+      while ((pm = photoRe.exec(text))) { photoUrl = pm[1]; text = text.replace(pm[0], '').trim() }
+      if (!photoUrl) {
+        var pm2 = text.match(/PHOTO\s*:\s*(https?:\/\/[^\s\]]+)/i)
+        if (pm2) { photoUrl = pm2[1]; text = text.replace(pm2[0], '').trim() }
+      }
+
       var imgRegex = /\[(?:IMAGE|PHOTO)\s*:\s*([\s\S]*?)\]/i
       var imgMatch = text.match(imgRegex)
       var parchRegex = /\[PARCHEMIN\]([\s\S]*?)\[\/PARCHEMIN\]/i
@@ -1067,6 +1077,15 @@
         bubble.innerHTML = linkifyHtml(cleanMarkdown(escHtml(text)).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'))
       }
       wrapper.appendChild(bubble)
+
+      if (photoUrl) {
+        var formationPhoto = document.createElement('img')
+        formationPhoto.src = photoUrl
+        formationPhoto.alt = 'Image de la formation'
+        formationPhoto.style.cssText = 'width:100%;max-width:420px;border-radius:12px;display:block;margin:8px 0;border:1px solid rgba(123,92,255,0.2)'
+        formationPhoto.onerror = function(){ formationPhoto.alt = 'Image indisponible' }
+        wrapper.appendChild(formationPhoto)
+      }
 
       // Carte de parchemin — séparée du texte de l'Alpha, avec un vrai bouton Copier qui ne
       // prend QUE le contenu publiable, jamais ses propres mots autour. Évite qu'une Gardienne
