@@ -1734,8 +1734,8 @@ function renderFormationBlocForChat(bloc, ctx) {
     else if (bloc.titre) parts.push('🎬 ' + String(bloc.titre).trim());
     if (isHttpsUrl(bloc.url)) parts.push('[VIDEO: ' + String(bloc.url).trim() + ']');
   } else if (type === 'image') {
-    if (bloc.legende) parts.push(String(bloc.legende).trim());
     const imgUrl = String(bloc.url || bloc.lien || '').trim() || (String(bloc.contenu || '').match(/https?:\/\/[^\s\]]+/i) || [''])[0];
+    if (bloc.legende) parts.push(String(bloc.legende).trim());
     if (isHttpsUrl(imgUrl)) parts.push('[PHOTO: ' + imgUrl + ']');
     else if (bloc.contenu) parts.push(String(bloc.contenu).trim());
   } else if (type === 'exercice') {
