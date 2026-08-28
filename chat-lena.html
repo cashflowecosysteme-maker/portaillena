@@ -143,11 +143,54 @@
     col.appendChild(b); m.appendChild(col); el('msgs').appendChild(m); scroll();
   }
 
+  // Convertit les marqueurs média d'une formation en vrais éléments cliquables/lisibles.
+  // Retourne { text: texte nettoyé, media: [éléments DOM à insérer sous la bulle] }.
+  function foExtractMedia(raw){
+    var media=[]; var text=String(raw==null?'':raw);
+    function ytId(u){ var m=u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/); return m?m[1]:null; }
+    function vimeoId(u){ var m=u.match(/vimeo\.com\/(?:video\/)?(\d+)/); return m?m[1]:null; }
+    // [VIDEO: url]
+    text=text.replace(/\[VIDEO\s*:\s*([^\]\r\n]+)\]/gi,function(_,url){
+      url=url.trim(); var wrap=document.createElement('div'); wrap.style.cssText='margin:10px 0;max-width:640px';
+      var yt=ytId(url), vim=vimeoId(url);
+      if(yt||vim){
+        var box=document.createElement('div'); box.style.cssText='position:relative;width:100%;padding-top:56.25%;border-radius:14px;overflow:hidden;border:1px solid rgba(123,92,255,.25)';
+        var ifr=document.createElement('iframe'); ifr.src=yt?('https://www.youtube.com/embed/'+yt):('https://player.vimeo.com/video/'+vim);
+        ifr.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0'; ifr.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'; ifr.allowFullscreen=true;
+        box.appendChild(ifr); wrap.appendChild(box);
+      } else if(/\.(mp4|webm|ogg|mov|m4v)(\?|$)/i.test(url)){
+        var v=document.createElement('video'); v.src=url; v.controls=true; v.playsInline=true; v.preload='metadata';
+        v.style.cssText='width:100%;border-radius:14px;border:1px solid rgba(123,92,255,.25);display:block'; wrap.appendChild(v);
+      } else {
+        var a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener'; a.textContent='▶ Ouvrir la vidéo';
+        a.style.cssText='display:inline-block;padding:10px 16px;border-radius:12px;background:linear-gradient(135deg,#7B5CFF,#9d7bff);color:#fff;text-decoration:none;font-weight:600'; wrap.appendChild(a);
+      }
+      media.push(wrap); return '';
+    });
+    // [AUDIO: url]
+    text=text.replace(/\[AUDIO\s*:\s*([^\]\r\n]+)\]/gi,function(_,url){
+      url=url.trim(); var au=document.createElement('audio'); au.src=url; au.controls=true; au.preload='metadata';
+      au.style.cssText='width:100%;max-width:520px;margin:10px 0;display:block'; media.push(au); return '';
+    });
+    // [PHOTO: url]
+    text=text.replace(/\[PHOTO\s*:\s*([^\]\r\n]+)\]/gi,function(_,url){
+      url=url.trim(); var im=document.createElement('img'); im.src=url; im.alt='illustration'; im.loading='lazy';
+      im.style.cssText='max-width:100%;width:auto;max-height:520px;border-radius:14px;border:1px solid rgba(123,92,255,.25);display:block;margin:10px 0'; media.push(im); return '';
+    });
+    // [LIEN: url]  ou  [LIEN: url|Libellé du bouton]
+    text=text.replace(/\[LIEN\s*:\s*([^\]\r\n]+)\]/gi,function(_,payload){
+      var parts=String(payload).split('|'); var url=parts[0].trim(); var label=(parts[1]||'').trim()||'Ouvrir le lien';
+      var a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener'; a.textContent='🔗 '+label;
+      a.style.cssText='display:inline-block;margin:10px 0;padding:11px 18px;border-radius:12px;background:linear-gradient(135deg,#7B5CFF,#9d7bff);color:#fff;text-decoration:none;font-weight:600'; media.push(a); return '';
+    });
+    return { text:text.replace(/\n{3,}/g,'\n\n').trim(), media:media };
+  }
+
   function render(text){
     return esc(text)
       .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
       .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')
-      .replace(/(^|[^"'>=])(https?:\/\/[^\s<]+)/g,'$1<a href="$2" target="_blank" rel="noopener">$2</a>')
+      .replace(/(^|[^"'>=])(https?:\/\/[^\s<]+)/g,function(_,pre,url){ var tail=''; var mt=url.match(/[)\].,;!?]+$/); if(mt){ tail=mt[0]; url=url.slice(0,url.length-tail.length); } return pre+'<a href="'+url+'" target="_blank" rel="noopener">'+url+'</a>'+tail; })
       .replace(/\n/g,'<br>');
   }
 
@@ -159,61 +202,21 @@
     var col=document.createElement('div'); col.className='col';
     var b=document.createElement('div'); b.className='bubble';
 
-    var display=String(raw||'').replace(/[\u200B-\u200D\uFEFF]/g,'').replace(/［/g,'[').replace(/］/g,']');
-    function take(label){
-      var found='';
-      var re=new RegExp('\\[\\s*'+label+'\\s*:\\s*(https?:\\/\\/[^\\]\\s]+)\\s*\\]','ig');
-      display=display.replace(re,function(_,u){ found=u; return ''; });
-      return found;
-    }
-    var photoUrl=take('PHOTO');
-    var audioUrl=take('AUDIO');
-    var videoUrl=take('VIDEO')||take('VIDÉO');
+    var display=raw;
     var parch=display.match(/\[PARCHEMIN\]([\s\S]*?)\[\/PARCHEMIN\]/i); var parchText=null;
     if(parch){ parchText=parch[1].trim(); display=display.replace(parch[0],'').trim(); }
-    var parchImg=display.match(/\[PARCHEMIN_IMAGE\s*:\s*([\s\S]*?)\]/i); var parchImgUrl=null;
-    if(parchImg){ parchImgUrl=parchImg[1].trim(); display=display.replace(parchImg[0],'').trim(); }
-    var img=display.match(/\[IMAGE\s*:\s*([\s\S]*?)\]/i); var imgPrompt=null;
+    var img=display.match(/\[IMAGE\s*:\s*([\s\S]*?)\]/i) || display.match(/\[PARCHEMIN_IMAGE\s*:\s*([\s\S]*?)\]/i); var imgPrompt=null;
     if(img){ imgPrompt=img[1].trim(); display=display.replace(img[0],'').trim(); }
-    if(imgPrompt && /^https?:\/\//i.test(imgPrompt)){ photoUrl=photoUrl||imgPrompt.split(/\s/)[0]; imgPrompt=null; }
 
-    b.innerHTML=render(display|| (photoUrl||audioUrl||videoUrl ? '' : '…')); col.appendChild(b);
-    if(photoUrl){
-      var im0=document.createElement('img'); im0.className='gen-img'; im0.alt='formation'; im0.src=photoUrl;
-      im0.style.cssText='width:100%;max-width:420px;border-radius:12px;display:block;margin:8px 0';
-      col.appendChild(im0);
-    }
-    if(audioUrl){
-      var au=document.createElement('audio'); au.controls=true; au.src=audioUrl;
-      au.style.cssText='width:100%;max-width:420px;margin:8px 0;display:block';
-      col.appendChild(au);
-    }
-    if(videoUrl){
-      var yt=videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/i);
-      if(yt){
-        var fr=document.createElement('iframe');
-        fr.src='https://www.youtube.com/embed/'+yt[1];
-        fr.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-        fr.allowFullscreen=true;
-        fr.style.cssText='width:100%;max-width:480px;aspect-ratio:16/9;border:0;border-radius:12px;margin:8px 0;display:block';
-        col.appendChild(fr);
-      } else {
-        var vd=document.createElement('video'); vd.controls=true; vd.src=videoUrl;
-        vd.style.cssText='width:100%;max-width:480px;border-radius:12px;margin:8px 0;display:block';
-        col.appendChild(vd);
-      }
-    }
+    var _media=foExtractMedia(display); display=_media.text;
+    b.innerHTML=render(display||'…'); col.appendChild(b);
+    _media.media.forEach(function(node){ col.appendChild(node); });
 
     if(parchText){
       var pc=document.createElement('div'); pc.className='parch'; pc.textContent=parchText;
       var cp2=document.createElement('button'); cp2.className='parch-copy'; cp2.textContent='📋 Copier le parchemin';
       cp2.onclick=function(){ navigator.clipboard.writeText(parchText); cp2.textContent='✓ Copié !'; setTimeout(function(){cp2.textContent='📋 Copier le parchemin';},1800); };
       pc.appendChild(document.createElement('br')); pc.appendChild(cp2); col.appendChild(pc);
-    }
-    if(parchImgUrl && /^https?:\/\//i.test(parchImgUrl)){
-      var pim=document.createElement('img'); pim.className='gen-img'; pim.src=parchImgUrl.trim();
-      pim.style.cssText='width:100%;max-width:420px;border-radius:12px;display:block;margin:8px 0';
-      col.appendChild(pim);
     }
     if(imgPrompt){
       var seed=Math.floor(Math.random()*99999);
@@ -309,6 +312,7 @@
       .replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1')
       .replace(/---+/g,'').replace(/#{1,6}\s+/g,'').replace(/^>+\s*/gm,'')
       .replace(/\[IMAGE[\s\S]*?\]/gi,'').replace(/\[PARCHEMIN\][\s\S]*?\[\/PARCHEMIN\]/gi,'')
+      .replace(/\[(?:PHOTO|AUDIO|VIDEO|LIEN)\s*:[^\]]*\]/gi,'')
       .replace(/[✦💜🚀💎🌐📱⭐✓►▶🪞🌿🕯️🌙✨📖🔥👑😉📚📜]/gu,'').trim();
   }
 
