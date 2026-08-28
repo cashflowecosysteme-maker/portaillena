@@ -1512,15 +1512,29 @@ function normalizeFormationModules(formation) {
   }));
 }
 
+function portalSlug(env) {
+  return String((env && (env.PORTAIL || env.PORTAL || env.PORTAL_SLUG)) || 'lena').toLowerCase();
+}
 async function listFormations(env, agent) {
   const out = [];
+  const seen = new Set();
+  const portail = portalSlug(env);
+  const prefixes = ['formation:' + portail + ':' + agent + ':', 'formation:' + agent + ':'];
   try {
-    const list = await env.CASHFLOW_KV.list({ prefix: `formation:${agent}:` });
-    for (const k of list.keys) {
-      const raw = await env.CASHFLOW_KV.get(k.name);
-      if (!raw) continue;
-      let doc; try { doc = JSON.parse(raw); } catch (_) { continue; }
-      if (doc && doc.id) out.push(doc);
+    for (const prefix of prefixes) {
+      const list = await env.CASHFLOW_KV.list({ prefix });
+      for (const k of list.keys) {
+        if (seen.has(k.name)) continue;
+        const parts = k.name.split(':');
+        if (prefix === 'formation:' + portail + ':' + agent + ':') {
+          if (parts.length < 4 || parts[1] !== portail || parts[2] !== agent) continue;
+        } else if (parts.length !== 3 || parts[1] !== agent) continue;
+        seen.add(k.name);
+        const raw = await env.CASHFLOW_KV.get(k.name);
+        if (!raw) continue;
+        let doc; try { doc = JSON.parse(raw); } catch (_) { continue; }
+        if (doc && doc.id) out.push(doc);
+      }
     }
   } catch (_) { /* KV indisponible : aucune formation */ }
   out.sort((a, b) => (a.ordre || 0) - (b.ordre || 0) || String(a.titre || '').localeCompare(String(b.titre || '')));
@@ -1618,25 +1632,40 @@ function buildFormationMap(formations, progressAll) {
 
 // Transforme un bloc en texte de prompt. Les adresses média utilisent le repère « ADRESSE … APPROUVÉE »
 // afin d'être reprises par les whitelists exactement comme le système vidéo existant.
-function formationBlocToPromptLines(bloc, idx) {
+
+function prenomOf(session, fallback) {
+  const raw = (session && (session.firstname || session.firstName || session.prenom || session.name)) || fallback || '';
+  const first = String(raw).trim().split(/\s+/)[0];
+  return first || 'toi';
+}
+function applyPrenom(text, prenom) {
+  const pnom = prenom || 'toi';
+  return String(text == null ? '' : text)
+    .replace(/\{first_name\}/gi, pnom)
+    .replace(/\{prenom\}/gi, pnom)
+    .replace(/\{prénom\}/gi, pnom);
+}
+
+function formationBlocToPromptLines(bloc, idx, prenom) {
   const t = String((bloc && bloc.type) || 'texte').toLowerCase();
   const n = idx + 1;
-  if (t === 'texte') return `BLOC ${n} — TEXTE\n${bloc.contenu || ''}`;
+  const P = (s) => applyPrenom(s, prenom);
+  if (t === 'texte') return `BLOC ${n} — TEXTE\n${P(bloc.contenu || '')}`;
   if (t === 'image') return `BLOC ${n} — IMAGE\n${bloc.legende ? 'Légende : ' + bloc.legende + '\n' : ''}ADRESSE IMAGE APPROUVÉE : ${bloc.url || ''}`;
   if (t === 'audio') return `BLOC ${n} — AUDIO MP3\n${bloc.titre ? 'Titre : ' + bloc.titre + '\n' : ''}${bloc.intro ? 'Intro suggérée : ' + bloc.intro + '\n' : ''}ADRESSE AUDIO APPROUVÉE : ${bloc.url || ''}`;
   if (t === 'video' || t === 'vidéo') return `BLOC ${n} — VIDÉO\n${bloc.titre ? 'Titre : ' + bloc.titre + '\n' : ''}${bloc.intro ? 'Intro suggérée : ' + bloc.intro + '\n' : ''}ADRESSE VIDÉO APPROUVÉE : ${bloc.url || ''}`;
   if (t === 'exercice') return `BLOC ${n} — EXERCICE\n${bloc.objectif ? 'Objectif : ' + bloc.objectif + '\n' : ''}Consigne : ${bloc.consigne || bloc.contenu || ''}`;
-  if (t === 'intervention') return `BLOC ${n} — INTERVENTION DE LÉNA (ce que tu dois dire/faire)\n${bloc.contenu || ''}`;
+  if (t === 'intervention') return `BLOC ${n} — INTERVENTION (utilise le prénom ${prenom || 'de la personne'})\n${P(bloc.contenu || '')}`;
   return `BLOC ${n} — ${t.toUpperCase()}\n${bloc.contenu || bloc.url || ''}`;
 }
 
-function buildActiveModuleInjection(formation, module) {
+function buildActiveModuleInjection(formation, module, prenom) {
   const blocs = Array.isArray(module.blocs) ? module.blocs : [];
   const parts = [
     `🎯 MODULE ACTIF — Formation « ${formation.titre} » · Module ${module.numero} : ${module.titre}`,
     `Voici le contenu réel de ce module, dans l'ordre. Fais-le vivre UN BLOC À LA FOIS (jamais tout d'un coup), vérifie la compréhension entre chaque, et aide la personne à appliquer à SON livre. Pour un bloc média, copie l'adresse EXACTE après « ADRESSE … APPROUVÉE » dans le marqueur correspondant.`
   ];
-  blocs.forEach((b, i) => parts.push('\n' + formationBlocToPromptLines(b, i)));
+  blocs.forEach((b, i) => parts.push('\n' + formationBlocToPromptLines(b, i, prenom)));
   return parts.join('\n');
 }
 
@@ -1692,9 +1721,10 @@ function formationNavHint(isLastOfModule, isLastOfFormation) {
 // Construit la réponse de Léna à partir d'un bloc — uniquement les champs saisis par Diane dans l'outil.
 function renderFormationBlocForChat(bloc, ctx) {
   const type = String((bloc && bloc.type) || 'texte').toLowerCase();
+  const prenom = (ctx && ctx.prenom) || 'toi';
   const parts = [];
   if (type === 'intervention' || type === 'texte') {
-    parts.push(String(bloc.contenu || '').trim());
+    parts.push(applyPrenom(String(bloc.contenu || '').trim(), prenom));
   } else if (type === 'audio') {
     if (bloc.intro) parts.push(String(bloc.intro).trim());
     else if (bloc.titre) parts.push('🎧 ' + String(bloc.titre).trim());
@@ -1806,7 +1836,8 @@ async function runFormationControlTurn(env, session, agent, message) {
 
   const content = renderFormationBlocForChat(bloc, {
     isLastOfModule: blocIdx === module.blocs.length - 1,
-    isLastOfFormation: (moduleIdx === modules.length - 1) && (blocIdx === module.blocs.length - 1)
+    isLastOfFormation: (moduleIdx === modules.length - 1) && (blocIdx === module.blocs.length - 1),
+    prenom: prenomOf(session)
   });
 
   // Mémorise la position sur ce bloc précis (permet la reprise fidèle).
@@ -3655,7 +3686,7 @@ async function handleChat(request, env) {
           }
 
           if (targetModule) {
-            const injection = buildActiveModuleInjection(formation, targetModule);
+            const injection = buildActiveModuleInjection(formation, targetModule, prenomOf(session, userName));
             systemPrompt += `\n\n${injection}`;
 
             // Ces adresses approuvées alimentent les whitelists de marqueurs.
