@@ -1107,8 +1107,21 @@
       var wrapper = document.createElement('div'); wrapper.style.cssText = 'display:flex;flex-direction:column;gap:4px;max-width:100%;flex:1'
 
       text = String(text == null ? '' : text)
-      var photoUrl = ''
-      text = text.replace(/\[PHOTO\s*:\s*(https?:\/\/[^\]\s]+)\s*\]/ig, function(_, u){ photoUrl = u; return ''; }).trim()
+      text = text.replace(/[\u200B-\u200D\uFEFF]/g,'').replace(/［/g,'[').replace(/］/g,']').replace(/：/g,':')
+      function takeMarker(label) {
+        var found = ''
+        var re = new RegExp('\\[\\s*' + label + '\\s*:\\s*(https?:\\/\\/[^\\]\\s]+)\\s*\\]', 'ig')
+        text = text.replace(re, function(_, u){ found = u; return ''; })
+        return found
+      }
+      var photoUrl = takeMarker('PHOTO') || takeMarker('IMAGE')
+      var audioUrl = takeMarker('AUDIO')
+      var videoUrl = takeMarker('VIDEO') || takeMarker('VIDÉO')
+      if (!photoUrl) {
+        var loose = text.match(/https?:\/\/[^\s\]]+\.(?:png|jpe?g|webp|gif)(?:\?[^\s\]]*)?/i)
+        if (loose) { photoUrl = loose[0]; text = text.replace(photoUrl, ''); }
+      }
+      text = text.trim()
 
       var imgRegex = /\[(?:IMAGE|PHOTO)\s*:\s*([\s\S]*?)\]/i
       var imgMatch = text.match(imgRegex)
@@ -1129,12 +1142,36 @@
       }
       wrapper.appendChild(bubble)
 
-      if (photoUrl) {
+      if (photoUrl && !/^https?:\/\//i.test(photoUrl) === false) {
         var formationPhoto = document.createElement('img')
         formationPhoto.src = photoUrl
         formationPhoto.alt = 'Image de la formation'
         formationPhoto.style.cssText = 'width:100%;max-width:420px;border-radius:12px;display:block;margin:8px 0'
         wrapper.appendChild(formationPhoto)
+      }
+      if (audioUrl) {
+        var audioEl = document.createElement('audio')
+        audioEl.controls = true
+        audioEl.src = audioUrl
+        audioEl.style.cssText = 'width:100%;max-width:420px;margin:8px 0;display:block'
+        wrapper.appendChild(audioEl)
+      }
+      if (videoUrl) {
+        var yt = videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/i)
+        if (yt) {
+          var frame = document.createElement('iframe')
+          frame.src = 'https://www.youtube.com/embed/' + yt[1]
+          frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+          frame.allowFullscreen = true
+          frame.style.cssText = 'width:100%;max-width:480px;aspect-ratio:16/9;border:0;border-radius:12px;margin:8px 0;display:block'
+          wrapper.appendChild(frame)
+        } else {
+          var videoEl = document.createElement('video')
+          videoEl.controls = true
+          videoEl.src = videoUrl
+          videoEl.style.cssText = 'width:100%;max-width:480px;border-radius:12px;margin:8px 0;display:block'
+          wrapper.appendChild(videoEl)
+        }
       }
 
       // Carte de parchemin — séparée du texte de l'Alpha, avec un vrai bouton Copier qui ne
@@ -1386,6 +1423,7 @@
     function cleanMarkdown(str) {
       return str
         .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:#c4b5fd;text-decoration:underline">$1</a>')
+        .replace(/(^|[^"'>=])(https?:\/\/[^\s<]+)/g, '$1<a href="$2" target="_blank" rel="noopener" style="color:#c4b5fd;text-decoration:underline">$2</a>')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '$1')
         .replace(/^---+$/gm, '')
@@ -1402,7 +1440,7 @@
         .replace(/---+/g, '')
         .replace(/#{1,6}\s+/g, '')
         .replace(/^>+\s*/gm, '')
-        .replace(/\[(?:IMAGE|PHOTO)[\s\S]*?\]/gi, '')
+        .replace(/\[(?:IMAGE|PHOTO|AUDIO|VIDEO|VIDÉO)[\s\S]*?\]/gi, '')
         .replace(/[✦💜🚀💎🌐📱⭐✓►▶🪞🌿🕯️🌙✨💎📖]/gu, '')
         .replace(/<br>/g, ' ')
         .replace(/<[^>]+>/g, '')
