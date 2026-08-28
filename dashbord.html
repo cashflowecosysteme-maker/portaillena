@@ -1,4 +1,4 @@
-<!DOCTYPE htmL>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -24,9 +24,9 @@
     #starry-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
     header {
-      position: relative; z-index: 200; height: 56px;
+      position: relative; z-index: 100; height: 56px;
       background: rgba(8,15,34,0.95); border-bottom: 1px solid rgba(123,92,255,0.12);
-      backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px 0 10px; flex-shrink: 0;
+      backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px 0 0; flex-shrink: 0;
     }
     .header-brand { width: 240px; flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 0 16px; border-right: 1px solid rgba(123,92,255,0.1); height: 100%; }
     .header-brand img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1.5px solid rgba(123,92,255,0.5); box-shadow: 0 0 20px rgba(123,92,255,0.4); animation: breathe 3s ease-in-out infinite; }
@@ -39,13 +39,13 @@
     .header-center { flex: 1; display: flex; align-items: center; justify-content: center; }
     .welcome-text { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-style: italic; color: var(--t3); }
     .welcome-text strong { color: var(--gold); font-style: normal; font-weight: 600; }
-    .header-actions { flex-shrink: 0; min-width: 0; display: flex; align-items: center; gap: 10px; }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
     .btn-header { padding: 6px 16px; border-radius: 50px; border: none; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; text-decoration: none; }
     .btn-pro { background: linear-gradient(135deg, var(--gold), #e6a800); color: #1a1000; }
     .btn-logout { background: rgba(255,75,110,0.1); border: 1px solid rgba(255,75,110,0.25); color: #ff8fab; }
     .btn-logout:hover { background: rgba(255,75,110,0.2); }
 
-    .app-body { display: flex; flex: 1; overflow: hidden; position: relative; z-index: auto; }
+    .app-body { display: flex; flex: 1; overflow: hidden; position: relative; z-index: 1; }
     aside { width: 240px; flex-shrink: 0; background: rgba(8,15,34,0.97); border-right: 1px solid rgba(123,92,255,0.1); display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
     aside::-webkit-scrollbar { width: 6px; }
     aside::-webkit-scrollbar-track { background: transparent; }
@@ -224,33 +224,26 @@
       width: 42px;
       height: 42px;
       border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.28);
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(123,92,255,0.25);
+      background: rgba(123,92,255,0.1);
       color: #fff;
       font-size: 20px;
       cursor: pointer;
       flex-shrink: 0;
       margin-right: 8px;
-      z-index: 130;
-      position: relative;
       transition: all .15s;
     }
-    #mobile-menu-btn:hover, #mobile-menu-btn:active {
-      background: rgba(255,255,255,0.16);
-      border-color: rgba(255,255,255,0.45);
+    #mobile-menu-btn:hover {
+      background: rgba(123,92,255,0.22);
+      border-color: rgba(123,92,255,0.5);
     }
     #mobile-menu-backdrop {
       display: none;
       position: fixed;
-      top: 56px;
-      right: 0;
-      bottom: 0;
-      left: min(300px, 86vw);
-      background: rgba(0,0,0,0.35);
-      z-index: 160;
-      pointer-events: auto;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 90;
+      backdrop-filter: blur(2px);
     }
     #mobile-menu-backdrop.mobile-open { display: block !important; }
 
@@ -260,33 +253,19 @@
       .header-center { display: none; }
       .app-body { position: relative; }
       aside {
-        display: none !important;
-        position: fixed !important;
-        top: 56px;
-        left: 0 !important;
-        height: calc(100% - 56px);
-        height: calc(100dvh - 56px);
+        position: fixed;
+        top: 0; left: 0;
+        height: 100vh;
         width: min(300px, 86vw);
-        z-index: 200;
-        background: #152044 !important;
-        transform: none !important;
+        z-index: 100;
+        transform: translateX(-105%);
+        transition: transform .28s ease;
         box-shadow: none;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        pointer-events: auto !important;
       }
       aside.mobile-open {
-        display: flex !important;
-        flex-direction: column !important;
+        transform: translateX(0);
         box-shadow: 8px 0 40px rgba(0,0,0,0.45);
-        pointer-events: auto !important;
       }
-      aside .nav-item, aside .nav-item * { pointer-events: auto !important; }
-      aside .nav-name { color: #ffffff !important; }
-      aside .nav-sub { color: #d0d6f0 !important; opacity: 1 !important; }
-      aside .sidebar-label { color: #b7c0e0 !important; }
-      aside .nav-item { color: #ffffff !important; }
-
       .main-content, .content, .panels, [class*="panel-wrap"] {
         /* full width when sidebar is overlay */
       }
@@ -342,34 +321,6 @@
           <span class="nav-arrow">›</span>
         </div>
       </div>
-      <div class="sidebar-section">
-        <div class="sidebar-label">Atelier de développement</div>
-
-        <div class="nav-item" id="nav-sophia" onclick="openAgentTab('sophia')">
-          <img class="nav-avatar" src="/Sophia.png" alt="Sophia">
-          <span class="nav-text"><span class="nav-name">🔢 Sophia</span><span class="nav-sub">La Tisseuse des Nombres</span></span>
-          <span class="nav-arrow">›</span>
-        </div>
-
-        <div class="nav-item" id="nav-aletheia" onclick="openAgentTab('aletheia')">
-          <img class="nav-avatar" src="/Aletheia.png" alt="Aletheia">
-          <span class="nav-text"><span class="nav-name">ᚱ Aletheia</span><span class="nav-sub">La Scribe des Murmures Runiques</span></span>
-          <span class="nav-arrow">›</span>
-        </div>
-
-        <div class="nav-item" id="nav-cassandre" onclick="openAgentTab('cassandre')">
-          <img class="nav-avatar" src="/Cassandre.png" alt="Cassandre">
-          <span class="nav-text"><span class="nav-name">🃏 Cassandre</span><span class="nav-sub">La Voix du Reflet</span></span>
-          <span class="nav-arrow">›</span>
-        </div>
-
-        <div class="nav-item" id="nav-celeste" onclick="openAgentTab('celeste')">
-          <img class="nav-avatar" src="/Celeste.png" alt="Céleste">
-          <span class="nav-text"><span class="nav-name">✦ Céleste</span><span class="nav-sub">La Cartographe des Présages</span></span>
-          <span class="nav-arrow">›</span>
-        </div>
-      </div>
-
       
       <div class="sidebar-section">
         <div class="sidebar-label">Outils</div>
@@ -771,19 +722,14 @@
       closeMobileMenu()
     }
 
-    function toggleMobileMenu(e) {
+    function toggleMobileMenu() {
       var aside = document.querySelector('aside')
       var bd = document.getElementById('mobile-menu-backdrop')
-      if (!aside) return false
+      if (!aside) return
       var open = !aside.classList.contains('mobile-open')
-      if (open) aside.classList.add('mobile-open')
-      else aside.classList.remove('mobile-open')
-      if (bd) {
-        if (open) bd.classList.add('mobile-open')
-        else bd.classList.remove('mobile-open')
-      }
+      aside.classList.toggle('mobile-open', open)
+      if (bd) bd.classList.toggle('mobile-open', open)
       document.body.style.overflow = open ? 'hidden' : ''
-      return false
     }
     function closeMobileMenu() {
       var aside = document.querySelector('aside')
@@ -792,9 +738,6 @@
       if (bd) bd.classList.remove('mobile-open')
       document.body.style.overflow = ''
     }
-    window.toggleMobileMenu = toggleMobileMenu
-    window.closeMobileMenu = closeMobileMenu
-
 
     /* ═══════ MESSAGES DES IFRAMES → personnage ═══════ */
     window.addEventListener('message', function(e) {
@@ -989,10 +932,6 @@
       nyxia:  '/chat-nyxia.html',
       diane:  '/chat-diane.html',
       lena:   '/chat-lena.html',
-      sophia: '/chat-sophia.html',
-      aletheia: '/chat-aletheia.html',
-      cassandre: '/chat-cassandre.html',
-      celeste: '/chat-celeste.html',
       ovilus: '/ovilus.html',
       aimee:  '/chat-aimee.html',
       alibi:  '/chat-alibi.html',
@@ -1110,7 +1049,7 @@
       div.style.cssText = 'display:flex;gap:10px;align-items:flex-start'
       var wrapper = document.createElement('div'); wrapper.style.cssText = 'display:flex;flex-direction:column;gap:4px;max-width:100%;flex:1'
 
-      var imgRegex = /\[IMAGE\s*:\s*([\s\S]*?)\]/i
+      var imgRegex = /\[(?:IMAGE|PHOTO)\s*:\s*([\s\S]*?)\]/i
       var imgMatch = text.match(imgRegex)
       var parchRegex = /\[PARCHEMIN\]([\s\S]*?)\[\/PARCHEMIN\]/i
       var parchMatch = text.match(parchRegex)
@@ -1123,9 +1062,9 @@
 
       var bubble = document.createElement('div'); bubble.className = 'msg-bubble'
       if (textWithoutImg) {
-        bubble.innerHTML = cleanMarkdown(escHtml(textWithoutImg)).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')
+        bubble.innerHTML = linkifyHtml(cleanMarkdown(escHtml(textWithoutImg)).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'))
       } else if (!imgDesc && !parchContent) {
-        bubble.innerHTML = cleanMarkdown(escHtml(text)).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')
+        bubble.innerHTML = linkifyHtml(cleanMarkdown(escHtml(text)).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'))
       }
       wrapper.appendChild(bubble)
 
@@ -1185,9 +1124,11 @@
         loader.innerHTML = '<div class="msg-img-spinner"></div>🎨 Génération en cours...'
         imgWrap.appendChild(loader); wrapper.appendChild(imgWrap)
 
-        var cleanDesc = imgDesc.replace(/\n/g, ' ').substring(0, 300).trim()
+        var cleanDesc = imgDesc.replace(/\n/g, ' ').substring(0, 2000).trim()
         var seed = Math.floor(Math.random() * 999999)
-        var primaryUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(cleanDesc + ', high quality, detailed, coherent composition') + '?width=768&height=768&model=flux&seed=' + seed + '&private=true'
+        var primaryUrl = (/^https?:\/\//i.test(cleanDesc))
+          ? cleanDesc.split(/\s/)[0]
+          : ('https://image.pollinations.ai/prompt/' + encodeURIComponent(cleanDesc.substring(0,300) + ', high quality, detailed, coherent composition') + '?width=768&height=768&model=flux&seed=' + seed + '&private=true')
 
         var img = document.createElement('img'); img.alt = cleanDesc; img.crossOrigin = 'anonymous'
         var hasRetried = false
@@ -1267,7 +1208,11 @@
       if (btn._nxAudio) { btn._nxAudio.pause(); btn._nxAudio = null }
     }
 
-    function speakMsg(btn, text) {
+    
+  function linkifyHtml(s){
+    return String(s||'').replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+  }
+function speakMsg(btn, text) {
       if (btn._nxSpeaking) { window.speechSynthesis && window.speechSynthesis.cancel(); stopSpeakBtn(btn); return }
       window.speechSynthesis && window.speechSynthesis.cancel()
       document.querySelectorAll('.msg button').forEach(function(b) { if (b._nxSpeaking) stopSpeakBtn(b) })
