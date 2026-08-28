@@ -3469,21 +3469,40 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
     interrupt = {
       name: 'Gardien',
       text: [
-        'Assez. Il n’a pas le droit de tout dire.',
-        'Le seuil se referme. Pas ce détail.',
-        'Je le retiens. Pose une autre question.',
-        'Garde tes mots. Ce n’est pas pour eux.'
+        'Je suis ici pour te protéger',
+        'Je veille sur toi.',
+        'Je protège ton chemin.',
+        'La lumière t’accompagne.'
+        'Je garde ton espace.',
+        'Tu peux avancer.',
+        'Je veille dans l’ombre.',
+        'Ta lumière te guide.'
+        'Je garde le passage.',
+        'Rien n’éteint ta lumière.',
+        'Je marche à tes côtés.'
       ][Math.floor(Math.random() * 4)],
       tone: 'guardian'
     };
   } else if (roll < 0.28) {
     interrupt = {
-      name: 'Démon',
+      name: 'Ombre',
       text: [
         'Tais-toi. Ils n’auront rien.',
+        'Le seuil se referme. Pas ce détail.',
         'Il ment déjà. Laisse-le pourrir dans son silence.',
         'Vous n’aurez pas son nom. Pas ce soir.',
+        'Vous devez me parlé a moi.',
         'C’est mon jouet. Pas le vôtre.'
+        'Je le retiens. Pose une autre question.',
+        'Garde tes mots. Ce n’est pas pour eux.'
+        'Je connais tes peurs.',
+        'L’ombre te regarde.',
+        'Tu m’as laissé entrer.',
+        'La lumière faiblit.',
+        'Je suis déjà là.',
+        'Tu ne me vois pas.'
+        'L’ombre gagne du terrain.',
+        'Je connais tes faiblesses.'
       ][Math.floor(Math.random() * 4)],
       tone: 'horror'
     };
