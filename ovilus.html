@@ -247,7 +247,7 @@ body.embedded header .btn-back{display:none}
         <button type="button" id="btnKnock" onclick="manualKnock()">Knock ×1</button>
       </div>
 
-      <p class="note">Une seule question à la fois. Nomme l’intention. N’insiste pas si le silence se pose. Ferme toujours le cercle.</p>
+      <p class="note">Une seule question à la fois. N’insiste pas si le silence se pose. Ferme toujours le cercle.</p>
 
       <div class="ovilus-log" id="ovilusLog"><div class="ovilus-log-entry">Aucune séance ouverte.</div></div>
     </div>
@@ -366,19 +366,32 @@ async function loadCast(){
 
 /* Esprits ancrés 1920–2026, récits crédibles (Québec / francophonie). */
 var SPIRITS = [
-  { name:'Émile G.', born:1901, died:1978, era:'1920-1945', tone:'story',
+ { name:'Brigitte', born:1960, died:2024, era:'2024-2026', tone:'story',
     voice:'grave',
-    intro:'Émile. Soixante-dix-huit. J’ai fermé les yeux en soixante-dix-huit.',
-    words:['usine','grève','pain','hiver','Henri','rail'],
+    intro:'Brigitte. J’ai fermé les yeux et maintenant je suis ici.',
+    words:['route','pluie','fatigue','hiver','noirceur','rail'],
     stories:[
-      'En vingt-neuf le moulin a mis tout le monde dehors. On a cassé le pain en quatre.',
-      'Quarante-deux. Mon frère Henri est parti outre-mer. La lettre est arrivée en quarante-quatre. Plus de Henri.',
-      'On gagelait vingt-deux cents de l’heure et on se croyait riches. On l’était pas.',
-      'J’ai vu le pont Duplessis tomber en cinquante. Trois de la gang d’à côté étaient dessus.'
+      'Cette nuit-là, je roulais seule sous la pluie, en plein hiver. J’étais tellement fatiguée…',
+      'Je me souviens de la route, de la noirceur, puis d’un rail devant moi. Après, plus rien. J’ai fermé les yeux quelques secondes… du moins, c’est ce que je croyais.',
+      'Quand je les ai rouverts, j’étais toujours là, mais personne ne pouvait m’entendre.',
+      'J’aurais aimé leur dire une dernière fois combien je les aimais.',
+      'J’aurais aimé prendre le temps de leur dire au revoir… Je pensais vraiment que je rentrerais à la maison.'
     ]},
-  { name:'Mariette L.', born:1918, died:1996, era:'1930-1960', tone:'story',
+  { name:'Émile', born:1939, died:2018, era:'2018-2026', tone:'story',
+    voice:'grave',
+    intro:'Émile.Tout a commencé avec cette immense fatigue, puis je répétais sans cesse : “J’ai mal… j’ai du mal à respirer.',
+    words:['j'ai mal','j'ai du mal a respiré','fatigue','hôpital','noirceur','maintenant je suis icil'],
+    stories:[
+      'Tout a commencé avec cette immense fatigue, puis je répétais sans cesse : “J’ai mal… j’ai du mal à respirer.',
+      'On m’a conduite à l’hôpital et je croyais encore que j’allais rentrer chez moi.',
+      'Puis il y a eu la noirceur…',
+      'Quand j’ai ouvert les yeux, tout était étrangement calme.',
+      'Je ne sais pas combien de temps s’est écoulé.',
+      'Je sais seulement une chose : maintenant, je suis ici.'
+    ]},
+  { name:'Jeanne', born:1930, died:2025, era:'2025-2026', tone:'story',
     voice:'douce',
-    intro:'Mariette. Née dix-huit. Partie en quatre-vingt-seize. J’ai une affaire à dire.',
+    intro:'Jeanne. J’ai une affaire à dire.',
     words:['couvent','linge','curé','radio','Jos','bébé'],
     stories:[
       'Le curé disait de pas écouter la radio le dimanche. Je l’écoutais pareil, bas.',
@@ -386,35 +399,39 @@ var SPIRITS = [
       'J’ai lavé le linge des autres pendant vingt ans, rue Ontario. Mes mains le savent encore.',
       'Jos m’a demandée en quarante-six avec une bague à deux piastres. Je l’ai encore au doigt, d’un bord.'
     ]},
-  { name:'Raymond B.', born:1924, died:2003, era:'1940-1970', tone:'story',
+  { name:'Raymond', born:1924, died:2003, era:'1940-1970', tone:'story',
     voice:'homme',
-    intro:'Raymond. Vingt-quatre — deux mille trois. Laisse-moi finir mon bout.',
-    words:['Normandie','tabac','char','usine','Gaspé','neige'],
+    intro:'Raymond. Laisse-moi finir mon bout.',
+    words:['j'étouffe','tabac','char','usine','Gaspé','j'ai un message']
     stories:[
-      'J’avais dix-neuf ans en Normandie. J’ai pas tiré sur un homme que je voyais. J’ai tiré où on m’a dit.',
-      'Revenue au pays, on nous a dit merci et on nous a donné une job à l’usine. C’était ça la gloire.',
-      'En soixante-dix j’ai brûlé mes bottes de guerre. La fumée sentait encore le cuir mouillé.',
-      'Ma fille croit que je parlais pas. Je parlais. Juste pas de ça.'
+      'J’ai travaillé longtemps à l’usine, à Gaspé, et le tabac a fait partie de ma vie pendant des années.',
+      'Vers la fin, je répétais souvent : J’étouffe…',
+      'Chaque souffle devenait plus difficile.',
+      'Ma fille croit que je parlais pas. Je parlais. Juste pas de ça.',
+      'Aujourd’hui, je suis ici pour une raison… j’ai un message à transmettre.'
     ]},
-  { name:'Thérèse C.', born:1933, died:2011, era:'1950-1980', tone:'story',
+  { name:'Thérèse', born:1933, died:2021, era:'1950-1980', tone:'story',
     voice:'femme',
-    intro:'Thérèse. Trente-trois à deux mille onze. J’étais institutrice, pas une sainte.',
+    intro:'Thérèse. j’ai un message à transmettre.',
     words:['école','Duplessis','crayon','grève','fille','Québec'],
     stories:[
-      'Sous Duplessis on avait pas le droit de dire « grève » dans la cour. On le pensait fort.',
+      'J’ai été une petite fille, puis une femme qui a traversé presque un siècle d’histoire.',
       'En soixante-dix j’ai voté le soir et j’ai tremblé comme une fille de quinze ans.',
       'Une élève m’a dit que sa mère se faisait battre. J’ai appelé personne. C’était ça, le temps.',
-      'On m’a enterrée avec mon crayon rouge. C’est plate, mais c’est vrai.'
+      'On m’a enterrée avec mon crayon rouge. C’est plate, mais c’est vrai.',
+      'Je suis partie en 2021… et aujourd’hui, j’ai un message à transmettre.'
     ]},
-  { name:'André P.', born:1948, died:1998, era:'1970-1998', tone:'story',
+  { name:'André.', born:1948, died:1998, era:'1970-1998', tone:'story',
     voice:'homme',
     intro:'André. Quarante-huit. Parti dans le verglas de quatre-vingt-dix-huit.',
     words:['verglas','Hydro','chômage','taverne','Suzanne','fil'],
     stories:[
-      'Le verglas. Les fils par terre comme des serpents. J’ai voulu rentrer une génératrice. Ça a pas fini.',
-      'Suzanne m’avait dit de pas sortir. J’écoute jamais quand on me le dit gentil.',
-      'On a manqué de travail en quatre-vingt-deux. J’ai fait le clown à la taverne pour une bière.',
-      'Dis à ceux qui restent : le givre est joli tant que tu rentres.'
+      'Le verglas. Les fils par terre comme des serpents. J’ai voulu rentrer une génératrice.',
+      'Suzanne m’avait dit de pas sortir. J’écoute jamais.',
+      'J’ai connu le chômage, les soirées à la taverne, puis ce fameux verglas où tout semblait s’être arrêté',
+      'Dis à ceux qui restent : le givre est joli tant que tu rentres.',
+      'les gars d’Hydro travaillaient sans relâche.',
+     'Je me souviens aussi de Suzanne… et de ce fil qui revient toujours dans mes souvenirs.'
     ]},
   { name:'Lise M.', born:1956, died:2020, era:'1980-2020', tone:'story',
     voice:'femme',
