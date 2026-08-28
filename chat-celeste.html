@@ -485,7 +485,8 @@
     var parchMatch = text.match(parchRegex)
     var parchImgRegex = /\[(?:PROMPT|PARCHEMIN)_IMAGE\s*:\s*([\s\S]*?)\]/i
     var parchImgMatch = text.match(parchImgRegex)
-    var textWithoutImg = text.replace(imgRegex, '').replace(parchRegex, '').replace(parchImgRegex, '').trim()
+    var _media = foExtractMedia(text.replace(imgRegex, '').replace(parchRegex, '').replace(parchImgRegex, ''))
+    var textWithoutImg = _media.text
     var imgDesc = imgMatch ? imgMatch[1].trim() : null
     var parchContent = parchMatch ? parchMatch[1].trim() : null
     var parchImgUrl = parchImgMatch ? parchImgMatch[1].trim() : null
@@ -493,10 +494,11 @@
     var bubble = document.createElement('div'); bubble.className = 'msg-bubble'
     if (textWithoutImg) {
       bubble.innerHTML = cleanMarkdown(escHtml(textWithoutImg)).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')
-    } else if (!imgDesc && !parchContent) {
+    } else if (!imgDesc && !parchContent && !_media.media.length) {
       bubble.innerHTML = cleanMarkdown(escHtml(text)).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')
     }
     wrapper.appendChild(bubble)
+    _media.media.forEach(function(node){ wrapper.appendChild(node) })
 
     if (parchContent) {
       var parchWrap = document.createElement('div')
@@ -781,9 +783,48 @@
   }
 
 
+  // Convertit les marqueurs média d'une formation en vrais éléments cliquables/lisibles.
+  function foExtractMedia(raw){
+    var media=[]; var text=String(raw==null?'':raw);
+    function ytId(u){ var m=u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/); return m?m[1]:null; }
+    function vimeoId(u){ var m=u.match(/vimeo\.com\/(?:video\/)?(\d+)/); return m?m[1]:null; }
+    text=text.replace(/\[VIDEO\s*:\s*([^\]\r\n]+)\]/gi,function(_,url){
+      url=url.trim(); var wrap=document.createElement('div'); wrap.style.cssText='margin:10px 0;max-width:640px';
+      var yt=ytId(url), vim=vimeoId(url);
+      if(yt||vim){
+        var box=document.createElement('div'); box.style.cssText='position:relative;width:100%;padding-top:56.25%;border-radius:14px;overflow:hidden;border:1px solid rgba(123,92,255,.25)';
+        var ifr=document.createElement('iframe'); ifr.src=yt?('https://www.youtube.com/embed/'+yt):('https://player.vimeo.com/video/'+vim);
+        ifr.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0'; ifr.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'; ifr.allowFullscreen=true;
+        box.appendChild(ifr); wrap.appendChild(box);
+      } else if(/\.(mp4|webm|ogg|mov|m4v)(\?|$)/i.test(url)){
+        var v=document.createElement('video'); v.src=url; v.controls=true; v.playsInline=true; v.preload='metadata';
+        v.style.cssText='width:100%;border-radius:14px;border:1px solid rgba(123,92,255,.25);display:block'; wrap.appendChild(v);
+      } else {
+        var a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener'; a.textContent='▶ Ouvrir la vidéo';
+        a.style.cssText='display:inline-block;padding:10px 16px;border-radius:12px;background:linear-gradient(135deg,#7B5CFF,#9d7bff);color:#fff;text-decoration:none;font-weight:600'; wrap.appendChild(a);
+      }
+      media.push(wrap); return '';
+    });
+    text=text.replace(/\[AUDIO\s*:\s*([^\]\r\n]+)\]/gi,function(_,url){
+      url=url.trim(); var au=document.createElement('audio'); au.src=url; au.controls=true; au.preload='metadata';
+      au.style.cssText='width:100%;max-width:520px;margin:10px 0;display:block'; media.push(au); return '';
+    });
+    text=text.replace(/\[PHOTO\s*:\s*([^\]\r\n]+)\]/gi,function(_,url){
+      url=url.trim(); var im=document.createElement('img'); im.src=url; im.alt='illustration'; im.loading='lazy';
+      im.style.cssText='max-width:100%;width:auto;max-height:520px;border-radius:14px;border:1px solid rgba(123,92,255,.25);display:block;margin:10px 0'; media.push(im); return '';
+    });
+    text=text.replace(/\[LIEN\s*:\s*([^\]\r\n]+)\]/gi,function(_,payload){
+      var parts=String(payload).split('|'); var url=parts[0].trim(); var label=(parts[1]||'').trim()||'Ouvrir le lien';
+      var a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener'; a.textContent='🔗 '+label;
+      a.style.cssText='display:inline-block;margin:10px 0;padding:11px 18px;border-radius:12px;background:linear-gradient(135deg,#7B5CFF,#9d7bff);color:#fff;text-decoration:none;font-weight:600'; media.push(a); return '';
+    });
+    return { text:text.replace(/\n{3,}/g,'\n\n').trim(), media:media };
+  }
+
   function cleanMarkdown(str) {
     return str
       .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:#c4b5fd;text-decoration:underline">$1</a>')
+      .replace(/(^|[^"'>=])(https?:\/\/[^\s<]+)/g, function(_,pre,url){ var tail=''; var mt=url.match(/[)\].,;!?]+$/); if(mt){ tail=mt[0]; url=url.slice(0,url.length-tail.length); } return pre+'<a href="'+url+'" target="_blank" rel="noopener" style="color:#c4b5fd;text-decoration:underline">'+url+'</a>'+tail; })
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '$1')
       .replace(/^---+$/gm, '')
@@ -804,6 +845,7 @@
       .replace(/\[IMAGE[\s\S]*?\]/gi, '')
       .replace(/\[(?:PROMPT|PARCHEMIN)\][\s\S]*?\[\/(?:PROMPT|PARCHEMIN)\]/gi, '')
       .replace(/\[(?:PROMPT|PARCHEMIN)_IMAGE[\s\S]*?\]/gi, '')
+      .replace(/\[(?:PHOTO|AUDIO|VIDEO|LIEN)\s*:[^\]]*\]/gi, '')
       .replace(/[✦💜🚀💎🌐📱⭐✓►▶🪞🌿🕯️🌙✨📖🔥👑😉📚📜]/gu, '')
       .replace(/<br>/g, ' ')
       .replace(/<[^>]+>/g, '')
