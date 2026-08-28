@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE htmL>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -345,29 +345,29 @@
       <div class="sidebar-section">
         <div class="sidebar-label">Atelier de développement</div>
 
-        <a class="nav-item" href="/chat-sophia.html">
+        <div class="nav-item" id="nav-sophia" onclick="openAgentTab('sophia')">
           <img class="nav-avatar" src="/Sophia.png" alt="Sophia">
           <span class="nav-text"><span class="nav-name">🔢 Sophia</span><span class="nav-sub">La Tisseuse des Nombres</span></span>
           <span class="nav-arrow">›</span>
-        </a>
+        </div>
 
-        <a class="nav-item" href="/chat-aletheia.html">
+        <div class="nav-item" id="nav-aletheia" onclick="openAgentTab('aletheia')">
           <img class="nav-avatar" src="/Aletheia.png" alt="Aletheia">
           <span class="nav-text"><span class="nav-name">ᚱ Aletheia</span><span class="nav-sub">La Scribe des Murmures Runiques</span></span>
           <span class="nav-arrow">›</span>
-        </a>
+        </div>
 
-        <a class="nav-item" href="/chat-cassandre.html">
+        <div class="nav-item" id="nav-cassandre" onclick="openAgentTab('cassandre')">
           <img class="nav-avatar" src="/Cassandre.png" alt="Cassandre">
           <span class="nav-text"><span class="nav-name">🃏 Cassandre</span><span class="nav-sub">La Voix du Reflet</span></span>
           <span class="nav-arrow">›</span>
-        </a>
+        </div>
 
-        <a class="nav-item" href="/chat-celeste.html">
+        <div class="nav-item" id="nav-celeste" onclick="openAgentTab('celeste')">
           <img class="nav-avatar" src="/Celeste.png" alt="Céleste">
           <span class="nav-text"><span class="nav-name">✦ Céleste</span><span class="nav-sub">La Cartographe des Présages</span></span>
           <span class="nav-arrow">›</span>
-        </a>
+        </div>
       </div>
 
       
@@ -989,6 +989,10 @@
       nyxia:  '/chat-nyxia.html',
       diane:  '/chat-diane.html',
       lena:   '/chat-lena.html',
+      sophia: '/chat-sophia.html',
+      aletheia: '/chat-aletheia.html',
+      cassandre: '/chat-cassandre.html',
+      celeste: '/chat-celeste.html',
       ovilus: '/ovilus.html',
       aimee:  '/chat-aimee.html',
       alibi:  '/chat-alibi.html',
@@ -1106,24 +1110,7 @@
       div.style.cssText = 'display:flex;gap:10px;align-items:flex-start'
       var wrapper = document.createElement('div'); wrapper.style.cssText = 'display:flex;flex-direction:column;gap:4px;max-width:100%;flex:1'
 
-      text = String(text == null ? '' : text)
-      text = text.replace(/[\u200B-\u200D\uFEFF]/g,'').replace(/［/g,'[').replace(/］/g,']').replace(/：/g,':')
-      function takeMarker(label) {
-        var found = ''
-        var re = new RegExp('\\[\\s*' + label + '\\s*:\\s*(https?:\\/\\/[^\\]\\s]+)\\s*\\]', 'ig')
-        text = text.replace(re, function(_, u){ found = u; return ''; })
-        return found
-      }
-      var photoUrl = takeMarker('PHOTO') || takeMarker('IMAGE')
-      var audioUrl = takeMarker('AUDIO')
-      var videoUrl = takeMarker('VIDEO') || takeMarker('VIDÉO')
-      if (!photoUrl) {
-        var loose = text.match(/https?:\/\/[^\s\]]+\.(?:png|jpe?g|webp|gif)(?:\?[^\s\]]*)?/i)
-        if (loose) { photoUrl = loose[0]; text = text.replace(photoUrl, ''); }
-      }
-      text = text.trim()
-
-      var imgRegex = /\[(?:IMAGE|PHOTO)\s*:\s*([\s\S]*?)\]/i
+      var imgRegex = /\[IMAGE\s*:\s*([\s\S]*?)\]/i
       var imgMatch = text.match(imgRegex)
       var parchRegex = /\[PARCHEMIN\]([\s\S]*?)\[\/PARCHEMIN\]/i
       var parchMatch = text.match(parchRegex)
@@ -1141,38 +1128,6 @@
         bubble.innerHTML = cleanMarkdown(escHtml(text)).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')
       }
       wrapper.appendChild(bubble)
-
-      if (photoUrl && !/^https?:\/\//i.test(photoUrl) === false) {
-        var formationPhoto = document.createElement('img')
-        formationPhoto.src = photoUrl
-        formationPhoto.alt = 'Image de la formation'
-        formationPhoto.style.cssText = 'width:100%;max-width:420px;border-radius:12px;display:block;margin:8px 0'
-        wrapper.appendChild(formationPhoto)
-      }
-      if (audioUrl) {
-        var audioEl = document.createElement('audio')
-        audioEl.controls = true
-        audioEl.src = audioUrl
-        audioEl.style.cssText = 'width:100%;max-width:420px;margin:8px 0;display:block'
-        wrapper.appendChild(audioEl)
-      }
-      if (videoUrl) {
-        var yt = videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/i)
-        if (yt) {
-          var frame = document.createElement('iframe')
-          frame.src = 'https://www.youtube.com/embed/' + yt[1]
-          frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-          frame.allowFullscreen = true
-          frame.style.cssText = 'width:100%;max-width:480px;aspect-ratio:16/9;border:0;border-radius:12px;margin:8px 0;display:block'
-          wrapper.appendChild(frame)
-        } else {
-          var videoEl = document.createElement('video')
-          videoEl.controls = true
-          videoEl.src = videoUrl
-          videoEl.style.cssText = 'width:100%;max-width:480px;border-radius:12px;margin:8px 0;display:block'
-          wrapper.appendChild(videoEl)
-        }
-      }
 
       // Carte de parchemin — séparée du texte de l'Alpha, avec un vrai bouton Copier qui ne
       // prend QUE le contenu publiable, jamais ses propres mots autour. Évite qu'une Gardienne
@@ -1230,10 +1185,9 @@
         loader.innerHTML = '<div class="msg-img-spinner"></div>🎨 Génération en cours...'
         imgWrap.appendChild(loader); wrapper.appendChild(imgWrap)
 
-        var cleanDesc = imgDesc.replace(/\n/g, ' ').trim()
+        var cleanDesc = imgDesc.replace(/\n/g, ' ').substring(0, 300).trim()
         var seed = Math.floor(Math.random() * 999999)
-        var urlInMarker = (cleanDesc.match(/https?:\/\/[^\s\]]+/i) || [])[0] || ''
-        var primaryUrl = urlInMarker || ('https://image.pollinations.ai/prompt/' + encodeURIComponent(cleanDesc.substring(0,300) + ', high quality, detailed, coherent composition') + '?width=768&height=768&model=flux&seed=' + seed + '&private=true')
+        var primaryUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(cleanDesc + ', high quality, detailed, coherent composition') + '?width=768&height=768&model=flux&seed=' + seed + '&private=true'
 
         var img = document.createElement('img'); img.alt = cleanDesc; img.crossOrigin = 'anonymous'
         var hasRetried = false
@@ -1423,7 +1377,6 @@
     function cleanMarkdown(str) {
       return str
         .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:#c4b5fd;text-decoration:underline">$1</a>')
-        .replace(/(^|[^"'>=])(https?:\/\/[^\s<]+)/g, '$1<a href="$2" target="_blank" rel="noopener" style="color:#c4b5fd;text-decoration:underline">$2</a>')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '$1')
         .replace(/^---+$/gm, '')
@@ -1440,7 +1393,7 @@
         .replace(/---+/g, '')
         .replace(/#{1,6}\s+/g, '')
         .replace(/^>+\s*/gm, '')
-        .replace(/\[(?:IMAGE|PHOTO|AUDIO|VIDEO|VIDÉO)[\s\S]*?\]/gi, '')
+        .replace(/\[IMAGE[\s\S]*?\]/gi, '')
         .replace(/[✦💜🚀💎🌐📱⭐✓►▶🪞🌿🕯️🌙✨💎📖]/gu, '')
         .replace(/<br>/g, ' ')
         .replace(/<[^>]+>/g, '')
