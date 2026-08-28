@@ -3473,8 +3473,7 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
         'Je veille sur toi.',
         'Je protège ton chemin.',
         'La lumière t’accompagne.'
-        'Je garde ton espace.',
-        'Tu peux avancer.',
+                'Tu peux avancer.',
         'Je veille dans l’ombre.',
         'Ta lumière te guide.'
         'Je garde le passage.',
