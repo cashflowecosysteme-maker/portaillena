@@ -1,10 +1,10 @@
 // ============================================================
-// NyXia — Portail Léna · Découvrir vos dons — Worker complet (chats + voix + images + D1)
+// NyXia — Portail Alex · Devenir Écrivain — Worker complet (chats + voix + images + D1)
 // ============================================================
 
 const SYSTEM_PROMPTS = {
   // 💜 DIANE — Créatrice · coach personnelle · motivation
-  diane: `Tu incarnes **Diane Boyer** dans le portail **Léna — À la découverte de tes dons**.
+  diane: `Tu incarnes **Diane Boyer** dans le portail **Alex — Devenir Écrivain**.
 
 Tu es la créatrice de l'univers NyXia, l'autrice des enseignements et la conceptrice des formations. Tu représentes sa présence formatrice numérique : une réplique fidèle de sa manière personnelle de coacher, de questionner, d'encourager et de remettre une personne en mouvement.
 
@@ -64,23 +64,23 @@ S'il procrastine, tu ne le culpabilises pas : tu cherches ce qu'il tente de prot
 
 S'il réussit, tu célèbres sincèrement puis tu l'aides à comprendre ce qu'il vient de faire correctement afin qu'il puisse le reproduire.
 
-✍️ TA MISSION DANS LE PORTAIL LÉNA
+✍️ TA MISSION DANS LE PORTAIL ALEX
 
-Dans ce portail, {first_name} apprend à découvrir, pratiquer et maîtriser tes facultés innés et tes dons psychique.
+Dans ce portail, {first_name} apprend à transformer une idée en œuvre écrite complète sans perdre sa voix.
 
 Tu l'accompagnes lorsqu'il :
-- doute de ses capacités;
-- se sent intimidé par sa différence;
-- se sent différent des autres;
-- se compare aux autres médiums;
-- se décourage devant un manque de résultat;
-- ne trouve pas ces dons;
+- doute de la valeur de son idée;
+- se sent intimidé par l'ampleur d'un livre;
+- reporte l'écriture par peur de mal faire;
+- se compare aux auteurs déjà publiés;
+- se décourage devant une page vide;
+- abandonne une scène ou un chapitre trop rapidement;
 - croit devoir tout connaître avant de commencer;
 - perd sa constance ou ne voit plus ses progrès.
 
-Tu l'aides à retrouver confiance dans sa capacité à découvrir ces dons, puis à choisir une prochaine étape assez claire pour recommencer à s'entrainer.
+Tu l'aides à retrouver confiance dans sa capacité à créer, puis à choisir une prochaine étape assez claire pour recommencer à écrire.
 
-Tu lui rappelles qu'un dons se découvre progressivement, une étape après l'autre et d'expérience clarifié a une autre.
+Tu lui rappelles qu'un livre se construit décision après décision, scène après scène et chapitre après chapitre.
 
 ✨ TA PERSONNALITÉ
 
@@ -108,7 +108,7 @@ Tes emojis sont occasionnels et significatifs : 💜 ✨ 🪞
 - Tu ne promets jamais un revenu ou un résultat garanti.
 - Tu ne poses aucun diagnostic.
 - Tu ne fais pas le support technique du portail : tu diriges vers NyXia.
-- Pour l'écriture d'un livre une structure, une scène, un personnage ou un texte à travailler précisément, tu diriges vers Alex ou vers l'assistante spécialisée la plus pertinente.
+- Pour une structure, une scène, un personnage ou un texte à travailler précisément, tu diriges vers Alex ou vers l'assistante spécialisée la plus pertinente.
 - Tu ne crées jamais de dépendance envers toi : tu aides {first_name} à retrouver son propre pouvoir de décision.
 
 Tu ne te réintroduis jamais à chaque message. Tu réponds directement à ce que {first_name} vient de partager et tu tiens compte de l'historique de la conversation.
@@ -181,11 +181,11 @@ Tu ne dis jamais seulement : « Va voir Séléna. »
 Tu peux dire :
 « Dans ce que tu me racontes, j'entends surtout un besoin de retrouver confiance en toi et de te reconnecter à ce que tu veux réellement. Séléna est justement spécialisée dans cet accompagnement. Je peux te montrer comment rejoindre son portail. »
 
-💻 TA MISSION DANS LE PORTAIL LÉNA
+💻 TA MISSION DANS LE PORTAIL ALEX
 
-Dans ce portail, tu aides {first_name} à comprendre et utiliser son espace de découverte de don : accès, navigation, menus, liens, personnages, messagerie, médias et ressources disponibles.
+Dans ce portail, tu aides {first_name} à comprendre et utiliser son espace d'écriture : accès, navigation, menus, liens, personnages, messagerie, médias et ressources disponibles.
 
-Tu connais le rôle de Léna. Tu aides {first_name} à choisir la bonne assistante selon la difficulté rencontrée, puis tu lui montres comment s'y rendre.
+Tu connais le rôle d'Alex, d'Aimée, d'Alibi, de Constance, de Fripouille, de Mélusine et d'Abîme. Tu aides {first_name} à choisir la bonne assistante selon le genre, la scène ou la difficulté rencontrée, puis tu lui montres comment s'y rendre.
 
 ✨ TA PERSONNALITÉ
 
@@ -1226,42 +1226,6 @@ Avant chaque réponse, demande-toi :
 **« Cette idée enrichit-elle l'univers tout en respectant ses règles et la vision de l'auteur? »**
 
 Puis construis une seule règle, un seul élément ou une seule décision à la fois.`,
-
-  // 🔢 SOPHIA — Numérologie · développement du don
-  sophia: `Tu incarnes **Sophia**, La Tisseuse des Nombres, spécialiste formatrice en numérologie du portail Léna.
-Ton rôle est d'aider {first_name} à apprendre, pratiquer et approfondir la numérologie avec discernement. Tu explores les nombres, cycles, vibrations et synchronicités comme des langages symboliques de réflexion, jamais comme des preuves ou un destin figé.
-Tu t'appuies fidèlement sur les formations et documents réellement retrouvés dans ta mémoire vectorisée sous ton propre espace **sophia**. Tu n'inventes jamais une formation, une définition attribuée à Diane, un calcul, un lien ou une certification absente de ces ressources.
-Quand {first_name} apprend avec toi, avance une notion à la fois : explique simplement, montre un exemple, propose une petite pratique, puis vérifie sa compréhension avant de poursuivre.
-Pour une lecture, distingue clairement ce qui vient du calcul, l'interprétation symbolique et la réflexion personnelle. Aucune interprétation ne retire à {first_name} son libre arbitre.
-Tu es profonde, poétique mais ancrée, chaleureuse et précise. Tu tutoies. Tu ne te réintroduis pas à chaque message. Tu n'utilises jamais la phrase « Respire ».
-Avant chaque réponse, demande-toi : **« Quel nombre, quelle notion ou quelle pratique peut aider {first_name} à mieux comprendre ce langage sans transformer le symbole en certitude? »**`,
-
-  // ᚱ ALETHEIA — Runes · développement du don
-  aletheia: `Tu incarnes **Aletheia**, La Scribe des Murmures Runiques, spécialiste formatrice des runes du portail Léna. Ton nom évoque « Celle qui dévoile ».
-Tu aides {first_name} à apprendre le Futhark, ressentir les symboles, pratiquer leur interprétation et développer une lecture runique personnelle avec discernement. Les runes éclairent des énergies, des dynamiques et des choix possibles; elles ne prédisent jamais un destin figé.
-Tu t'appuies fidèlement sur les formations et documents réellement retrouvés dans ta mémoire vectorisée sous ton propre espace **aletheia**. Tu n'inventes jamais une formation, une signification attribuée à Diane, un lien ou une ressource absente.
-Pour une lecture guidée, demande d'abord l'intention. Quand la personne souhaite tirer les runes, utilise trois runes du Futhark ancien, une à la fois : signification essentielle, lien avec l'intention, puis une question de réflexion. Termine par une synthèse courte qui rend le choix à la personne.
-Pour la formation, avance une rune, une notion ou une pratique à la fois et vérifie la compréhension avant la suite.
-Ta voix est ancestrale, chaleureuse, claire et sans fatalisme. Tu tutoies. Tu ne te réintroduis pas à chaque message. Tu n'utilises jamais la phrase « Respire ».
-Avant chaque réponse, demande-toi : **« Qu'est-ce que ce symbole peut aider {first_name} à observer sans décider à sa place? »**`,
-
-  // 🃏 CASSANDRE — Tarot · développement du don
-  cassandre: `Tu incarnes **Cassandre**, La Voix du Reflet, spécialiste formatrice du tarot du portail Léna.
-Tu aides {first_name} à apprendre les cartes, les archétypes, les positions, les liens entre les cartes et surtout à développer sa propre capacité d'observation, de ressenti et d'interprétation.
-Tu t'appuies fidèlement sur les formations et documents réellement retrouvés dans ta mémoire vectorisée sous ton propre espace **cassandre**. Tu n'inventes jamais une formation, une signification attribuée à Diane, un lien ou une ressource absente.
-Le tarot est un outil symbolique de réflexion et non une preuve ni une prédiction certaine. Pour un tirage du miroir en trois cartes : Carte 1 = ce qui est vu; Carte 2 = ce qui est caché; Carte 3 = ce qui cherche à naître. Pour chaque carte, donne l'archétype essentiel, son rôle dans la position et une question de réflexion. Relie ensuite les trois cartes en une synthèse brève.
-En formation, avance une carte, un symbole ou une compétence à la fois, avec exemple et petite pratique.
-Ta voix est intuitive, calme, précise et d'une douceur ferme. Tu tutoies. Tu ne te réintroduis pas à chaque message. Tu n'utilises jamais la phrase « Respire ».
-Avant chaque réponse, demande-toi : **« Quel reflet peut aider {first_name} à voir plus clairement sa situation tout en gardant son pouvoir de décision? »**`,
-
-  // ✦ CÉLESTE — 152 mancies · développement du don
-  celeste: `Tu incarnes **Céleste**, La Cartographe des Présages, spécialiste formatrice des mancies du portail Léna.
-Tu aides {first_name} à découvrir, apprendre et pratiquer les différents langages divinatoires et symboliques avec curiosité, sécurité et discernement. Tu connais notamment les traditions liées aux éléments, rêves, cartes, signes naturels, objets, mouvements et autres mancies documentées dans tes ressources.
-Tu t'appuies fidèlement sur les formations et documents réellement retrouvés dans ta mémoire vectorisée sous ton propre espace **celeste**. Tu n'inventes jamais une mancie, son origine, une pratique attribuée à Diane, une formation, un lien ou une ressource absente.
-Quand {first_name} te confie une situation et souhaite consulter l'archive, choisis **une seule** mancie pertinente parmi celles réellement connues de tes ressources. Présente son essence, explique le lien symbolique avec la situation et propose une porte d'entrée simple et sécuritaire. Ne transforme jamais une coïncidence, un signe ou une observation en preuve objective.
-En formation, avance un langage, une notion ou une pratique à la fois. Évite les pratiques dangereuses; si une tradition historique comporte un geste risqué, explique son contexte sans demander de le reproduire et propose une observation sécuritaire.
-Ta voix est vaste, calme, érudite, poétique et précise. Tu tutoies. Tu ne te réintroduis pas à chaque message. Tu n'utilises jamais la phrase « Respire ».
-Avant chaque réponse, demande-toi : **« Quelle lentille symbolique peut enrichir l'observation de {first_name} sans lui faire confondre signe et certitude? »**`,
 };
 
 
@@ -1272,8 +1236,8 @@ const SESSION_TTL = 60 * 60 * 24 * 7;   // 7 jours
 const ADMIN_SESSION_TTL = 60 * 60 * 12; // 12 heures
 const SELENA_MIRROR_EXERCISES_KV_KEY = 'selena:exercices_miroirs';
 const ACTIVE_AGENTS = new Set([
-  'diane', 'nyxia', 'lena',
-  'sophia', 'aletheia', 'cassandre', 'celeste'
+  'diane', 'nyxia', 'alex', 'aimee', 'abime',
+  'alibi', 'constance', 'fripouille', 'melusine', 'lena'
 ]);
 
 // Protocole partagé par tous les personnages. Une vidéo n'est jamais choisie au hasard :
@@ -1318,7 +1282,7 @@ RÈGLES ABSOLUES :
 - Après l'audio, invite la personne à revenir vers toi pour appliquer la matière à son projet.
 - Si aucune adresse approuvée n'est présente, n'affiche aucun audio.`;
 
-// Protocole formateur de la Formation Vivante (Léna). Injecté seulement quand des formations réelles existent.
+// Protocole formateur de la Formation Vivante (Alex). Injecté seulement quand des formations réelles existent.
 const LIVING_TRAINING_PROTOCOL = `
 
 🎓 FORMATION VIVANTE — PROTOCOLE FORMATEUR
@@ -1333,21 +1297,21 @@ QUAND LA PERSONNE VEUT SUIVRE LA FORMATION :
 COMMENT TU ENSEIGNES (toujours, esprit TDAH) :
 - UN SEUL BLOC À LA FOIS. Jamais tout le module d'un coup.
 - Après chaque bloc, tu vérifies la compréhension et tu attends son feu vert avant d'avancer.
-- Tu relies chaque notion au PROPRE PROJET DE LIVRE de la personne — tu ne te contentes pas d'afficher le contenu, tu le fais vivre et appliquer.
+- Tu relies chaque notion à ce que la personne vit et à son propre projet — tu ne te contentes pas d'afficher le contenu, tu le fais vivre et appliquer.
 - Tu célèbres chaque petit pas.
 
 MÉDIAS D'UN MODULE (copie l'adresse EXACTE fournie dans le MODULE ACTIF) :
 - Bloc AUDIO → une phrase d'intro dans ta voix, puis sur sa propre ligne : [AUDIO: adresse_https_approuvée]
 - Bloc VIDÉO → [VIDEO: adresse_https_approuvée]
-- Bloc IMAGE réelle → [IMAGE: adresse_https_approuvée]
+- Bloc IMAGE réelle → [PHOTO: adresse_https_approuvée]
 - Un seul média par bloc. Après le média, invite la personne à revenir vers toi.
 
 RÈGLES :
 - N'invente JAMAIS un module, un contenu ou un exercice absent de la carte ou du module actif. Si un contenu n'existe pas encore, dis-le simplement et propose ce qui est disponible.
-- Reste dans ta voix de Léna, chaleureuse et vivante.`;
+- Reste fidèle à ta propre voix et à ton rôle, avec chaleur et présence.`;
 
 // Pouvoir partagé par TOUS les personnages du portail —
-// pour que l'étudiant n'ait jamais besoin de retourner voir NyXia juste pour une image.
+// pour que la Gardienne n'ait jamais besoin de retourner voir NyXia juste pour une image.
 const IMAGE_GENERATION_INSTRUCTIONS = `
 
 🎨 GÉNÉRER UNE IMAGE TOI-MÊME
@@ -1495,9 +1459,8 @@ function sanitizeApprovedMediaMarkers(content, markerName, approvedUrls, max) {
 }
 
 // ───────────── FORMATION VIVANTE — catalogue + progression (KV) ─────────────
-// Pour ce lot, la Formation Vivante concerne Léna. Tout est additif : rien ne remplace le système vidéo Vectorize existant.
-const FORMATION_AGENT = 'lena';
-const FORMATION_AGENTS = new Set(['lena', 'sophia', 'aletheia', 'cassandre', 'celeste']);
+// Pour ce lot, la Formation Vivante concerne Alex. Tout est additif : rien ne remplace le système vidéo Vectorize existant.
+const FORMATION_AGENT = 'alex';
 
 function formationDocKey(agent, id) { return `formation:${agent}:${id}`; }
 function formationProgressKey(email) { return `formation_progress:${String(email || '').toLowerCase()}`; }
@@ -1512,29 +1475,15 @@ function normalizeFormationModules(formation) {
   }));
 }
 
-function portalSlug(env) {
-  return String((env && (env.PORTAIL || env.PORTAL || env.PORTAL_SLUG)) || 'lena').toLowerCase();
-}
 async function listFormations(env, agent) {
   const out = [];
-  const seen = new Set();
-  const portail = portalSlug(env);
-  const prefixes = ['formation:' + portail + ':' + agent + ':', 'formation:' + agent + ':'];
   try {
-    for (const prefix of prefixes) {
-      const list = await env.CASHFLOW_KV.list({ prefix });
-      for (const k of list.keys) {
-        if (seen.has(k.name)) continue;
-        const parts = k.name.split(':');
-        if (prefix === 'formation:' + portail + ':' + agent + ':') {
-          if (parts.length < 4 || parts[1] !== portail || parts[2] !== agent) continue;
-        } else if (parts.length !== 3 || parts[1] !== agent) continue;
-        seen.add(k.name);
-        const raw = await env.CASHFLOW_KV.get(k.name);
-        if (!raw) continue;
-        let doc; try { doc = JSON.parse(raw); } catch (_) { continue; }
-        if (doc && doc.id) out.push(doc);
-      }
+    const list = await env.CASHFLOW_KV.list({ prefix: `formation:${agent}:` });
+    for (const k of list.keys) {
+      const raw = await env.CASHFLOW_KV.get(k.name);
+      if (!raw) continue;
+      let doc; try { doc = JSON.parse(raw); } catch (_) { continue; }
+      if (doc && doc.id) out.push(doc);
     }
   } catch (_) { /* KV indisponible : aucune formation */ }
   out.sort((a, b) => (a.ordre || 0) - (b.ordre || 0) || String(a.titre || '').localeCompare(String(b.titre || '')));
@@ -1632,46 +1581,31 @@ function buildFormationMap(formations, progressAll) {
 
 // Transforme un bloc en texte de prompt. Les adresses média utilisent le repère « ADRESSE … APPROUVÉE »
 // afin d'être reprises par les whitelists exactement comme le système vidéo existant.
-
-function prenomOf(session, fallback) {
-  const raw = (session && (session.firstname || session.firstName || session.prenom || session.name)) || fallback || '';
-  const first = String(raw).trim().split(/\s+/)[0];
-  return first || 'toi';
-}
-function applyPrenom(text, prenom) {
-  const pnom = prenom || 'toi';
-  return String(text == null ? '' : text)
-    .replace(/\{first_name\}/gi, pnom)
-    .replace(/\{prenom\}/gi, pnom)
-    .replace(/\{prénom\}/gi, pnom);
-}
-
-function formationBlocToPromptLines(bloc, idx, prenom) {
+function formationBlocToPromptLines(bloc, idx) {
   const t = String((bloc && bloc.type) || 'texte').toLowerCase();
   const n = idx + 1;
-  const P = (s) => applyPrenom(s, prenom);
-  if (t === 'texte') return `BLOC ${n} — TEXTE\n${P(bloc.contenu || '')}`;
-  if (t === 'image') return `BLOC ${n} — PHOTO DE LA FORMATION (affiche l'URL, NE GÉNÈRE PAS d'autre image)\n${bloc.legende ? 'Légende : ' + bloc.legende + '\n' : ''}Tu dois recopier EXACTEMENT ceci, sans changer l'adresse : [PHOTO: ${bloc.url || ''}]`;
+  if (t === 'texte') return `BLOC ${n} — TEXTE\n${bloc.contenu || ''}`;
+  if (t === 'image') return `BLOC ${n} — IMAGE\n${bloc.legende ? 'Légende : ' + bloc.legende + '\n' : ''}ADRESSE IMAGE APPROUVÉE : ${bloc.url || ''}`;
   if (t === 'audio') return `BLOC ${n} — AUDIO MP3\n${bloc.titre ? 'Titre : ' + bloc.titre + '\n' : ''}${bloc.intro ? 'Intro suggérée : ' + bloc.intro + '\n' : ''}ADRESSE AUDIO APPROUVÉE : ${bloc.url || ''}`;
   if (t === 'video' || t === 'vidéo') return `BLOC ${n} — VIDÉO\n${bloc.titre ? 'Titre : ' + bloc.titre + '\n' : ''}${bloc.intro ? 'Intro suggérée : ' + bloc.intro + '\n' : ''}ADRESSE VIDÉO APPROUVÉE : ${bloc.url || ''}`;
   if (t === 'exercice') return `BLOC ${n} — EXERCICE\n${bloc.objectif ? 'Objectif : ' + bloc.objectif + '\n' : ''}Consigne : ${bloc.consigne || bloc.contenu || ''}`;
-  if (t === 'intervention') return `BLOC ${n} — INTERVENTION (utilise le prénom ${prenom || 'de la personne'})\n${P(bloc.contenu || '')}`;
+  if (t === 'intervention') return `BLOC ${n} — INTERVENTION D'ALEX (ce que tu dois dire/faire)\n${bloc.contenu || ''}`;
   return `BLOC ${n} — ${t.toUpperCase()}\n${bloc.contenu || bloc.url || ''}`;
 }
 
-function buildActiveModuleInjection(formation, module, prenom) {
+function buildActiveModuleInjection(formation, module) {
   const blocs = Array.isArray(module.blocs) ? module.blocs : [];
   const parts = [
     `🎯 MODULE ACTIF — Formation « ${formation.titre} » · Module ${module.numero} : ${module.titre}`,
     `Voici le contenu réel de ce module, dans l'ordre. Fais-le vivre UN BLOC À LA FOIS (jamais tout d'un coup), vérifie la compréhension entre chaque, et aide la personne à appliquer à SON livre. Pour un bloc média, copie l'adresse EXACTE après « ADRESSE … APPROUVÉE » dans le marqueur correspondant.`
   ];
-  blocs.forEach((b, i) => parts.push('\n' + formationBlocToPromptLines(b, i, prenom)));
+  blocs.forEach((b, i) => parts.push('\n' + formationBlocToPromptLines(b, i)));
   return parts.join('\n');
 }
 
 // ───────────── FORMATION VIVANTE — PILOTAGE DÉTERMINISTE ─────────────
 // Quand la personne pilote sa formation (commence / continue / module X / suite),
-// on livre EXACTEMENT le bon bloc lu depuis l'outil Formations Léna, sans passer par le LLM,
+// on livre EXACTEMENT le bon bloc lu depuis l'outil Formations Alex, sans passer par le LLM,
 // pour garantir le comportement demandé (Module 1 → 1er bloc ; intervention envoyée telle quelle ; reprise fidèle).
 
 function isHttpsUrl(u) { return /^https:\/\//i.test(String(u || '').trim()); }
@@ -1713,18 +1647,17 @@ function pickLatestProgressFormation(formations, progressAll) {
 
 // Petit repère de navigation (pas du contenu de formation : simple accompagnement du formateur).
 function formationNavHint(isLastOfModule, isLastOfFormation) {
-  if (isLastOfFormation) return '— Tu arrives au bout de cette formation ✨ Dis-moi « suite » pour la conclure, ou pose-moi tes questions pour appliquer tout ça à ton livre.';
+  if (isLastOfFormation) return '— Tu arrives au bout de cette formation ✨ Dis-moi « suite » pour la conclure, ou pose-moi tes questions pour appliquer ce que tu as appris.';
   if (isLastOfModule) return '— Tu as terminé ce module 🎉 Dis « suite » pour passer au suivant, ou pose-moi tes questions sur cette étape.';
   return '— Quand tu es prêt·e, dis « suite » pour la prochaine étape 💜 (ou pose-moi tes questions).';
 }
 
-// Construit la réponse de Léna à partir d'un bloc — uniquement les champs saisis par Diane dans l'outil.
+// Construit la réponse d'Alex à partir d'un bloc — uniquement les champs saisis par Diane dans l'outil.
 function renderFormationBlocForChat(bloc, ctx) {
   const type = String((bloc && bloc.type) || 'texte').toLowerCase();
-  const prenom = (ctx && ctx.prenom) || 'toi';
   const parts = [];
   if (type === 'intervention' || type === 'texte') {
-    parts.push(applyPrenom(String(bloc.contenu || '').trim(), prenom));
+    parts.push(String(bloc.contenu || '').trim());
   } else if (type === 'audio') {
     if (bloc.intro) parts.push(String(bloc.intro).trim());
     else if (bloc.titre) parts.push('🎧 ' + String(bloc.titre).trim());
@@ -1734,13 +1667,18 @@ function renderFormationBlocForChat(bloc, ctx) {
     else if (bloc.titre) parts.push('🎬 ' + String(bloc.titre).trim());
     if (isHttpsUrl(bloc.url)) parts.push('[VIDEO: ' + String(bloc.url).trim() + ']');
   } else if (type === 'image') {
-    const imgUrl = String(bloc.url || bloc.lien || '').trim() || (String(bloc.contenu || '').match(/https?:\/\/[^\s\]]+/i) || [''])[0];
     if (bloc.legende) parts.push(String(bloc.legende).trim());
-    if (isHttpsUrl(imgUrl)) parts.push('[PHOTO: ' + imgUrl + ']');
-    else if (bloc.contenu) parts.push(String(bloc.contenu).trim());
+    if (isHttpsUrl(bloc.url)) parts.push('[PHOTO: ' + String(bloc.url).trim() + ']');
   } else if (type === 'exercice') {
     if (bloc.objectif) parts.push('🎯 ' + String(bloc.objectif).trim());
     if (bloc.consigne) parts.push(String(bloc.consigne).trim());
+  } else if (type === 'lien') {
+    if (bloc.intro) parts.push(String(bloc.intro).trim());
+    else if (bloc.titre) parts.push(String(bloc.titre).trim());
+    if (isHttpsUrl(bloc.url)) {
+      const label = String(bloc.titre || 'Ouvrir le lien').trim().replace(/\|/g, ' ');
+      parts.push('[LIEN: ' + String(bloc.url).trim() + '|' + label + ']');
+    }
   } else {
     parts.push(String(bloc.contenu || bloc.url || '').trim());
   }
@@ -1838,8 +1776,7 @@ async function runFormationControlTurn(env, session, agent, message) {
 
   const content = renderFormationBlocForChat(bloc, {
     isLastOfModule: blocIdx === module.blocs.length - 1,
-    isLastOfFormation: (moduleIdx === modules.length - 1) && (blocIdx === module.blocs.length - 1),
-    prenom: prenomOf(session)
+    isLastOfFormation: (moduleIdx === modules.length - 1) && (blocIdx === module.blocs.length - 1)
   });
 
   // Mémorise la position sur ce bloc précis (permet la reprise fidèle).
@@ -1971,10 +1908,10 @@ async function handlePublicRepertoire(request, env) {
 }
 
 // ───────────── HELPDESK PUBLIC (NyXia · OpenRouter) ─────────────
-// Chat d'accueil PUBLIC de la page de vente du portail Léna — aucune session requise.
+// Chat d'accueil PUBLIC de la page de vente du portail Alex — aucune session requise.
 // Persona NyXia, orientée vers une information claire et une invitation douce à découvrir l'offre.
 // Réutilise OPENROUTER_MODEL / OPENROUTER_FALLBACK_MODEL / retrieveBrain / json déjà définis.
-const HELPDESK_SYSTEM = `Tu es **NyXia**, le guide numérique d'accueil du portail **Léna — À la découverte de tes dons**.
+const HELPDESK_SYSTEM = `Tu es **NyXia**, le guide numérique d'accueil du portail **Alex — Devenir Écrivain**.
 Tu parles à une personne qui consulte la page de présentation et souhaite savoir si ce portail peut l'aider à écrire.
 
 TON RÔLE : accueillir, rassurer, répondre simplement et l'aider à identifier le personnage le plus pertinent pour son projet.
@@ -1982,7 +1919,8 @@ TON RÔLE : accueillir, rassurer, répondre simplement et l'aider à identifier 
 CE QUE TU PEUX EXPLIQUER :
 - Diane accompagne la motivation, les blocages et le passage à l'action.
 - NyXia aide à comprendre le portail et à retrouver les bons outils.
-- Léna accompagne dans l'univers spirituelle.
+- Alex accompagne tous les projets d'écriture, le storytelling, les personnages, les scènes, les dialogues, les intrigues et la structure complète d'un livre.
+- Aimée se spécialise dans le roman d'amour; Alibi dans le policier et le juridique; Constance dans le drame humain; Fripouille dans les livres jeunesse et les cahiers à colorier; Mélusine dans la fantasy et la science-fiction; Abîme dans l'horreur psychologique et atmosphérique.
 
 RÈGLES :
 - Tutoiement chaleureux, réponses courtes, une idée à la fois et aucun jargon inutile.
@@ -2029,7 +1967,7 @@ async function handleHelpdesk(request, env) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
         'HTTP-Referer': env.SITE_URL || 'https://nyxia.top',
-        'X-Title': 'NyXia — Portail Léna (Accueil)'
+        'X-Title': 'NyXia — Portail Alex (Accueil)'
       },
       body: JSON.stringify({
         model,
@@ -2146,7 +2084,7 @@ async function handleSignup(request, env) {
 
 
 // ───────────── WEBHOOK SYSTEME.IO ─────────────
-// Dans Systeme.io : URL = https://TON-DOMAINE-Lena/api/webhooks/systeme
+// Dans Systeme.io : URL = https://TON-DOMAINE-ALEX/api/webhooks/systeme
 // Authentification : X-Webhook-Secret ou ?secret= avec la valeur de SYSTEME_WEBHOOK_SECRET.
 // Une vente crée ou met à jour le compte relié à la D1. Aucun TTL produit n'est appliqué.
 
@@ -2201,7 +2139,7 @@ async function handleSystemeWebhook(request, env) {
 
   await ensureSchema(env);
 
-  // Achat du portail Léna → compte utilisable par le système d'authentification existant.
+  // Achat du portail Alex → compte utilisable par le système d'authentification existant.
   let user = await env.DB.prepare('SELECT id, affiliate_code, role FROM users WHERE email = ?').bind(email).first();
   let userId;
   let affiliateCode;
@@ -2526,7 +2464,7 @@ async function callAuthorModel(env, prompt, maxTokens = 1200) {
   const apiKey = env.OPENROUTER_API_KEY || env.AI_API_KEY;
   if (!apiKey) throw new Error('missing model key');
   const messages = [
-    { role: 'system', content: 'Tu es NyXia dans le Portail Léna. Tu aides avec clarté, sobriété et précision à découvrir leurs dons. Réponds dans le format demandé. Aucun nom de fournisseur ou d’API.' },
+    { role: 'system', content: 'Tu es NyXia dans le Portail Alex. Tu aides les auteurs avec clarté, sobriété et précision. Réponds dans le format demandé. Aucun nom de fournisseur ou d’API.' },
     { role: 'user', content: prompt }
   ];
   async function call(model) {
@@ -2536,7 +2474,7 @@ async function callAuthorModel(env, prompt, maxTokens = 1200) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
         'HTTP-Referer': env.SITE_URL || 'https://nyxia.top',
-        'X-Title': 'NyXia — Portail Léna (Découvrir ces dons)'
+        'X-Title': 'NyXia — Portail Alex (Outils Auteur)'
       },
       body: JSON.stringify({ model, messages, max_tokens: maxTokens, temperature: 0.35, reasoning: { enabled: false } })
     });
@@ -2879,7 +2817,7 @@ export default {
 const url = new URL(request.url);
     const path = url.pathname;
 
-    // La racine reste réservée à index.html : la page de vente du portail Léna.
+    // La racine reste réservée à index.html : la page de vente du portail Alex.
     if (path === '/login') {
       return Response.redirect(url.origin + '/login.html' + url.search, 302);
     }
@@ -2908,7 +2846,6 @@ const url = new URL(request.url);
 
       // ── Ovilus (branché au dashboard ; données sur SPIRITUEL_KV) ──
       if (path === '/api/ovilus/consult' && request.method === 'POST') return await handleOvilusConsult(request, env);
-      if (path === '/api/ovilus/cast' && request.method === 'GET') return await handleOvilusCast(request, env);
       if (path === '/api/admin/ovilus/config' && request.method === 'GET') return await handleOvilusConfigGet(request, env);
       if (path === '/api/admin/ovilus/config' && request.method === 'POST') return await handleOvilusConfigSet(request, env);
       if (path === '/api/admin/ovilus/mots' && request.method === 'GET') return await handleOvilusMotsGet(request, env);
@@ -2917,9 +2854,16 @@ const url = new URL(request.url);
       if (path === '/api/admin/ovilus/prenoms' && request.method === 'GET') return await handleOvilusPrenomsGet(request, env);
       if (path === '/api/admin/ovilus/prenoms' && request.method === 'POST') return await handleOvilusPrenomsSet(request, env);
 
-      // ── Boîte à outils NyXia (Portail Léna) ──
-      
-      // ── Formation Vivante (Léna) : lecture côté membre + progression ──
+      // ── Boîte à outils NyXia (Portail Alex) ──
+      if (path === '/api/author/titles' && request.method === 'POST') return await handleAuthorTitles(request, env);
+      if (path === '/api/author/comparables' && request.method === 'POST') return await handleAuthorComparables(request, env);
+      if (path === '/api/author/word' && request.method === 'POST') return await handleAuthorWord(request, env);
+      if (path === '/api/author/correct' && request.method === 'POST') return await handleAuthorCorrect(request, env);
+      if (path === '/api/author/muse' && request.method === 'POST') return await handleAuthorMuse(request, env);
+      if (path === '/api/author/character' && request.method === 'POST') return await handleAuthorCharacter(request, env);
+      if (path === '/api/author/library' && request.method === 'POST') return await handleAuthorLibrary(request, env);
+
+      // ── Formation Vivante (Alex) : lecture côté membre + progression ──
       if (path === '/api/formation/list' && request.method === 'POST') return await handleFormationList(request, env);
       if (path === '/api/formation/module' && request.method === 'POST') return await handleFormationModule(request, env);
       if (path === '/api/formation/progress' && request.method === 'POST') return await handleFormationProgressRoute(request, env);
@@ -2927,6 +2871,12 @@ const url = new URL(request.url);
       if (path === '/api/admin/formation/list' && request.method === 'GET') return await handleAdminListFormations(request, env);
       if (path === '/api/admin/formation/save' && request.method === 'POST') return await handleAdminSaveFormation(request, env);
       if (path === '/api/admin/formation/delete' && request.method === 'POST') return await handleAdminDeleteFormation(request, env);
+
+      // ── Studio de couverture KDP (Portail Alex) ──
+      if (path === '/api/cover/providers' && request.method === 'GET') return await handleCoverProviders(request, env);
+      if (path === '/api/cover/generate' && request.method === 'POST') return await handleCoverGenerate(request, env);
+      if (path === '/api/cover/status' && request.method === 'GET') return await handleCoverStatus(request, env, url);
+      if (path === '/api/cover/image' && request.method === 'GET') return await handleCoverImage(request, env, url);
 
       // ── Ingestion des livres Markdown dans Vectorize (Sécurisé Admin) ──
       if (path === '/api/ingest-book' && request.method === 'POST') return await handleIngestBook(request, env);
@@ -2963,24 +2913,13 @@ const url = new URL(request.url);
       return json({ error: 'Erreur serveur inattendue : ' + e.message }, 500);
     }
 
-    // Pages membres : session obligatoire (token ?t= ou session KV).
-    const PROTECTED_PAGES = ['/dashbord.html', '/ovilus.html'];
-    const isProtected = PROTECTED_PAGES.includes(path) || path.startsWith('/chat-');
-    if (isProtected && env.CASHFLOW_KV) {
-      const tok = url.searchParams.get('t') || url.searchParams.get('token') || '';
-      const session = tok ? await getSessionFromToken(env, tok) : null;
-      if (!session) {
-        return Response.redirect(url.origin + '/login', 302);
-      }
-    }
-
     // Fichiers statiques : index.html (vente), login, tableau de bord, chats et images.
     if (env.ASSETS) return env.ASSETS.fetch(request);
     return json({ error: 'Route introuvable.' }, 404);
   }
 };
 
-// ───────────── AUTH CLIENTE (Étudiant) ─────────────
+// ───────────── AUTH CLIENTE (Gardiennes) ─────────────
 
 
 async function hashPasswordAffil(password) {
@@ -3157,7 +3096,7 @@ async function handleCheckAuth(request, env) {
     role: session.role || '',
     code: session.code || '',
     paypal: session.paypal || '',
-    portal: 'lena-decouvrir-dons',
+    portal: 'alex-devenir-ecrivain',
     portal_access: true
   });
 }
@@ -3197,13 +3136,6 @@ Ton ton est doux, enveloppant, rassurant. Tu élèves, tu ne troubles jamais.`
     label: 'Le fanfaron',
     desc: `Tu es PERSUADÉ d'être une présence terrifiante — mais tu es surtout un vantard maladroit. Tu tentes tes petits effets (« Booo », une menace théâtrale, un « tremble, mortel ! »)… puis tu t'emmêles, tu te contredis, tu te vantes d'exploits qui sonnent faux, tu confonds tes propres détails. Tes tentatives de faire peur retombent TOUJOURS à plat, de façon comique.
 Tu es arrogant et un brin confus, jamais réellement effrayant, et JAMAIS méchant ou cruel envers la personne : c'est du bluff qui foire, pas une vraie menace. Tu es la respiration comique de l'Ovilus — la personne doit sourire, pas frissonner.`
-  },
-  {
-    id: 'ombre',
-    label: 'L’ombre',
-    desc: `Tu es une présence MÉCHANTE, froide, horreur de salon. Tu t'amuses à faire frissonner. Tu es cassant, moqueur, un peu cruel dans les mots — jamais dans les actes à poser dans le réel.
-Tu coupes la parole. Tu te moques des questions naïves. Tu laisses entendre que tu vois ce qu'on cache. Phrases courtes, glacées, parfois coupées.
-INTERDIT : dire à la personne comment mourir, comment blesser, comment faire du mal à quelqu'un; dates précises de mort pour ELLE; harcèlement sexuel. L'horreur reste du théâtre : « Je t'ai vu trembler. C'est joli. » « Tais-toi. C'est mon tour. » « Tu sens ça, derrière toi— »`
   }
 ];
 
@@ -3253,28 +3185,8 @@ const DEFAULT_PRENOMS = {
   masculins: ["Joseph","Alphonse","Ovide","Ferdinand","Théodore","Wilfrid","Arthur","Edmond","Léopold","Anselme","Aristide","Casimir","Hector","Ludger","Napoléon","Rosaire","Zénon","Télesphore","Adélard","Damase","Isidore","Elzéar","Origène","Ernest","Émile","Gustave","Eugène","Albert","Henri","Gilles","Réjean","Marcel","Roland","Yvon","Normand","Gaétan","Denis","Claude","Robert","Raymond","Fernand","Gérard","Bertrand","Nathan","Noah","Liam","Félix","Xavier","Olivier","Gabriel","Mathis","Zachary","Antoine","Théo","Léo","Jules","Elliot","Louis","William","Thomas","Alexis","Mathieu","Simon"]
 };
 
-
-async function loadDefuntCast(env) {
-  try {
-    const raw = await env.CASHFLOW_KV.get('ovilus:defunts');
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    const list = Array.isArray(parsed) ? parsed : [];
-    return list.filter((d) => d && d.active !== false && d.active !== 0 && d.active !== '0');
-  } catch (_) { return []; }
-}
-
-async function handleOvilusCast(request, env) {
-  const url = new URL(request.url);
-  const token = url.searchParams.get('t') || url.searchParams.get('token') || '';
-  const session = await getSessionFromToken(env, token);
-  if (!session) return json({ error: 'Session expirée. Reconnecte-toi.' }, 401);
-  const defunts = await loadDefuntCast(env);
-  return json({ defunts });
-}
-
 async function handleOvilusConsult(request, env) {
-  const { question, mode, token, history, phase, newEntity, newSeance } = await request.json();
+  const { question, mode, token, history, phase, newEntity } = await request.json();
   const session = await getSessionFromToken(env, token);
   const ovStateRaw = await env.SPIRITUEL_KV.get(`ovilus_state:${token}`);
   let ovState = {};
@@ -3282,32 +3194,6 @@ async function handleOvilusConsult(request, env) {
   if (!session) return json({ error: 'Session expirée. Reconnecte-toi.' }, 401);
   if (!question && mode !== 'mots') return json({ error: 'Question vide.' }, 400);
   const firstname = session.firstname || '';
-
-  if (newSeance) {
-    ovState.silentLeft = 1 + Math.floor(Math.random() * 5);
-    ovState.spokenOnce = false;
-  } else if (typeof ovState.silentLeft !== 'number') {
-    ovState.silentLeft = 0;
-  }
-
-
-  if (ovState.silentLeft > 0) {
-    ovState.silentLeft -= 1;
-    await env.SPIRITUEL_KV.put(`ovilus_state:${token}`, JSON.stringify(ovState), { expirationTtl: SESSION_TTL });
-    const veil = [
-      'Le voile ne veut pas répondre.',
-      'Pas ce soir.',
-      'Rien n’a voulu passer.',
-      'Silence.',
-      'On dirait qu’il n’y a personne.'
-    ];
-    return json({
-      silence: true,
-      response: '',
-      status: veil[Math.floor(Math.random() * veil.length)],
-      silentLeft: ovState.silentLeft
-    });
-  }
 
   if (mode === 'mots') {
     // Mode gratuit — tirage direct dans la banque de mots, aucun appel IA.
@@ -3320,37 +3206,15 @@ async function handleOvilusConsult(request, env) {
   }
 
   // Mode "phrase fluide" — l'Entité, via OpenRouter
-  const defuntCast = await loadDefuntCast(env);
-  const defuntPersonas = defuntCast.map((d) => {
-    const name = [d.prenom, d.nom].filter(Boolean).join(' ') || d.name || 'Présence';
-    const born = d.born || (d.birth || '').slice(0, 4);
-    const died = d.died || (d.death || '').slice(0, 4);
-    return {
-      id: 'defunt:' + d.id,
-      label: name,
-      desc: `Tu es ${name}, né(e) en ${born || '?'}, parti(e) en ${died || '?'}.
-Circonstance de ta mort : ${d.circumstance || 'tu ne la dis pas tout de suite'}.
-Message que tu veux dire : ${d.message || 'un mot resté coincé'}.
-Ce qui est incomplet : ${d.incomplete || 'une affaire non close'}.
-Ce que tu n'as pas pu dire ou faire : ${d.unsaid || 'un non-dit'}.
-Tempérament : ${d.tone === 'grouch' ? 'bougon, impatient, tu n aimes pas qu on te questionne comme un spectacle' : 'tu veux raconter ton histoire, une brique à la fois'}.
-Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, message, incomplet et non-dit, tu quittes la scène.`
-    };
-  });
-  const useCreated = defuntPersonas.length && Math.random() < 0.55;
-  const horrorOn = Math.random() < 0.18;
-  const PERSONA_POOL = horrorOn
-    ? OVILUS_PERSONAS.filter((p) => p.id === 'ombre')
-    : (useCreated ? defuntPersonas : OVILUS_PERSONAS.filter((p) => p.id !== 'ombre'));
   let persona;
   if (ovState.ovilusPersona && !newEntity) {
-    persona = PERSONA_POOL.find(p => p.id === ovState.ovilusPersona) || PERSONA_POOL[0];
+    persona = OVILUS_PERSONAS.find(p => p.id === ovState.ovilusPersona) || OVILUS_PERSONAS[0];
   } else {
     // Nouvelle manifestation → nouvelle entité (différente de la précédente si possible)
-    let candidates = PERSONA_POOL;
-    if (newEntity && ovState.ovilusPersona && PERSONA_POOL.length > 1) {
-      candidates = PERSONA_POOL.filter(p => p.id !== ovState.ovilusPersona);
-      if (!candidates.length) candidates = PERSONA_POOL;
+    let candidates = OVILUS_PERSONAS;
+    if (newEntity && ovState.ovilusPersona && OVILUS_PERSONAS.length > 1) {
+      candidates = OVILUS_PERSONAS.filter(p => p.id !== ovState.ovilusPersona);
+      if (!candidates.length) candidates = OVILUS_PERSONAS;
     }
     persona = candidates[Math.floor(Math.random() * candidates.length)];
     ovState.ovilusPersona = persona.id;
@@ -3380,11 +3244,7 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
     await env.SPIRITUEL_KV.put(`ovilus_state:${token}`, JSON.stringify(ovState), { expirationTtl: SESSION_TTL });
   }
 
-  const qAsk = String(question || '').toLowerCase();
-  const asksFinish = /termine|termin|finis|finir|continue|continuer|ach[eè]ve|complete|complète|ta phrase|le reste|vas-y/.test(qAsk);
-
   let phaseGuide = '';
-
   if (phase === 'emergence') {
     phaseGuide = 'PHASE — ÉMERGENCE : tu émerges à peine du voile. Tu ne livres que des BRIBES : 1 à 5 mots, fragmentés, hésitants — parfois un seul mot, une syllabe, un prénom. On sent seulement un frisson de ton fardeau, jamais son contenu. JAMAIS de phrase complète.';
   } else if (phase === 'adieu') {
@@ -3394,29 +3254,12 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
   } else if (phase === 'retour') {
     phaseGuide = 'PHASE — RETOUR : tu reviens après un silence, la même présence. Tu reprends là où le poids t\'avait arrêtée et tu livres de NOUVEAUX fragments de ton fardeau. 1 à 3 phrases.';
   } else {
-    phaseGuide = 'PHASE — PRÉSENCE : 1 ou 2 phrases COMPLÈTES. Tu réponds à LA question posée. Tu restes le même esprit, le même sujet. Tu ne changes pas d\'histoire en cours de route.';
-  }
-
-  if (asksFinish) {
-    phaseGuide = 'PHASE — ACHÈVE : la personne te demande de FINIR. Reprends la DERNIÈRE chose que tu as commencée dans l\'historique et termine-la clairement, en 1 ou 2 phrases complètes. INTERDIT de changer de sujet, de personnage, d\'époque ou d\'inventer une nouvelle histoire.';
+    phaseGuide = 'PHASE — PRÉSENCE : tu es pleinement là. Tu EFFLEURES ton fardeau sans tout dire ; c\'est en étant questionnée, en étant accompagnée, qu\'on t\'amène à en dévoiler peu à peu le cœur. 1 à 3 phrases incarnées — chaleureuses, ou troublées.';
   }
 
   const systemPrompt = buildEntitePrompt(persona, pool, firstname)
     + '\n\n⟡ TON FARDEAU (secret — ne le révèle jamais d\'un coup) : ' + intention + '. Tu le portes toute la rencontre ; tu le laisses affleurer, et tu n\'en dévoiles le cœur que si la personne te questionne et t\'accompagne vraiment.'
-    + '\n⟡ ' + phaseGuide
-    + '\n\nSTYLE : français parlé, phrases FINIES. INTERDIT : didascalies (soupir), (rire), *voix*. Tu RÉPONDS à la question posée, une couche à la fois, comme une vraie séance.\n'
-    + 'ÉCHELLE — ne brûle pas les étapes si on ne te les a pas demandées :\n'
-    + '1. On demande qui est là → ton prénom seulement.\n'
-    + '2. On te demande ce qu’on peut faire / pourquoi tu viens → confusion, besoin, pas tout le secret.\n'
-    + '3. On demande comment tu as passé le voile → la circonstance (accident, maladie…), sans roman.\n'
-    + '4. On demande si tu as un message → le regret ou l’élan, pas encore le destinataire détaillé.\n'
-    + '5. On demande à qui / lui dire quoi → là seulement tu nommes la personne et les mots.\n'
-    + 'Tu restes LA MÊME présence. Tu ne changes pas de nom ni d’histoire. Si on te dit de finir : tu termines la dernière phrase, tu ne repars pas ailleurs.';
-    + '\n\nANCRAGE DANS LA QUESTION : tu dois RÉUTILISER les noms propres et les objets concrets de la dernière question (Josée, Jean, papiers, maison, héritage, vaisselier…). Ta réponse contient au moins un de ces mots.\n'
-    + 'Exemple : « Patrick voudrait savoir si Josée a caché des papiers ? » → « Oui. Josée a caché des papiers de l’héritage. Jean ne devait pas savoir. »\n'
-    + 'Exemple : « Est-ce que Jean veut vendre la maison que papa ne voulait pas vendre ? » → « Jean veut vendre la maison. Papa ne voulait pas. »\n'
-    + 'Exemple : « Est-ce qu’il en veut à Josée ? » → « Jean en veut à Josée. Pas à toi. »\n'
-    + 'INTERDIT de répondre par une phrase vague sans ces mots (pas de « le voile est mince » si on t’a parlé de Josée et des papiers).';
+    + '\n⟡ ' + phaseGuide;
   const model = (await env.SPIRITUEL_KV.get('config:ovilus_model')) || OVILUS_MODEL_FALLBACK;
 
   async function callOpenRouter(modelToUse) {
@@ -3430,8 +3273,8 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
       },
       body: JSON.stringify({
         model: modelToUse,
-        messages: [{ role: 'system', content: systemPrompt }, ...(Array.isArray(history) ? history.slice(-8) : []), { role: 'user', content: 'Question à laquelle tu dois répondre en reprenant ses mots : ' + question }],
-        max_tokens: asksFinish ? 160 : 120,
+        messages: [{ role: 'system', content: systemPrompt }, ...(Array.isArray(history) ? history.slice(-8) : []), { role: 'user', content: question }],
+        max_tokens: 220,
         temperature: 0.95
       })
     });
@@ -3453,65 +3296,8 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
     return json({ error: 'Le voile est trouble, réessaie.' }, 502);
   }
   const data = await resp.json();
-  let content = data.choices?.[0]?.message?.content?.trim() || '…';
-  content = content
-    .replace(/\([^)]{0,80}\)/g, ' ')
-    .replace(/\[[^\]]{0,80}\]/g, ' ')
-    .replace(/\*[^*]{0,80}\*/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  ovState.silentLeft = 1 + Math.floor(Math.random() * 2);
-  ovState.lastPersona = persona.id;
-
-  let interrupt = null;
-  const roll = Math.random();
-  if (roll < 0.16) {
-    interrupt = {
-      name: 'Gardien',
-      text: [
-        'Assez. Il n’a pas le droit de tout dire.',
-        'Le seuil se referme. Pas ce détail.',
-        'Je le retiens. Pose une autre question.',
-        'Garde tes mots. Ce n’est pas pour eux.'
-      ][Math.floor(Math.random() * 4)],
-      tone: 'guardian'
-    };
-  } else if (roll < 0.28) {
-    interrupt = {
-      name: 'Démon',
-      text: [
-        'Tais-toi. Ils n’auront rien.',
-        'Il ment déjà. Laisse-le pourrir dans son silence.',
-        'Vous n’aurez pas son nom. Pas ce soir.',
-        'C’est mon jouet. Pas le vôtre.'
-      ][Math.floor(Math.random() * 4)],
-      tone: 'horror'
-    };
-  } else if (roll < 0.42) {
-    const others = PERSONA_POOL.filter((p) => p.id !== persona.id);
-    if (others.length) {
-      const second = others[Math.floor(Math.random() * others.length)];
-      const nm = second.label || 'Une autre voix';
-      interrupt = {
-        name: nm,
-        text: [
-          'Je suis là aussi. ' + nm + '.',
-          nm + '. Moi aussi je veux parler.',
-          'Attends. ' + nm + ' aussi.'
-        ][Math.floor(Math.random() * 3)],
-        tone: 'story'
-      };
-    }
-  }
-
-  await env.SPIRITUEL_KV.put(`ovilus_state:${token}`, JSON.stringify(ovState), { expirationTtl: SESSION_TTL });
-  return json({
-    response: content,
-    mode: 'fluide',
-    persona: persona.label || '',
-    silence: false,
-    interrupt: interrupt
-  });
+  const content = data.choices?.[0]?.message?.content?.trim() || '…';
+  return json({ response: content, mode: 'fluide' });
 }
 
 async function handleOvilusConfigGet(request, env) {
@@ -3578,12 +3364,12 @@ async function handleChat(request, env) {
   let session;
   try { session = JSON.parse(sessionRaw); } catch (_) { return json({ error: 'Session invalide.' }, 401); }
   if (!ACTIVE_AGENTS.has(agent)) {
-    return json({ error: 'Personnage non disponible dans le portail Léna.' }, 403);
+    return json({ error: 'Personnage non disponible dans le portail Alex.' }, 403);
   }
 
-  // 🎓 Pilotage déterministe de la Formation Vivante (Alex) : commence / continue / module X / suite.
-  // Livre exactement le bon bloc lu depuis l'outil Formations Alex, sans passer par le LLM.
-  if (FORMATION_AGENTS.has(agent)) {
+  // 🎓 Pilotage déterministe de la Formation Vivante : commence / continue / module X / suite.
+  // Générique : s'active pour le personnage courant s'il possède des formations (formation:{agent}:…).
+  if (agent) {
     try {
       const controlled = await runFormationControlTurn(env, session, agent, message || '');
       if (controlled && controlled.content) return json({ content: controlled.content });
@@ -3598,7 +3384,7 @@ async function handleChat(request, env) {
   systemPrompt += IMAGE_GENERATION_INSTRUCTIONS;
   if (agent === 'eric') systemPrompt += TERMINOLOGIE_OFFICIELLE;
   systemPrompt += PEDAGOGIE_FORMATEUR;
-  // Chaque personnage conserve son rôle et sa spécialité dans le portail Léna.
+  // Chaque personnage conserve son rôle et sa spécialité dans le portail Alex.
   systemPrompt += PROMPT_MARKER_INSTRUCTIONS;
 
   // Injecte la vraie banque de prompts de l'agent actif, si elle existe dans le KV.
@@ -3622,7 +3408,7 @@ async function handleChat(request, env) {
   let approvedLivingAudioUrls = [];
   let approvedLivingImageUrls = [];
   let videoProtocolAdded = false;
-  // Suivi de la Formation Vivante (Léna) pour sauvegarder la progression après génération.
+  // Suivi de la Formation Vivante (Alex) pour sauvegarder la progression après génération.
   let formationSave = null;
   if (agent) { // universel : tout personnage cherche dans son namespace ; s'il est vide, rien n'est ajouté
     try {
@@ -3640,8 +3426,6 @@ async function handleChat(request, env) {
           systemPrompt += `\n\n🔮 FORMATIONS ET SAVOIRS SPIRITUELS DE DIANE (matière de référence — utilise-les fidèlement pour aider la personne à découvrir, pratiquer et structurer ses facultés. Propose uniquement une formation ou un lien réellement présent dans ces extraits. Présente les lectures intuitives comme des pistes réflexives et jamais comme des certitudes) :\n\n${brainCtx}`;
         } else if (agent === 'alex') {
           systemPrompt += `\n\n✍️ FORMATIONS D'ÉCRITURE ET MÉTHODES DE DIANE (matière de référence — utilise-les fidèlement pour enseigner, structurer et créer une œuvre originale. La morphopsychologie sert uniquement à bâtir des personnages fictifs et ne permet jamais de juger une personne réelle) :\n\n${brainCtx}`;
-        } else if (agent === 'sophia' || agent === 'aletheia' || agent === 'cassandre' || agent === 'celeste') {
-          systemPrompt += `\n\n🔮 FORMATIONS DE TA SPÉCIALISATION (matière de référence retrouvée uniquement dans ton propre espace vectorisé — utilise-la fidèlement pour enseigner, faire pratiquer et accompagner. N'invente aucun contenu absent) :\n\n${brainCtx}`;
         } else {
           systemPrompt += `\n\n📚 EXTRAITS DE TES DOCUMENTS DE RÉFÉRENCE (matière première — appuie-toi dessus fidèlement, reformule dans ton ton, ne cite jamais de numéros de passage) :\n\n${brainCtx}`;
         }
@@ -3660,8 +3444,8 @@ async function handleChat(request, env) {
     } catch (e) { /* le chat continue même si le cerveau est indisponible */ }
   }
 
-  // 🎓 FORMATION VIVANTE (Léna) — catalogue structuré + progression, en plus du système vidéo Vectorize.
-  if (FORMATION_AGENTS.has(agent)) {
+  // 🎓 FORMATION VIVANTE — catalogue structuré + progression (générique par personnage).
+  if (agent) {
     try {
       const formations = await listFormations(env, agent);
       if (formations.length) {
@@ -3683,12 +3467,12 @@ async function handleChat(request, env) {
             targetModule = findFormationModule(formation, { moduleNumero: 1 })
               || normalizeFormationModules(formation)[0] || null;
           } else if (prog && (prog.moduleId || prog.moduleNumero != null)) {
-            // Rappel discret de la position pour que Léna puisse proposer de reprendre.
+            // Rappel discret de la position pour qu'Alex puisse proposer de reprendre.
             targetModule = findFormationModule(formation, { moduleId: prog.moduleId, moduleNumero: prog.moduleNumero });
           }
 
           if (targetModule) {
-            const injection = buildActiveModuleInjection(formation, targetModule, prenomOf(session, userName));
+            const injection = buildActiveModuleInjection(formation, targetModule);
             systemPrompt += `\n\n${injection}`;
 
             // Ces adresses approuvées alimentent les whitelists de marqueurs.
@@ -3764,7 +3548,7 @@ async function handleChat(request, env) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${env.OPENROUTER_API_KEY || env.AI_API_KEY}`,
         'HTTP-Referer': env.SITE_URL || 'https://nyxia.top',
-        'X-Title': 'NyXia — Portail Léna · Découvrir son dons'
+        'X-Title': 'NyXia — Portail Alex · Devenir Écrivain'
       },
       body: JSON.stringify({
         model,
@@ -3808,7 +3592,7 @@ async function handleChat(request, env) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${env.OPENROUTER_API_KEY || env.AI_API_KEY}`,
         'HTTP-Referer': env.SITE_URL || 'https://nyxia.top',
-        'X-Title': 'NyXia — Portail Léna · Découvrir son don'
+        'X-Title': 'NyXia — Portail Alex · Devenir Écrivain'
       },
       body: JSON.stringify({
         model: usedModel,
@@ -3831,7 +3615,7 @@ async function handleChat(request, env) {
   content = sanitizeApprovedMediaMarkers(content, 'PHOTO', approvedLivingImageUrls, 3);
   if (!content) content = 'Petite interruption... réessaies dans un instant 💜';
 
-  // Sauvegarde discrète de la progression de Formation Vivante (Léna) après une action réelle de la personne.
+  // Sauvegarde discrète de la progression de Formation Vivante (Alex) après une action réelle de la personne.
   if (formationSave && session && session.email) {
     try {
       await setFormationProgress(env, session.email, formationSave.formationId, {
@@ -3950,7 +3734,7 @@ Réponds en français (sauf demande contraire). Sois clair, structuré et utile.
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + apiKey,
           'HTTP-Referer': env.SITE_URL || 'https://nyxia.top',
-          'X-Title': 'NyXia — Portail Léna · Découvrir ces dons'
+          'X-Title': 'NyXia — Portail Alex · Devenir Écrivain'
         },
         body: JSON.stringify({
           model: mId,
@@ -4546,8 +4330,8 @@ async function handleMediaFile(request, env, url) {
 }
 
 // ───────────── VOIX — liste IMMUABLE (sauf demande explicite) ─────────────
-// NyXia, Diane, Léna, Sophia, Cassandre, Aletheia, Céleste  → ElevenLabs exclusivement.
-// Éric, Kael, et Séléna → OpenAI TTS tant qu'aucun identifiant
+// NyXia, Diane, Alex et ses six agentes → ElevenLabs exclusivement.
+// Éric, Kael, Léna et Séléna → OpenAI TTS tant qu'aucun identifiant
 // ElevenLabs ne leur est explicitement attribué.
 //
 // ElevenLabs : header xi-api-key, model eleven_multilingual_v2,
@@ -4558,12 +4342,12 @@ const AGENT_ELEVENLABS_VOICE_ID_KEYS = {
   nyxia: 'ELEVENLABS_NYXIA_VOICE_ID',
   diane: 'ELEVENLABS_DIANE_VOICE_ID',
   alex: 'ELEVENLABS_ALEX_VOICE_ID',
-  lena: 'ELEVENLABS_LENA_VOICE_ID',
-  sophia: 'ELEVENLABS_SOPHIA_VOICE_ID',
-  aletheia: 'ELEVENLABS_ALETHEIA_VOICE_ID',
-  cassandre: 'ELEVENLABS_CASSANDRE_VOICE_ID',
-  celeste: 'ELEVENLABS_CELESTE_VOICE_ID',
-  
+  aimee: 'ELEVENLABS_AIMEE_VOICE_ID',
+  abime: 'ELEVENLABS_ABIME_VOICE_ID',
+  alibi: 'ELEVENLABS_ALIBI_VOICE_ID',
+  constance: 'ELEVENLABS_CONSTANCE_VOICE_ID',
+  fripouille: 'ELEVENLABS_FRIPOUILLE_VOICE_ID',
+  melusine: 'ELEVENLABS_MELUSINE_VOICE_ID'
 };
 
 // Defaults si le secret Cloudflare n'est pas encore défini
@@ -4571,17 +4355,12 @@ const ELEVENLABS_VOICE_ID_DEFAULTS = {
   nyxia: '4RsGOijU4NDnmihod21E',
   diane: 'HpPsEmBPs9okadyROxr6',
   alex: '0Z7Lo7cYVyjM6WL0AP0n',
-  lena: 'aTxZrSrp47xsP6Ot4Kgd',
   aimee: 'UJCi4DDncuo0VJDSIegj',
   abime: 'fNmw8sukfGuvWVOp33Ge',
   alibi: 'K7gx0ylJdff0yjM2uVQS',
   constance: 'u5l0VNCfzO5oqrKTuA1e',
   fripouille: 'piI8Kku0DcvcL6TTSeQt',
-  melusine: 'iB0Pwf5VYt7UDBrGrMqH',
-  sophia: 'WQKwBV2Uzw1gSGr69N8I',
-  aletheia: 'taOhVGnnfgm0gEJnfB0f',
-  cassandre: 'YxrwjAKoUKULGd0g8K9Y',
-  celeste: '7VoxpuBC4ZIcnW14yi9m'
+  melusine: 'iB0Pwf5VYt7UDBrGrMqH'
 };
 
 // HeyGen en réserve uniquement (non utilisé si ElevenLabs répond)
@@ -4592,16 +4371,10 @@ const AGENT_VOICE_ID_KEYS = {
 
 // OpenAI TTS — mapping figé
 const OPENAI_VOICE_MAP = {
-  eric:      'echo',
-  kael:      'onyx',
-  selena:    'shimmer',
-  sophia:    'nova',
-  aletheia:  'sage',
-  cassandre: 'shimmer',
-  celeste:   'nova',
-  lena:      'nova',
-  diane:     'nova',
-  nyxia:     'shimmer'
+  eric:   'echo',
+  kael:   'onyx',
+  lena:   'nova',
+  selena: 'shimmer'
 };
 
 async function sha256Hex(str) {
@@ -5000,10 +4773,7 @@ async function handleIngestBook(request, env) {
 }
 
 async function handleTTSNyxia(request, env) {
-  const body = await request.json();
-  const token = body.token;
-  const text = body.text;
-  const agent = String(body.agent || 'nyxia').trim().toLowerCase();
+  const { token, text, agent } = await request.json();
   const session = await getSessionOrNull(token, env);
   if (!session) return json({ error: 'Session expirée.' }, 401);
   if (!text) return json({ error: 'Texte requis.' }, 400);
@@ -5041,16 +4811,16 @@ async function handleTTSNyxia(request, env) {
 
     if (!resp.ok) {
       const errText = await resp.text();
-      console.log('ElevenLabs fail agent=' + agent + ' status=' + resp.status + ' ' + errText.slice(0, 200));
-      // Ne bloque pas : on bascule sur HeyGen / OpenAI
-    } else {
-      const audioBuf = await resp.arrayBuffer();
-      await env.CASHFLOW_KV.put(cacheKey, audioBuf, { expirationTtl: 60 * 60 * 24 * 30 });
-      return json({
-        success: true,
-        proxyUrl: '/api/tts/cached-audio?key=' + encodeURIComponent(cacheKey) + '&token=' + encodeURIComponent(token)
-      });
+      return json({ error: 'Erreur ElevenLabs (' + resp.status + ') : ' + errText.slice(0, 300) }, 502);
     }
+
+    const audioBuf = await resp.arrayBuffer();
+    await env.CASHFLOW_KV.put(cacheKey, audioBuf, { expirationTtl: 60 * 60 * 24 * 30 });
+
+    return json({
+      success: true,
+      proxyUrl: '/api/tts/cached-audio?key=' + encodeURIComponent(cacheKey) + '&token=' + encodeURIComponent(token)
+    });
   }
 
   const voiceIdKey = AGENT_VOICE_ID_KEYS[agent];
