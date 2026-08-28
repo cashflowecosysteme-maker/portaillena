@@ -1651,7 +1651,7 @@ function formationBlocToPromptLines(bloc, idx, prenom) {
   const n = idx + 1;
   const P = (s) => applyPrenom(s, prenom);
   if (t === 'texte') return `BLOC ${n} — TEXTE\n${P(bloc.contenu || '')}`;
-  if (t === 'image') return `BLOC ${n} — IMAGE\n${bloc.legende ? 'Légende : ' + bloc.legende + '\n' : ''}ADRESSE IMAGE APPROUVÉE : ${bloc.url || ''}`;
+  if (t === 'image') return `BLOC ${n} — PHOTO DE LA FORMATION (affiche l'URL, NE GÉNÈRE PAS d'autre image)\n${bloc.legende ? 'Légende : ' + bloc.legende + '\n' : ''}Tu dois recopier EXACTEMENT ceci, sans changer l'adresse : [PHOTO: ${bloc.url || ''}]`;
   if (t === 'audio') return `BLOC ${n} — AUDIO MP3\n${bloc.titre ? 'Titre : ' + bloc.titre + '\n' : ''}${bloc.intro ? 'Intro suggérée : ' + bloc.intro + '\n' : ''}ADRESSE AUDIO APPROUVÉE : ${bloc.url || ''}`;
   if (t === 'video' || t === 'vidéo') return `BLOC ${n} — VIDÉO\n${bloc.titre ? 'Titre : ' + bloc.titre + '\n' : ''}${bloc.intro ? 'Intro suggérée : ' + bloc.intro + '\n' : ''}ADRESSE VIDÉO APPROUVÉE : ${bloc.url || ''}`;
   if (t === 'exercice') return `BLOC ${n} — EXERCICE\n${bloc.objectif ? 'Objectif : ' + bloc.objectif + '\n' : ''}Consigne : ${bloc.consigne || bloc.contenu || ''}`;
@@ -1735,7 +1735,9 @@ function renderFormationBlocForChat(bloc, ctx) {
     if (isHttpsUrl(bloc.url)) parts.push('[VIDEO: ' + String(bloc.url).trim() + ']');
   } else if (type === 'image') {
     if (bloc.legende) parts.push(String(bloc.legende).trim());
-    if (isHttpsUrl(bloc.url)) parts.push('[IMAGE: ' + String(bloc.url).trim() + ']');
+    const imgUrl = String(bloc.url || bloc.lien || '').trim() || (String(bloc.contenu || '').match(/https?:\/\/[^\s\]]+/i) || [''])[0];
+    if (isHttpsUrl(imgUrl)) parts.push('[PHOTO: ' + imgUrl + ']');
+    else if (bloc.contenu) parts.push(String(bloc.contenu).trim());
   } else if (type === 'exercice') {
     if (bloc.objectif) parts.push('🎯 ' + String(bloc.objectif).trim());
     if (bloc.consigne) parts.push(String(bloc.consigne).trim());
