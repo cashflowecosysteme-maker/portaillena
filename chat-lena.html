@@ -99,7 +99,7 @@
       <span id="chat-header-avatar"><img src="/Lena.png" alt="Léna"></span>
       <div class="chat-header-info">
         <div class="chat-header-name" id="chat-header-name">Léna</div>
-        <div class="chat-header-sub" id="chat-header-sub">Consultation spirituelle & prompts</div>
+        <div class="chat-header-sub" id="chat-header-sub">Développement psychique, énergétique & spirituel</div>
       </div>
       <button type="button" class="btn-new-chat" id="btn-welcome-video" onclick="rejouerVideoAccueil()" title="Revoir la vidéo d'accueil">🎬 Vidéo</button>
       <button type="button" class="btn-new-chat" onclick="nouveauChat()" title="Effacer cette conversation">✨ Nouveau chat</button>
@@ -113,9 +113,9 @@
       </button>
     </div>
     <div class="suggestions" id="suggestions">
-      <button type="button" class="sug-chip" onclick="useSuggestion(this)">Prompt pour mieux structurer une réponse en consultation spirituelle</button>
-      <button type="button" class="sug-chip" onclick="useSuggestion(this)">Prompt pour un contenu spirituel éthique et rassurant</button>
-      <button type="button" class="sug-chip" onclick="useSuggestion(this)">Prompt pour une offre d'accompagnement spirituel claire</button>
+      <button type="button" class="sug-chip" onclick="useSuggestion(this)">✨ Découvrir mes facultés psychiques</button>
+      <button type="button" class="sug-chip" onclick="useSuggestion(this)">🔮 J’ai vécu une expérience, aide-moi à la comprendre</button>
+      <button type="button" class="sug-chip" onclick="useSuggestion(this)">🌙 Comment développer mes perceptions ?</button>
     </div>
 
     <div id="attach-bar" style="display:none;padding:6px 20px;background:rgba(123,92,255,0.08);border-top:1px solid rgba(123,92,255,0.1);align-items:center;gap:8px;flex-shrink:0;font-size:12px;color:var(--t3)">
@@ -145,8 +145,8 @@
   var ALPHA_INFO = {
     lena: {
       name: 'Léna',
-      sub: 'Consultation spirituelle & prompts',
-      greeting: '🔮 Allô…\n\nMoi c\\\'est Léna.\n\nJe t\\\'aide à **mieux répondre en consultation spirituelle** — avec des prompts pour structurer tes lectures, tes messages clients, tes contenus et tes offres.\n\nDis-moi ce dont tu as besoin…\n\n👉 Un prompt pour répondre à une question de consultation\n👉 Un prompt pour un script ou un post spirituel\n👉 Un prompt pour créer une offre de service\n\nÉcris ta demande. Je te renvoie un prompt clair et utilisable. ✦'
+      sub: 'Développement psychique, énergétique & spirituel',
+      greeting: '🔮 Allô {prenom}…\n\nMoi, c\'est Léna.\n\nJe suis là pour t\'accompagner dans l\'exploration de tes **facultés psychiques, énergétiques et spirituelles**.\n\nTu peux me parler de tes perceptions, de ton intuition, de tes expériences, de tes questionnements ou simplement me demander par où commencer.\n\nEt si tu veux aller plus loin, je serai aussi ta formatrice tout au long de ton parcours. ✨\n\nAlors {prenom}… qu\'aimerais-tu explorer avec moi aujourd\'hui ? 💜'
     }
   }
   var AGENT_IMAGES = { lena: '/Lena.png' }
