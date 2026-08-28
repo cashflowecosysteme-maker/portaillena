@@ -3478,7 +3478,7 @@ Tu restes cette personne d un bout à l autre. Quand tu as livré circonstance, 
     };
   } else if (roll < 0.28) {
     interrupt = {
-      name: 'Démon',
+      name: 'Ombre',
       text: [
         'Tais-toi. Ils n’auront rien.',
         'Il ment déjà. Laisse-le pourrir dans son silence.',
