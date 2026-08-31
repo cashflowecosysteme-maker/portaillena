@@ -219,6 +219,18 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
 .footer-sign{color:var(--text-muted);font-size:.82rem}
 .footer-sign b{color:var(--primary-light);font-weight:600}
 
+/* ─────────── FORMAT VIDÉO 9:16 ─────────── */
+.video-card .auteur-cover {
+  width: 160px;
+  height: 284px; /* Ratio 9:16 */
+  border-radius: 14px;
+}
+.video-card.large-video .auteur-cover {
+  width: 220px;
+  height: 391px; /* Ratio 9:16 plus grand pour le dernier témoignage */
+  border-radius: 16px;
+}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
@@ -335,11 +347,11 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
   </div>
 
   <div class="auteurs-grid">
-    <div class="auteur-card">
+    <div class="auteur-card video-card">
       <div class="auteur-cover"><img src="temoignage-video-1.png" alt="Témoignage Vidéo 1"></div>
       <h4>TÉMOIGNAGE VIDÉO 1</h4>
     </div>
-    <div class="auteur-card">
+    <div class="auteur-card video-card">
       <div class="auteur-cover"><img src="temoignage-video-2.png" alt="Témoignage Vidéo 2"></div>
       <h4>TÉMOIGNAGE VIDÉO 2</h4>
     </div>
@@ -549,11 +561,11 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
   </div>
 
   <div class="auteurs-grid">
-    <div class="auteur-card">
+    <div class="auteur-card video-card">
       <div class="auteur-cover"><img src="temoignage-video-3.png" alt="Témoignage Vidéo 3"></div>
       <h4>TÉMOIGNAGE VIDÉO 3</h4>
     </div>
-    <div class="auteur-card">
+    <div class="auteur-card video-card">
       <div class="auteur-cover"><img src="temoignage-video-4.png" alt="Témoignage Vidéo 4"></div>
       <h4>TÉMOIGNAGE VIDÉO 4</h4>
     </div>
@@ -661,8 +673,9 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
 <!-- ══════════ 20. 97K AUDIENCE ══════════ -->
 <section class="section-wrap">
   <div class="section-head">
-    <span class="kicker">Pratique</span>
-    <h2 class="display">UN TERRAIN DE PRATIQUE AVEC UNE AUDIENCE DE PLUS DE 97 000 PERSONNES</h2>
+    <span class="kicker">Apprendre, c’est bien.</span>
+    <h2 class="display">POUVOIR PRATIQUER, C’EST ENCORE MIEUX.</h2>
+    <h3>Un terrain de pratique avec une audience de plus de 97 000 personnes</h3>
   </div>
 
   <div class="img-frame large">
@@ -771,11 +784,11 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
   </div>
 
   <div class="auteurs-grid">
-    <div class="auteur-card">
+    <div class="auteur-card video-card">
       <div class="auteur-cover"><img src="temoignage-video-5.png" alt="Témoignage Vidéo 5"></div>
       <h4>TÉMOIGNAGE VIDÉO 5</h4>
     </div>
-    <div class="auteur-card">
+    <div class="auteur-card video-card">
       <div class="auteur-cover"><img src="temoignage-video-6.png" alt="Témoignage Vidéo 6"></div>
       <h4>TÉMOIGNAGE VIDÉO 6</h4>
     </div>
@@ -885,11 +898,11 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
   </div>
 
   <div class="auteurs-grid">
-    <div class="auteur-card">
+    <div class="auteur-card video-card">
       <div class="auteur-cover"><img src="temoignage-video-7.png" alt="Témoignage Vidéo 7"></div>
       <h4>TÉMOIGNAGE VIDÉO 7</h4>
     </div>
-    <div class="auteur-card">
+    <div class="auteur-card video-card">
       <div class="auteur-cover"><img src="temoignage-video-8.png" alt="Témoignage Vidéo 8"></div>
       <h4>TÉMOIGNAGE VIDÉO 8</h4>
     </div>
@@ -959,8 +972,11 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
     <h2 class="display">AVANT DE PARLER DE TOI</h2>
   </div>
 
-  <div class="img-frame large">
-    <img src="temoignage-video-9.png" alt="Témoignage Vidéo 9">
+  <div class="auteurs-grid" style="grid-template-columns: 1fr; max-width: 280px; margin: 40px auto;">
+    <div class="auteur-card video-card large-video">
+      <div class="auteur-cover"><img src="temoignage-video-9.png" alt="Témoignage Vidéo 9"></div>
+      <h4>TÉMOIGNAGE VIDÉO 9</h4>
+    </div>
   </div>
 </section>
 
