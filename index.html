@@ -120,6 +120,10 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
   background:rgba(244,200,66,.1);border:2px solid rgba(244,200,66,.5);color:var(--gold);
   font-size:clamp(1.3rem,3vw,1.7rem);font-weight:800;letter-spacing:1px;text-transform:uppercase;
   margin-bottom:28px;box-shadow:0 0 34px rgba(244,200,66,.28);animation:float-soft 5s ease-in-out infinite}
+.hero-points{list-style:none;max-width:600px;margin:6px auto 4px;text-align:left;display:inline-block}
+.hero-points li{position:relative;padding-left:30px;color:var(--text);font-size:1.08rem;line-height:1.75;margin-bottom:6px}
+.hero-points li::before{content:'✦';position:absolute;left:0;top:1px;color:var(--gold)}
+.hero-benefit{color:var(--gold);font-weight:600;font-size:1.05rem;max-width:640px;margin-left:auto;margin-right:auto}
 .hero h1{font-size:clamp(2.2rem,5.4vw,3.6rem);line-height:1.1;margin-bottom:20px;
   background:linear-gradient(135deg,#fff 26%,var(--primary-light));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -221,6 +225,8 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
 .diane-block{margin-top:30px;background:linear-gradient(135deg,rgba(123,92,255,.14),rgba(79,163,255,.06));border:1px solid rgba(123,92,255,.3);padding:30px;border-radius:var(--radius);text-align:center}
 .livres-3d{margin:34px auto 6px;max-width:520px}
 .livres-3d img{width:100%;height:auto;border-radius:12px;filter:drop-shadow(0 22px 44px rgba(0,0,0,.5));animation:float-soft 6s ease-in-out infinite}
+.section-img{max-width:460px;margin:30px auto 10px;text-align:center}
+.section-img img{width:100%;height:auto;border-radius:14px;filter:drop-shadow(0 20px 40px rgba(0,0,0,.45));animation:float-soft 6s ease-in-out infinite}
 
 /* ─────────── START CARDS (Tu peux commencer) ─────────── */
 .start-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:800px;margin:30px auto}
@@ -304,6 +310,24 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
   color: var(--primary-light);
   font-weight: 600;
 }
+.testi-quote{
+  text-align:center; margin-top:4px; font-size:.98rem; line-height:1.5;
+  color:var(--gold); font-weight:700; font-style:italic;
+}
+.testi-author{display:block; margin-top:10px; color:var(--primary-light); font-weight:700; font-style:normal; font-size:.95rem}
+.quote-hook{color:var(--gold); font-weight:700; font-style:normal; font-size:1.08rem; line-height:1.5; margin-bottom:12px}
+
+/* ── Rupture module optionnel (spirituel → business) ── */
+.module-optionnel{max-width:760px; margin:54px auto 6px; text-align:center; padding-top:42px;
+  border-top:1px solid rgba(244,200,66,.22); position:relative}
+.badge-optionnel{display:inline-block; padding:11px 28px; border-radius:50px;
+  background:rgba(52,211,153,.12); border:1px solid rgba(52,211,153,.45); color:var(--green);
+  font-weight:700; font-size:.92rem; letter-spacing:.6px; text-transform:uppercase; margin-bottom:16px;
+  box-shadow:0 0 20px rgba(52,211,153,.15)}
+.module-optionnel-note{color:var(--text-secondary); font-size:1.02rem; line-height:1.7; max-width:620px; margin:0 auto}
+.atelier-business{max-width:680px; margin-left:auto; margin-right:auto}
+.atelier-business .atelier-card{background:linear-gradient(180deg,rgba(52,211,153,.06),rgba(14,20,48,.35));
+  border-color:rgba(52,211,153,.22)}
 .testi-video.large-video {
   max-width: 380px;
 }
@@ -359,7 +383,7 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
         <svg viewBox="0 0 24 24"><path d="M16.6 5.8c-.9-.6-1.5-1.5-1.7-2.6h-2.7v11.2c0 1.3-1 2.3-2.3 2.3s-2.3-1-2.3-2.3 1-2.3 2.3-2.3c.3 0 .5 0 .7.1V9.5c-.2 0-.5-.1-.7-.1-3 0-5.4 2.4-5.4 5.4s2.4 5.4 5.4 5.4 5.4-2.4 5.4-5.4V9.4c1 .7 2.3 1.2 3.6 1.2V7.9c-.7 0-1.4-.2-2-.5z"/></svg>
       </a>
     </div>
-    <a class="btn-primary" href="#rdv">Portail Léna</a>
+    <a class="btn-primary" href="https://portaillena.nyxia.top/login">Portail Léna</a>
   </div>
 </header>
 
@@ -368,10 +392,15 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
   <span class="hero-eyebrow">✦ Portail Léna</span>
   <h1>Découvre enfin la faculté qui est déjà en toi.</h1>
   <h2>Sans te disperser. Sans devoir tout savoir avant de commencer.</h2>
-  <p class="hero-lead" style="max-width:800px"><b>Tu as cliqué ici parce que tu ressens quelque chose depuis longtemps : une intuition trop forte, des ressentis difficiles à expliquer, une attirance pour le Tarot, les nombres, le pendule, les runes ou les énergies. Tu n’as pas besoin d’arriver avec un métier déjà choisi. Tu as besoin d’un cadre pour découvrir ce qui te correspond, le développer pour vrai, et — seulement si tu le veux un jour — en faire une voie.</b></p>
-  <p class="hero-note">La prochaine étape n’est pas un achat à l’aveugle. C’est un appel de 20 à 30 minutes avec un membre de notre équipe.</p>
+  <p class="hero-lead" style="max-width:680px"><b>Tu ressens quelque chose de fort depuis longtemps — sans savoir si tu peux lui faire confiance, ni par où commencer.</b></p>
+  <ul class="hero-points">
+    <li>Une intuition trop forte pour être ignorée.</li>
+    <li>Une attirance pour le Tarot, les nombres, le pendule, les runes, les énergies.</li>
+    <li>L’envie de le développer pour vrai — et, un jour peut-être, d’en faire une voie.</li>
+  </ul>
+  <p class="hero-benefit hero-note">✦ Un échange bienveillant de 20 min pour cartographier tes ressentis et voir par où commencer — sans achat à l’aveugle.</p>
   <div class="hero-cta">
-    <span class="cta-glass-wrap"><a class="btn-glass" href="#rdv">Réserver mon appel de clarté</a></span>
+    <span class="cta-glass-wrap"><a class="btn-glass" href="https://www.publication-web.com/nyxia/rdvlena">Réserver mon appel de clarté</a></span>
   </div>
   <p class="hero-note" style="margin-top:20px; font-size: 0.9rem;">Sans paiement en ligne • 20–30 min avec un membre de l’équipe • 3 questions pour préparer l’échange • Aucune obligation d’acheter</p>
   
@@ -447,12 +476,19 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
 
   <div class="text-block">
     <div class="quote-card">
-      « Je ne savais même pas comment nommer ce que je ressentais. L’appel m’a rassurée : on n’a pas essayé de me vendre une identité. On m’a aidée à voir par où commencer. »
-      <span>— Témoignage reçu</span>
+      <p class="quote-hook">« J’ai enfin trouvé une méthode claire pour valider mes ressentis sans me perdre dans la théorie. »</p>
+      « J’avais besoin de comprendre ce qui m’arrivait sans tomber dans des discours perchés ou ésotériques. Le cadre m’a permis de tester mes ressentis de manière structurée et sans pression. Aujourd’hui, je sais exactement faire la différence entre mon analyse mentale et ma véritable intuition. »
+      <span class="testi-author">— Patrick, profil rationnel &amp; explorateur intuitif</span>
     </div>
     <div class="quote-card">
-      « Ce n’est pas une IA qui fait les lectures à ma place. C’est moi qui apprends. Et pour la première fois, je ne me sens plus ridicule de poser des questions à 23 h. »
-      <span>— Témoignage reçu</span>
+      <p class="quote-hook">« Je ne termine plus mes journées épuisée : ma sensibilité est devenue mon guide au lieu d’un fardeau. »</p>
+      « Je captais l’énergie et les tensions de tout le monde autour de moi, et je finissais mes journées vidée. Grâce aux ateliers et à l’accompagnement disponible au moment où mes doutes surgissaient, j’ai appris à poser un filtre protecteur sain. Je ne subis plus ma sensibilité, je la vis comme une vraie force. »
+      <span class="testi-author">— Josée, apprenante en reconnexion énergétique</span>
+    </div>
+    <div class="quote-card">
+      <p class="quote-hook">« Pour la première fois, j’interprète mes tirages avec assurance sans douter à chaque carte. »</p>
+      « J’avais plusieurs jeux de cartes et des livres empilés sur ma table de chevet sans jamais oser faire confiance à mes tirages. Poser mes questions en direct et débriefer mes lectures à 23 h m’a donné un déclic énorme. Je ne récite plus des définitions toutes faites, je lis les messages avec une fluidité totale. »
+      <span class="testi-author">— Samantha, passionnée d’arts divinatoires</span>
     </div>
   </div>
 
@@ -549,6 +585,15 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
       <span class="role">Mancies & Rituels</span>
       <p>Mancies + la logique d’environ 350 rituels (pourquoi cette lune, cette couleur, cette intention).</p>
     </div>
+  </div>
+
+  <!-- ── Rupture visuelle : module business optionnel ── -->
+  <div class="module-optionnel">
+    <span class="badge-optionnel">✦ Optionnel — Ouverture de Portail</span>
+    <p class="module-optionnel-note">Cette partie est une <strong>porte, pas une obligation</strong>. Tu peux vivre tout ton parcours d’éveil sans jamais l’ouvrir. Elle existe seulement si, un jour, tu souhaites apprendre à partager ton don auprès des autres.</p>
+  </div>
+
+  <div class="atelier-grid atelier-business">
     <div class="atelier-card">
       <div class="atelier-pastille"><img src="eric-cashflow-01.png" alt="Éric"></div>
       <h4>ÉRIC — MONÉTISER</h4>
@@ -563,6 +608,10 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
     </div>
   </div>
 
+  <div class="section-img">
+    <img src="cercle-succes-02-equipe.png" alt="Le Cercle de Succès — l’équipe">
+  </div>
+
   <div class="text-block" style="margin-top:40px">
     <h3>CERCLE DE SUCCÈS</h3>
     <p>Lien personnalisé. 10 % sur tes références personnelles admissibles. 5 % sur les ventes admissibles de ton équipe, selon les modalités. Tu n’as pas à spammer tes amies. Ce serait l’inverse de ce qu’on enseigne.</p>
@@ -573,6 +622,10 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
 
 <!-- ══════════ 6. GARANTIE & ÉLIMINATION DU RISQUE ══════════ -->
 <section class="section-wrap">
+  <div class="section-img">
+    <img src="Garantie.png" alt="Garantie">
+  </div>
+
   <div class="section-head">
     <span class="kicker">Garantie</span>
     <h2 class="display">L’investissement se décide ensemble. Pas contre toi.</h2>
@@ -600,7 +653,7 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
   </div>
 
   <div class="hero-cta" style="margin-top:30px">
-    <span class="cta-glass-wrap"><a class="btn-glass" href="#rdv">Réserver mon appel de clarté</a></span>
+    <span class="cta-glass-wrap"><a class="btn-glass" href="https://www.publication-web.com/nyxia/rdvlena">Réserver mon appel de clarté</a></span>
   </div>
   <p class="hero-note" style="margin-top:20px; font-size: 0.9rem;">Sans paiement en ligne • 20–30 min • Quelques questions pour préparer l’échange • Tu restes libre à la fin de l’appel</p>
 
@@ -642,6 +695,18 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
         <p>Ce n’est pas un prérequis. Le portail est conçu pour commencer avant la spécialisation.</p>
       </div>
     </details>
+    <details class="faq-item">
+      <summary>Combien de temps dois-je y consacrer par semaine ?</summary>
+      <div class="faq-content">
+        <p>Le rythme t’appartient. Le portail est accessible 24/7 : tu avances quand ça te convient, à ton rythme, sans horaire imposé. Certaines y passent 20 minutes ici et là, d’autres des soirées entières. Rien ne se périme, tu peux mettre en pause et reprendre quand tu veux.</p>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary>Faut-il être à l’aise avec la technologie ou les outils d’IA ?</summary>
+      <div class="faq-content">
+        <p>Non. L’interface est pensée pour être simple et intuitive : tu écris comme tu parlerais à une personne, et l’accompagnement se fait pas à pas. Aucune compétence technique n’est demandée — si tu sais envoyer un message, tu sais utiliser le portail.</p>
+      </div>
+    </details>
   </div>
 </section>
 
@@ -654,7 +719,7 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
     </div>
     
     <div class="cercle-cta">
-      <span class="cta-gold-wrap"><a class="btn-gold-xl" href="#">Réserver mon appel de clarté</a></span>
+      <span class="cta-gold-wrap"><a class="btn-gold-xl" href="https://www.publication-web.com/nyxia/rdvlena">Réserver mon appel de clarté</a></span>
     </div>
   </div>
 </section>
