@@ -381,6 +381,9 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
   gap: 40px;
   justify-content: center;
 }
+.split-layout.reverse {
+  flex-direction: row-reverse;
+}
 .split-layout .img-frame {
   flex: 1 1 300px;
   margin: 20px auto;
@@ -390,7 +393,8 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
   margin: 0 auto;
 }
 @media (max-width: 768px) {
-  .split-layout {
+  .split-layout,
+  .split-layout.reverse {
     flex-direction: column;
   }
 }
@@ -648,7 +652,7 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
 
 <!-- ══════════ ALETHEIA ══════════ -->
 <section class="section-wrap">
-  <div class="split-layout">
+  <div class="split-layout reverse">
     <div class="img-frame">
       <img src="aletheia.png" alt="Aletheia">
     </div>
@@ -684,7 +688,7 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
 
 <!-- ══════════ CÉLESTE ══════════ -->
 <section class="section-wrap">
-  <div class="split-layout">
+  <div class="split-layout reverse">
     <div class="img-frame">
       <img src="celeste.png" alt="Céleste">
     </div>
