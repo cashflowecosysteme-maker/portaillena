@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portail Léna — Découvrir, Développer, Monétiser | NyXia</title>
+<meta name="description" content="Découvre ce qui sommeille en toi. Développe-le. Apprends à en faire quelque chose. Une Formation Vivante dans le Portail Léna.">
+<link rel="icon" type="image/png" href="/FavIcon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg-deep:#060a18; --bg-card:#0e1430; --bg-card-hover:#141b3d;
+  --primary:#7B5CFF; --secondary:#5A6CFF; --primary-light:#a78bfa; --blue:#4FA3FF;
+  --primary-glow:rgba(123,92,255,.35); --gold:#F4C842; --green:#34d399;
+  --text:#f1f0ff; --text-secondary:#b9b3d6; --text-muted:#7c73a0;
+  --border:rgba(123,92,255,.18); --radius:18px; --radius-sm:11px;
+  --shadow-glow:0 16px 48px rgba(123,92,255,.16);
+  --transition:.3s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:Outfit,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-deep);color:var(--text);line-height:1.6;min-height:100vh;overflow-x:hidden}
+a{color:var(--primary-light);text-decoration:none;transition:color var(--transition)}
+a:hover{color:#fff}
+img,video{max-width:100%;display:block}
+button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit}
+:focus-visible{outline:2px solid var(--primary-light);outline-offset:3px;border-radius:6px}
+.display{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;letter-spacing:.3px}
+
+#starry-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.aura{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60% 40% at 80% 6%,rgba(123,92,255,.2),transparent 60%),
+    radial-gradient(50% 40% at 10% 24%,rgba(79,163,255,.12),transparent 60%),
+    radial-gradient(70% 50% at 50% 112%,rgba(244,200,66,.06),transparent 60%);
+}
+
+/* ─────────── HEADER ─────────── */
+.site-header{
+  position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px clamp(16px,4vw,34px);border-bottom:1px solid rgba(123,92,255,.1);
+  backdrop-filter:blur(14px);background:rgba(6,10,24,.62);
+}
+.brand{display:flex;align-items:center;gap:12px;color:#fff;font-weight:600}
+.brand img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid rgba(123,92,255,.45);box-shadow:0 0 22px rgba(123,92,255,.4)}
+.brand-name{display:flex;flex-direction:column;line-height:1.1}
+.brand-name b{font-size:1.05rem;font-weight:700}
+.brand-name span{font-size:.72rem;color:var(--text-muted);letter-spacing:.5px;text-transform:uppercase}
+.header-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.socials{display:flex;gap:6px}
+.social-btn{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  background:rgba(123,92,255,.1);border:1px solid var(--border);color:var(--text-secondary);transition:all var(--transition)}
+.social-btn:hover{color:#fff;border-color:var(--primary);background:rgba(123,92,255,.22);transform:translateY(-1px)}
+.social-btn svg{width:18px;height:18px;fill:currentColor}
+.btn-primary{padding:10px 22px;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--primary),var(--secondary));
+  color:#fff;font-size:.875rem;font-weight:600;white-space:nowrap;box-shadow:0 4px 16px var(--primary-glow);
+  transition:transform var(--transition),box-shadow var(--transition)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 26px var(--primary-glow);color:#fff}
+.btn-ghost{padding:10px 22px;border-radius:var(--radius-sm);white-space:nowrap;background:rgba(123,92,255,.1);
+  border:1px solid var(--border);color:var(--text);font-size:.875rem;font-weight:600;transition:all var(--transition)}
+.btn-ghost:hover{border-color:var(--primary);background:rgba(123,92,255,.2);color:#fff}
+
+/* ─────────── BOUTON GLASS (lueur + doux flottement) ─────────── */
+.cta-glass-wrap{display:inline-block;animation:float-soft 5s ease-in-out infinite}
+.btn-glass{
+  position:relative; z-index:1; display:inline-block;
+  padding:17px 42px; border-radius:50px;
+  font-family:'Outfit',sans-serif; font-size:1.05rem; font-weight:700; letter-spacing:.6px;
+  color:#fff; background:rgba(123,92,255,.10);
+  border:1px solid rgba(167,139,250,.5);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 8px 30px rgba(123,92,255,.25);
+  transition:transform .35s cubic-bezier(.4,0,.2,1), background .35s ease, box-shadow .35s ease, border-color .35s ease;
+}
+.btn-glass::before{
+  content:''; position:absolute; inset:-7px; border-radius:inherit; z-index:-1;
+  background:linear-gradient(135deg,var(--primary),var(--blue));
+  filter:blur(24px); opacity:.55;
+  animation:glow-pulse 4s ease-in-out infinite;
+}
+.btn-glass:hover{
+  transform:translateY(-3px); color:#fff;
+  background:rgba(123,92,255,.20); border-color:rgba(167,139,250,.85);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 14px 42px rgba(123,92,255,.45);
+}
+
+/* ─────────── BOUTON OR XL (bordure or + glow or) ─────────── */
+.cta-gold-wrap{display:inline-block;animation:float-soft 5s ease-in-out infinite}
+.btn-gold-xl{
+  position:relative; z-index:1; display:inline-block;
+  padding:22px 60px; border-radius:50px;
+  font-family:'Outfit',sans-serif; font-size:clamp(1.25rem,3vw,1.7rem);
+  font-weight:800; letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--gold); background:rgba(244,200,66,.06);
+  border:2px solid var(--gold);
+  box-shadow:0 0 30px rgba(244,200,66,.35), inset 0 0 20px rgba(244,200,66,.10);
+  transition:transform .35s cubic-bezier(.4,0,.2,1), background .35s ease, box-shadow .35s ease, color .35s ease;
+}
+.btn-gold-xl::before{
+  content:''; position:absolute; inset:-12px; border-radius:inherit; z-index:-1;
+  background:radial-gradient(circle, rgba(244,200,66,.6), transparent 70%);
+  filter:blur(26px); opacity:.7;
+  animation:glow-pulse 3.5s ease-in-out infinite;
+}
+.btn-gold-xl:hover{
+  transform:translateY(-3px) scale(1.03); color:#fff;
+  background:rgba(244,200,66,.16);
+  box-shadow:0 0 55px rgba(244,200,66,.6), inset 0 0 26px rgba(244,200,66,.22);
+}
+@media(max-width:560px){.btn-gold-xl{padding:18px 36px;letter-spacing:1px}}
+
+@media(max-width:560px){.socials{display:none}}
+
+/* ─────────── HERO ─────────── */
+.hero{position:relative;z-index:1;max-width:1120px;margin:0 auto;
+  padding:clamp(44px,7vw,84px) clamp(20px,4vw,28px) 30px;text-align:center}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;padding:12px 28px;border-radius:50px;
+  background:rgba(244,200,66,.1);border:1px solid rgba(244,200,66,.35);color:var(--gold);
+  font-size:1.1rem;font-weight:600;letter-spacing:.5px;margin-bottom:24px;
+  box-shadow:0 0 22px rgba(244,200,66,.18)}
+.hero h1{font-size:clamp(2.2rem,5.4vw,3.6rem);line-height:1.1;margin-bottom:20px;
+  background:linear-gradient(135deg,#fff 26%,var(--primary-light));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero h2{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,4vw,2.6rem);color:var(--gold);margin-bottom:12px}
+.hero-lead{color:var(--text-secondary);font-size:1.12rem;max-width:640px;margin:0 auto 14px}
+.hero-lead b{color:#fff;font-weight:600}
+.hero-note{color:var(--text-muted);font-size:.98rem;font-style:italic;max-width:560px;margin:0 auto 28px}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+
+/* ─────────── GLOBAL LAYOUTS ─────────── */
+.section-wrap{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:clamp(30px,5vw,52px) clamp(20px,4vw,28px)}
+.section-head{text-align:center;margin-bottom:34px}
+
+.section-head .kicker{
+  display:block;
+  color:var(--gold);
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(2.2rem, 4.5vw, 3.2rem); 
+  font-weight:700;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  margin-bottom:16px;
+  text-shadow:0 0 20px rgba(244,200,66,0.4);
+  line-height:1.1;
+}
+
+.section-head h2{font-size:clamp(1.8rem, 3.2vw, 2.4rem); color:var(--text); margin-bottom:8px; font-weight:600;}
+.section-head h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--primary-light);margin-top:10px}
+.section-head p{color:var(--text-muted);font-size:.98rem;max-width:560px;margin:0 auto}
+.text-block{max-width:700px;margin:0 auto;text-align:center;color:var(--text-secondary);}
+.text-block p{margin-bottom:1rem;}
+.text-block h3{font-family:'Cormorant Garamond',Georgia,serif;color:var(--text);font-size:1.8rem;margin:1.5rem 0 0.5rem;}
+.text-block h2{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,4vw,2.5rem);color:#fff;margin:1.5rem 0 0.5rem;}
+.text-block strong{color:#fff;font-weight:600;}
+
+/* ─────────── IMAGE GLOW & FLOAT ─────────── */
+.img-frame{position:relative;max-width:700px;margin:40px auto;padding:10px;border-radius:var(--radius);border:1px solid rgba(123,92,255,.2);background:rgba(14,20,48,.4)}
+.img-frame::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100%;height:100%;max-width:500px;max-height:500px;background:radial-gradient(circle,var(--primary-glow),transparent 70%);z-index:-1;filter:blur(30px);opacity:0.6;pointer-events:none;animation:glow-pulse 4s ease-in-out infinite}
+.img-frame img{width:100%;height:auto;border-radius:14px;animation:float-soft 6s ease-in-out infinite;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+.img-frame.large{max-width:800px}
+@keyframes float-soft{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes glow-pulse{0%,100%{opacity:0.4}50%{opacity:0.8}}
+
+.split-layout{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;margin:40px 0;}
+@media(max-width:760px){.split-layout{grid-template-columns:1fr}}
+
+/* ─────────── PARCOURS LIST ─────────── */
+.parcours-list{text-align:left;max-width:700px;margin:30px auto;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:680px){.parcours-list{grid-template-columns:1fr}}
+.parcours-item{padding-left:20px;border-left:2px solid rgba(123,92,255,.3)}
+.parcours-item h4{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--gold);margin-bottom:4px}
+.parcours-item p{font-size:.9rem;color:var(--text-secondary)}
+
+/* ─────────── CHAT BULLES ─────────── */
+.chat-container{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:20px 0;display:flex;flex-direction:column;gap:16px}
+.chat-bubble{padding:14px 20px;border-radius:16px;max-width:85%;font-size:.95rem;line-height:1.5}
+.chat-writer{background:rgba(79,163,255,.1);border:1px solid rgba(79,163,255,.3);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-alex{background:rgba(244,200,66,.1);border:1px solid rgba(244,200,66,.3);align-self:flex-end;border-bottom-right-radius:4px;color:#F4C842}
+.chat-author{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:block}
+
+/* ─────────── FEATURES BADGES ─────────── */
+.features-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:24px 0}
+.feature-badge{background:rgba(123,92,255,.1);border:1px solid rgba(123,92,255,.3);color:var(--primary-light);padding:8px 16px;border-radius:50px;font-size:.85rem;font-weight:600}
+.feature-badge.gold{color:var(--gold);border-color:rgba(244,200,66,.3);background:rgba(244,200,66,.1)}
+
+/* ─────────── ATELIER GRID & PASTILLES ─────────── */
+.atelier-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:30px}
+.atelier-card{background:linear-gradient(180deg,rgba(14,20,48,.7),rgba(14,20,48,.35));border:1px solid var(--border);border-radius:var(--radius);padding:24px;text-align:center;transition:all var(--transition)}
+.atelier-card:hover{border-color:rgba(123,92,255,.4);transform:translateY(-3px);box-shadow:var(--shadow-glow)}
+
+.atelier-pastille{width:100px;height:100px;border-radius:50%;margin:0 auto 16px;overflow:hidden;display:flex;align-items:center;justify-content:center;border:2px solid rgba(123,92,255,.45);background:rgba(15,28,63,.8);box-shadow:0 0 30px rgba(123,92,255,.4);position:relative}
+.atelier-pastille img{width:100%;height:100%;object-fit:cover}
+.atelier-pastille::after{content:'';position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 20px rgba(123,92,255,.2);pointer-events:none}
+
+.atelier-card h4{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:#fff;margin-bottom:4px}
+.atelier-card .role{color:var(--gold);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:block}
+.atelier-card p{font-size:.9rem;color:var(--text-secondary)}
+
+/* ─────────── TEMOIGNAGES / AUTEURS & COUVERTURES ─────────── */
+.auteurs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px;margin-top:34px;align-items:start;justify-items:center}
+.auteur-card{width:100%;background:rgba(14,20,48,.7);border:1px solid var(--border);border-radius:var(--radius);padding:22px 20px;text-align:center;transition:all var(--transition);display:flex;flex-direction:column;align-items:center}
+.auteur-card:hover{border-color:rgba(244,200,66,.4);box-shadow:0 0 25px rgba(244,200,66,.15)}
+
+/* Cover générique (fallback) */
+.auteur-cover{
+  width:100%; margin:0 auto 18px; border-radius:14px; overflow:hidden;
+  border:2px solid rgba(123,92,255,.4); background:rgba(15,28,63,.8);
+  box-shadow:0 0 25px rgba(123,92,255,.35); position:relative;
+}
+.auteur-cover img{width:100%; height:auto; display:block}
+.auteur-cover video{width:100%; height:100%; object-fit:cover; background:#000; display:block;}
+
+/* CAPTURES FACEBOOK (photo) : afficher l'image ENTIÈRE et LISIBLE, jamais rognée */
+.auteur-card:not(.video-card) .auteur-cover{
+  max-width:420px; height:auto; border-radius:14px;
+}
+.auteur-card:not(.video-card) .auteur-cover img{
+  width:100%; height:auto; object-fit:contain;
+}
+
+.auteur-card h4{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--primary-light);margin-bottom:4px}
+.auteur-card h5{font-size:1rem;color:var(--gold);margin-bottom:12px;font-weight:600}
+.auteur-card p{font-size:.9rem;color:var(--text-secondary)}
+
+/* ─────────── BANDEAU LIVRES 3D ─────────── */
+.books-banner{
+  width:100%; max-width:1100px; margin:50px auto; overflow:hidden; padding:20px 0; position:relative;
+  -webkit-mask-image:linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  mask-image:linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+.books-track{
+  display:flex; gap:40px; width:max-content; 
+  animation:scroll-left 25s linear infinite;
+}
+.book-item{
+  width:160px; height:240px; border-radius:6px; overflow:hidden; border:1px solid rgba(123,92,255,.3); background:#0e1430;
+  box-shadow:0 15px 40px rgba(0,0,0,0.5), 0 0 20px var(--primary-glow);
+  transform:perspective(1000px) rotateY(-15deg); 
+  transition:transform 0.3s ease;
+}
+.book-item:hover{ animation-play-state:paused; transform:perspective(1000px) rotateY(0deg) scale(1.05); }
+.book-item img{width:100%; height:100%; object-fit:cover}
+@keyframes scroll-left { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+.diane-block{margin-top:30px;background:linear-gradient(135deg,rgba(123,92,255,.14),rgba(79,163,255,.06));border:1px solid rgba(123,92,255,.3);padding:30px;border-radius:var(--radius);text-align:center}
+
+/* ─────────── START CARDS (Tu peux commencer) ─────────── */
+.start-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:800px;margin:30px auto}
+.start-card{background:rgba(14,20,48,.6);border-left:3px solid var(--gold);padding:18px 22px;border-radius:0 12px 12px 0;color:var(--text);font-weight:500;transition:transform var(--transition)}
+.start-card:hover{transform:translateX(5px)}
+
+/* ─────────── FAQ ACCORDION ─────────── */
+.faq-container{max-width:800px;margin:30px auto}
+.faq-item{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:12px;overflow:hidden}
+.faq-item summary{padding:18px 24px;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--text);font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:'+';font-size:1.5rem;color:var(--primary-light);transition:transform var(--transition)}
+.faq-item[open] summary::after{transform:rotate(45deg)}
+.faq-content{padding:0 24px 18px;color:var(--text-secondary);font-size:.95rem;line-height:1.6}
+
+/* ─────────── CERCLE (invitation) ─────────── */
+.cercle{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:clamp(28px,5vw,52px) clamp(20px,4vw,28px) 60px}
+.cercle-inner{text-align:center;background:linear-gradient(135deg,rgba(123,92,255,.14),rgba(79,163,255,.06));
+  border:1px solid rgba(123,92,255,.3);border-radius:26px;padding:clamp(30px,5vw,52px)}
+.cercle-inner .kicker{color:var(--primary-light);font-size:.9rem;font-weight:600;margin-bottom:12px; display:block; text-transform:uppercase; letter-spacing:1px;}
+.cercle-inner h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:clamp(1.9rem,3.8vw,2.7rem);color:#fff;line-height:1.15;margin-bottom:16px}
+.cercle-inner p{color:var(--text-secondary);font-size:1.02rem;line-height:1.65;max-width:620px;margin:0 auto 24px}
+.cercle-cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+
+/* ─────────── FOOTER ─────────── */
+.footer{position:relative;z-index:1;text-align:center;padding:34px 20px 46px;border-top:1px solid rgba(123,92,255,.1)}
+.footer-socials{display:flex;gap:8px;justify-content:center;margin-bottom:18px}
+.footer-links{display:flex;flex-wrap:wrap;gap:8px 22px;justify-content:center;margin-bottom:16px}
+.footer-links a{color:var(--text-muted);font-size:.85rem}
+.footer-links a:hover{color:var(--primary-light)}
+.footer-sign{color:var(--text-muted);font-size:.82rem}
+.footer-sign b{color:var(--primary-light);font-weight:600}
+
+/* ─────────── FORMAT VIDÉO 9:16 ─────────── */
+.video-card .auteur-cover {
+  width: 100%;
+  max-width: 270px;
+  aspect-ratio: 9 / 16;
+  height: auto;
+  border-radius: 16px;
+  animation: float-soft 6s ease-in-out infinite;
+}
+.video-card.large-video .auteur-cover {
+  max-width: 330px;
+  aspect-ratio: 9 / 16;
+  height: auto;
+  border-radius: 18px;
+}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="starry-canvas"></canvas>
+<div class="aura"></div>
+
+<!-- ══════════ HEADER ══════════ -->
+<header class="site-header">
+  <a class="brand" href="/">
+    <img src="/NyXia.png" alt="NyXia">
+    <span class="brand-name"><b>NyXia</b><span>L'univers</span></span>
+  </a>
+  <div class="header-right">
+    <div class="socials">
+      <a class="social-btn" href="https://www.facebook.com/LeMiroirdeNyXia/" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.7l-.4 2.9h-2.3v7A10 10 0 0022 12z"/></svg>
+      </a>
+      <a class="social-btn" href="https://www.instagram.com/nyxia_ia/" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24"><path d="M12 2c2.7 0 3 0 4.1.1 1 .1 1.7.2 2.3.5.6.2 1.1.5 1.6 1s.8 1 1 1.6c.3.6.4 1.3.5 2.3.1 1.1.1 1.4.1 4.1s0 3-.1 4.1c-.1 1-.2 1.7-.5 2.3-.2.6-.5 1.1-1 1.6s-1 .8-1.6 1c-.6.3-1.3.4-2.3.5-1.1.1-1.4.1-4.1.1s-3 0-4.1-.1c-1-.1-1.7-.2-2.3-.5-.6-.2-1.1-.5-1.6-1s-.8-1-1-1.6c-.3-.6-.4-1.3-.5-2.3C2 15 2 14.7 2 12s0-3 .1-4.1c.1-1 .2-1.7.5-2.3.2-.6.5-1.1 1-1.6s1-.8 1.6-1c.6-.3 1.3-.4 2.3-.5C9 2 9.3 2 12 2zm0 1.8c-2.7 0-3 0-4 .1-.8 0-1.2.2-1.5.3-.4.1-.7.3-1 .6s-.5.6-.6 1c-.1.3-.3.7-.3 1.5-.1 1-.1 1.3-.1 4s0 3 .1 4c0 .8.2 1.2.3 1.5.1.4.3.7.6 1s.6.5 1 .6c.3.1.7.3 1.5.3 1 .1 1.3.1 4 .1s3 0 4-.1c.8 0 1.2-.2 1.5-.3.4-.1.7-.3 1-.6s.5-.6.6-1c.1-.3.3-.7.3-1.5.1-1 .1-1.3.1-4s0-3-.1-4c0-.8-.2-1.2-.3-1.5-.1-.4-.3-.7-.6-1s-.6-.5-1-.6c-.3-.1-.7-.3-1.5-.3-1-.1-1.3-.1-4-.1zm0 3.1a5.1 5.1 0 110 10.2 5.1 5.1 0 010-10.2zm0 1.8a3.3 3.3 0 100 6.6 3.3 3.3 0 000-6.6zm5.3-3.1a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/></svg>
+      </a>
+      <a class="social-btn" href="https://www.tiktok.com/@lemiroirdenyxia" target="_blank" rel="noopener" aria-label="TikTok">
+        <svg viewBox="0 0 24 24"><path d="M16.6 5.8c-.9-.6-1.5-1.5-1.7-2.6h-2.7v11.2c0 1.3-1 2.3-2.3 2.3s-2.3-1-2.3-2.3 1-2.3 2.3-2.3c.3 0 .5 0 .7.1V9.5c-.2 0-.5-.1-.7-.1-3 0-5.4 2.4-5.4 5.4s2.4 5.4 5.4 5.4 5.4-2.4 5.4-5.4V9.4c1 .7 2.3 1.2 3.6 1.2V7.9c-.7 0-1.4-.2-2-.5z"/></svg>
+      </a>
+    </div>
+    <a class="btn-primary" href="https://portaillena.nyxia.top">Portail Léna</a>
+  </div>
+</header>
+
+<!-- ══════════ 1. HERO ══════════ -->
+<section class="hero" id="top">
+  <span class="hero-eyebrow">✦ Portail Léna</span>
+  <h1>DÉCOUVRIR · DÉVELOPPER · MONÉTISER</h1>
+  <h2>Une Formation Vivante. Des formatrices spécialisées. Un parcours qui évolue avec toi.</h2>
+  <p class="hero-note">Le Quiz est la première étape avant la prise de rendez-vous avec un membre de notre équipe.</p>
+  <p class="hero-lead" style="max-width:800px"><b>Tu ressens peut-être depuis longtemps qu’il y a quelque chose en toi. Une intuition particulièrement forte. Des ressentis que tu as du mal à expliquer. Une attirance pour le Tarot, les nombres, le pendule, les runes, les énergies ou le monde spirituel. Peut-être même que certaines choses te semblent naturelles… sans que tu saches vraiment si tu peux leur faire confiance, comment les comprendre ou comment aller plus loin. Et si, au lieu de chercher encore des réponses un peu partout, tu pouvais entrer dans un environnement conçu pour t’aider à Découvrir, Développer et éventuellement Monétiser ce qui te correspond réellement? Bienvenue dans Portail Léna.</b></p>
+  <div class="hero-cta">
+    <span class="cta-glass-wrap"><a class="btn-glass" href="#rdv">FAIRE LE QUIZ ET DÉCOUVRIR MON PARCOURS</a></span>
+  </div>
+  
+  <div class="img-frame large" style="margin-top:50px">
+    <img src="lena-vente-01-hero.png" alt="Portail Léna">
+  </div>
+</section>
+
+<!-- ══════════ 2. Problème / envie d'écrire ══════════ -->
+<section class="section-wrap">
+  <div class="text-block">
+    <h2>TU N’AS PAS BESOIN DE SAVOIR QUEL EST TON DON POUR COMMENCER</h2>
+    <p>C’est justement là que beaucoup de personnes restent bloquées.</p>
+    <p>Elles ressentent quelque chose, mais se demandent :</p>
+    <h3>Est-ce mon intuition… ou mon imagination?</h3>
+    <p>Pourquoi est-ce que je ressens certaines personnes ou certains endroits aussi fortement?</p>
+    <p>Pourquoi suis-je autant attirée par certaines pratiques?</p>
+    <p>Est-ce que je pourrais apprendre le pendule? La médiumnité? La numérologie? Le Tarot? Les runes?</p>
+    <p>Est-ce qu’une faculté peut réellement se développer avec de la pratique?</p>
+    <h3>Le Portail Léna a été pensé pour commencer avant la spécialisation.</h3>
+    <p>Tu n’as pas besoin d’arriver en disant : « Je veux devenir numérologue. »</p>
+    <p>Tu peux simplement arriver avec : « Je veux découvrir ce qui me correspond. »</p>
+    <h2>Et c’est là que Léna entre dans ton parcours.</h2>
+  </div>
+</section>
+
+<!-- ══════════ 3. Rencontre Léna ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Rencontre Léna</span>
+    <h2 class="display">Ta guide à la découverte de tes facultés</h2>
+  </div>
+
+  <div class="split-layout">
+    <div class="img-frame">
+      <img src="lena-vente-02-lena.png" alt="Léna, ta guide">
+    </div>
+    <div class="text-block" style="text-align:left">
+      <p>Léna est au cœur du portail.</p>
+      <p>Elle n’est pas simplement là pour répondre à quelques questions.</p>
+      <p>Elle devient ta formatrice principale dans un parcours consacré à la découverte et au développement de différentes facultés psychiques, spirituelles et intuitives.</p>
+      <p>Sa matière de formation explore notamment les corps subtils, les chakras et l’aura, puis différentes facultés comme la clairvoyance, la clairaudience, l’intuition, la télépathie, la médiumnité, les ressentis énergétiques, le magnétisme et la radiesthésie.</p>
+      <p>La philosophie derrière cet apprentissage est importante : <strong>tu ne fais pas qu’apprendre des concepts. Tu expérimentes.</strong></p>
+      <p>La matière source elle-même présente une grande diversité de facultés et insiste sur leur développement par l’expérimentation et la pratique.</p>
+      <h3>C’est cette idée que nous amenons beaucoup plus loin grâce à la Formation Vivante.</h3>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 4. FORMATION VIVANTE ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Une formation qui ne s’arrête pas lorsque la leçon est terminée</span>
+    <h2 class="display">VOICI CE QUE NOUS APPELONS UNE FORMATION VIVANTE</h2>
+  </div>
+
+  <div class="img-frame large">
+    <img src="lena-vente-03-formation.png" alt="Formation Vivante / Léna + Interface">
+  </div>
+
+  <div class="text-block">
+    <p>Dans une formation traditionnelle, tu regardes une vidéo. Tu lis ton document. Tu fais ton exercice.</p>
+    <p>Et lorsque tu te poses une question à 22 h 43… Eh bien, tu écris ta question quelque part et tu espères t’en souvenir demain. 😉</p>
+    <h3>Avec une Formation Vivante, nous voulons créer une expérience différente.</h3>
+    <p>Tu avances dans ta formation à ton rythme. Tu apprends. Tu expérimentes. Tu observes.</p>
+    <p>Puis tu peux retrouver ton personnage dans son espace de conversation pour approfondir ce que tu es en train d’apprendre.</p>
+    <p><strong>La formation transmet la connaissance. Le personnage accompagne l’expérience.</strong></p>
+    <p>Et plus tu avances, plus tu peux commencer à comprendre ce qui t’attire réellement.</p>
+  </div>
+</section>
+
+<!-- ══════════ 5. TÉMOIGNAGES 1 ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Elles ont commencé elles aussi…</span>
+    <h2 class="display">ÉCOUTE CEUX ET CELLES QUI ONT DÉJÀ VÉCU LA FORMATION AVEC DIANE</h2>
+  </div>
+
+  <div class="auteurs-grid">
+    <div class="auteur-card video-card">
+      <div class="auteur-cover">
+        <video controls preload="metadata" playsinline>
+          <source src="https://d1yei2z3i6k35z.cloudfront.net/1357080/62cb155561c54_20220608_175454.mp4" type="video/mp4">
+          Ton navigateur ne supporte pas la lecture de vidéos.
+        </video>
+      </div>
+      <h4>TÉMOIGNAGE VIDÉO 1</h4>
+    </div>
+    <div class="auteur-card video-card">
+      <div class="auteur-cover">
+        <video controls preload="metadata" playsinline>
+          <source src="https://d1yei2z3i6k35z.cloudfront.net/1357080/62cb1818aa57c_JeanAlbertTemoignage.mp4" type="video/mp4">
+          Ton navigateur ne supporte pas la lecture de vidéos.
+        </video>
+      </div>
+      <h4>TÉMOIGNAGE VIDÉO 2</h4>
+    </div>
+    <div class="auteur-card">
+      <div class="auteur-cover"><img src="temoignage-fb-1.png" alt="Témoignage Facebook 1"></div>
+      <h4>CAPTURE TÉMOIGNAGE FACEBOOK 1</h4>
+    </div>
+    <div class="auteur-card">
+      <div class="auteur-cover"><img src="temoignage-fb-2.png" alt="Témoignage Facebook 2"></div>
+      <h4>CAPTURE TÉMOIGNAGE FACEBOOK 2</h4>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 6. D comme DÉCOUVRIR ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">D comme DÉCOUVRIR</span>
+    <h2 class="display">AVANT DE VOULOIR MAÎTRISER UNE DISCIPLINE, ENCORE FAUT-IL DÉCOUVRIR CE QUI RÉSONNE AVEC TOI.</h2>
+  </div>
+
+  <div class="text-block">
+    <p>C’est la première mission de Portail Léna.</p>
+    <p>Tu vas pouvoir explorer différents univers, mieux comprendre certaines perceptions et surtout expérimenter.</p>
+    <p>Parce qu’entre lire : « Voici ce qu’est l’intuition » et commencer à reconnaître comment toi, tu vis tes propres ressentis… il y a tout un monde.</p>
+    <h3>Le portail est justement là pour créer ce pont.</h3>
+  </div>
+</section>
+
+<!-- ══════════ 7. PENDULE ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Le pendule</span>
+    <h2 class="display">ET LE PENDULE? OUI, LUI AUSSI. 😉</h2>
+  </div>
+
+  <div class="split-layout">
+    <div class="img-frame">
+      <img src="lena-vente-04-pendule.png" alt="Pendule / Léna">
+    </div>
+    <div class="text-block" style="text-align:left">
+      <p>La radiesthésie fait partie des matières pouvant être explorées avec Léna.</p>
+      <p>La matière pédagogique aborde notamment le rôle du pendule et d’autres instruments radiesthésiques ainsi que l’importance du ressenti et de la neutralité dans cette pratique.</p>
+      <p>Tu peux donc découvrir progressivement cet univers au lieu de simplement acheter un pendule et de te demander ensuite :</p>
+      <h3>« Bon… maintenant, qu’est-ce que je fais avec ça? » 😂</h3>
+      <p>Et ce n’est qu’un exemple parmi les nombreuses directions que ton parcours peut prendre.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 8. D comme DÉVELOPPER ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">D comme DÉVELOPPER</span>
+    <h2 class="display">QUAND UNE VOIE T’APPELLE DAVANTAGE, UNE SPÉCIALISTE PEUT PRENDRE LE RELAIS.</h2>
+  </div>
+
+  <div class="img-frame large">
+    <img src="lena-vente-05-atelier.png" alt="Léna au centre + Sophia + Aletheia + Cassandre + Céleste">
+  </div>
+
+  <div class="text-block">
+    <p>Portail Léna n’a pas été conçu autour d’un personnage qui prétend tout enseigner.</p>
+    <h3>Nous avons plutôt créé une équipe de formatrices, chacune possédant son propre univers.</h3>
+  </div>
+</section>
+
+<!-- ══════════ 9. SOPHIA ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Sophia</span>
+    <h2 class="display">LA TISSEUSE DES NOMBRES</h2>
+  </div>
+
+  <div class="split-layout">
+    <div class="img-frame">
+      <img src="sophia.png" alt="Sophia">
+    </div>
+    <div class="text-block" style="text-align:left">
+      <p>Les nombres t’ont toujours fascinée? Sophia t’accompagne dans l’univers de la numérologie.</p>
+      <p>Son rôle n’est pas simplement de te donner une interprétation toute faite.</p>
+      <p>Elle est là pour t’aider à apprendre le langage des nombres, comprendre les calculs, les cycles et les différentes interprétations afin que tu développes progressivement tes propres connaissances.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 10. ALETHEIA ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Aletheia</span>
+    <h2 class="display">LA SCRIBE DES MURMURES RUNIQUES</h2>
+  </div>
+
+  <div class="split-layout">
+    <div class="img-frame">
+      <img src="aletheia.png" alt="Aletheia">
+    </div>
+    <div class="text-block" style="text-align:left">
+      <p>Avec Aletheia, tu entres dans l’univers des runes et du Futhark.</p>
+      <p>Tu peux apprendre leur symbolisme, leur langage et progressivement comprendre comment construire une lecture plutôt que simplement mémoriser une liste de significations.</p>
+      <h3>Les runes deviennent alors un langage à découvrir.</h3>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 11. CASSANDRE ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Cassandre</span>
+    <h2 class="display">LA VOIX DU REFLET</h2>
+  </div>
+
+  <div class="split-layout">
+    <div class="img-frame">
+      <img src="cassandre.png" alt="Cassandre">
+    </div>
+    <div class="text-block" style="text-align:left">
+      <p>Cassandre t’accompagne dans l’apprentissage du Tarot.</p>
+      <p>Mais apprendre le Tarot ne signifie pas seulement connaître la définition de chaque carte.</p>
+      <p>L’objectif est progressivement de comprendre les cartes ensemble, leurs interactions, leurs symboles et la manière dont une lecture peut devenir cohérente.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 12. CÉLESTE ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Céleste</span>
+    <h2 class="display">LA CARTOGRAPHE DES PRÉSAGES</h2>
+  </div>
+
+  <div class="split-layout">
+    <div class="img-frame">
+      <img src="celeste.png" alt="Céleste">
+    </div>
+    <div class="text-block" style="text-align:left">
+      <p>Et puis il y a Céleste… Son territoire est immense.</p>
+      <p>Céleste explore avec toi les arts divinatoires et les différentes mancies.</p>
+      <p>Tu peux découvrir des pratiques auxquelles tu n’aurais peut-être jamais pensé et comprendre leurs particularités avant de décider lesquelles tu souhaites approfondir.</p>
+      <h3>Mais Céleste possède également un autre trésor…</h3>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 13. RITUELS ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Rituels</span>
+    <h2 class="display">ENVIRON 350 RITUELS À EXPLORER</h2>
+  </div>
+
+  <div class="img-frame large">
+    <img src="lena-vente-06-rituels.png" alt="Céleste / Autel / Rituels">
+  </div>
+
+  <div class="text-block">
+    <p>Nous ne voulions surtout pas transformer cette collection en : « Prends cette bougie. Allume-la. Fais ceci. Terminé. »</p>
+    <p>Parce qu’un rituel possède une logique.</p>
+    <h3>Pourquoi cette lune? Pourquoi cette couleur de bougie? Pourquoi cet encens? Pourquoi ces éléments sur l’autel?</h3>
+    <p>Et surtout… Quelle est ton intention?</p>
+    <p>L’objectif est donc d’aller progressivement vers la compréhension du rituel, de ses correspondances et de sa construction.</p>
+    <h2>PAS SEULEMENT REPRODUIRE. COMPRENDRE.</h2>
+  </div>
+</section>
+
+<!-- ══════════ 14. ATELIER DE DÉVELOPPEMENT ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Atelier de développement</span>
+    <h2 class="display">TU N’APPRENDS PAS AUPRÈS D’UNE SEULE FORMATRICE</h2>
+  </div>
+
+  <div class="text-block">
+    <p>Léna peut t’aider à découvrir.</p>
+    <p>Sophia peut t’ouvrir le langage des nombres.</p>
+    <p>Aletheia celui des runes.</p>
+    <p>Cassandre celui du Tarot.</p>
+    <p>Céleste celui des mancies et des rituels.</p>
+    <h3>Et toi? Tu construis progressivement ton propre chemin.</h3>
+  </div>
+</section>
+
+<!-- ══════════ 15. IA OUTIL ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Outil pédagogique</span>
+    <h2 class="display">« MAIS EST-CE QU’UNE IA VA FAIRE LES CHOSES À MA PLACE? »</h2>
+  </div>
+
+  <div class="text-block">
+    <h3>Non.</h3>
+    <p>Et ce serait complètement contraire à l’objectif du Portail Léna.</p>
+    <p>Nous ne voulons pas que tu sortes d’ici en sachant seulement écrire : « Fais-moi une lecture de Tarot. »</p>
+    <h2>NOUS VOULONS QUE TOI, TU APPRENNES.</h2>
+    <p>L’intelligence du portail devient un outil pédagogique autour de ta formation.</p>
+    <p>Parce que le véritable actif que tu développes… c’est toi.</p>
+    <p>Tes connaissances. Ta compréhension. Ton expérience. Ta façon d’interpréter. Ta pratique.</p>
+    <h3>Et éventuellement, ta propre manière d’accompagner les autres.</h3>
+  </div>
+</section>
+
+<!-- ══════════ 16. TÉMOIGNAGES 2 ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Ils ont vécu l’expérience</span>
+    <h2 class="display">ÉCOUTE CEUX ET CELLES QUI ONT DÉJÀ VÉCU LA FORMATION</h2>
+  </div>
+
+  <div class="auteurs-grid">
+    <div class="auteur-card video-card">
+      <div class="auteur-cover">
+        <video controls preload="metadata" playsinline>
+          <source src="https://d1yei2z3i6k35z.cloudfront.net/1357080/628260c6a0ca3_Hlnetmoignagevnementgratuit.mp4">
+          Ton navigateur ne supporte pas la lecture de vidéos.
+        </video>
+      </div>
+      <h4>TÉMOIGNAGE VIDÉO 3</h4>
+    </div>
+    <div class="auteur-card video-card">
+      <div class="auteur-cover">
+        <video controls preload="metadata" playsinline>
+          <source src="https://d1yei2z3i6k35z.cloudfront.net/1357080/62cb17f82e01b_291238830_139981048681634_3984222231295063390_n.mp4" type="video/mp4">
+          Ton navigateur ne supporte pas la lecture de vidéos.
+        </video>
+      </div>
+      <h4>TÉMOIGNAGE VIDÉO 4</h4>
+    </div>
+    <div class="auteur-card">
+      <div class="auteur-cover"><img src="temoignage-fb-3.png" alt="Témoignage Facebook 3"></div>
+      <h4>CAPTURE TÉMOIGNAGE FACEBOOK 3</h4>
+    </div>
+    <div class="auteur-card">
+      <div class="auteur-cover"><img src="temoignage-fb-4.png" alt="Témoignage Facebook 4"></div>
+      <h4>CAPTURE TÉMOIGNAGE FACEBOOK 4</h4>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 17. MONÉTISER INTRO ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Et ensuite?</span>
+    <h2 class="display">C’EST ICI QUE LE M DE DDM PREND TOUT SON SENS.</h2>
+  </div>
+
+  <div class="text-block">
+    <p>Tu as DÉCOUVERT quelque chose.</p>
+    <p>Tu as commencé à le DÉVELOPPER.</p>
+    <p>Et peut-être qu’un jour une nouvelle pensée apparaît :</p>
+    <h3>« Et si je pouvais faire quelque chose avec ça? »</h3>
+    <p>Peut-être aimerais-tu proposer des consultations. Créer une offre d’accompagnement. Développer une présence sur les réseaux sociaux. Ou simplement apprendre comment transformer progressivement tes nouvelles connaissances en projet.</p>
+    <p>C’est exactement pour cette raison que le parcours ne s’arrête pas à Portail Léna.</p>
+  </div>
+</section>
+
+<!-- ══════════ 18. RENCONTRE ÉRIC ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">M comme MONÉTISER</span>
+    <h2 class="display">RENCONTRE ÉRIC ET PORTAIL CASHFLOW™</h2>
+  </div>
+
+  <div class="split-layout">
+    <div class="img-frame">
+      <img src="eric-cashflow-01.png" alt="Éric / Portail CashFlow">
+    </div>
+    <div class="text-block" style="text-align:left">
+      <p>Éric n’est pas là pour t’enseigner la spiritualité.</p>
+      <p>Il intervient lorsqu’une autre compétence devient nécessaire : apprendre à communiquer à l’ère numérique.</p>
+      <p>Parce qu’avoir une compétence ne signifie pas automatiquement savoir la présenter.</p>
+      <p>Et publier continuellement : « J’offre des consultations, écris-moi en privé » n’est pas une stratégie de communication. 😉</p>
+      <h3>Éric t’apprend une autre approche.</h3>
+      <p>Créer du contenu qui suscite des interactions. Ces interactions ouvrent des conversations. Ces conversations permettent de créer des relations. Les relations construisent la confiance. Et la confiance peut éventuellement ouvrir une opportunité lorsqu’une personne possède réellement un besoin auquel tu peux répondre.</p>
+    </div>
+  </div>
+
+  <div class="features-row">
+    <span class="feature-badge">PUBLICATION</span>
+    <span class="feature-badge">INTERACTION</span>
+    <span class="feature-badge">CONVERSATION</span>
+    <span class="feature-badge">RELATION</span>
+    <span class="feature-badge">CONFIANCE</span>
+    <span class="feature-badge">OPPORTUNITÉ</span>
+  </div>
+
+  <div class="text-block">
+    <span class="feature-badge gold" style="font-size:1.1rem; padding:12px 24px; margin-top:20px; display:inline-block;">C’EST ÇA, APPRENDRE À COMMUNIQUER À L’ÈRE NUMÉRIQUE.</span>
+  </div>
+</section>
+
+<!-- ══════════ 19. 3 LIVRES ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Une Formation Vivante</span>
+    <h2 class="display">BASÉE SUR TROIS LIVRES ÉCRITS PAR DIANE BOYER</h2>
+  </div>
+
+  <div class="img-frame large">
+    <img src="eric-livres-3d.png" alt="Les 3 livres en version papier">
+  </div>
+
+  <div class="text-block">
+    <p>Une partie de l’enseignement d’Éric s’appuie sur trois ouvrages écrits par Diane Boyer :</p>
+  </div>
+
+  <div class="auteurs-grid">
+    <div class="auteur-card">
+      <h4>LA PSYCHOLOGIE DU CLIC</h4>
+      <h5>Comprendre ce qui fait qu’une personne s’arrête</h5>
+      <p>Remarque, s’intéresse et décide d’interagir.</p>
+    </div>
+    <div class="auteur-card">
+      <h4>CASHFLOW NEUROGÉNÉRÉ</h4>
+      <h5>Comprendre comment l’IA et les mécanismes</h5>
+      <p>De communication peuvent être intégrés dans une stratégie de développement.</p>
+    </div>
+    <div class="auteur-card">
+      <h4>LA COMMUNICATION À L’ÈRE NUMÉRIQUE</h4>
+      <h5>Apprendre à communiquer dans un monde</h5>
+      <p>Où les relations commencent de plus en plus souvent derrière un écran.</p>
+    </div>
+  </div>
+
+  <div class="text-block">
+    <p><strong>Ces ouvrages sont également disponibles en version papier.</strong></p>
+  </div>
+</section>
+
+<!-- ══════════ 20. 97K AUDIENCE ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Apprendre, c’est bien.</span>
+    <h2 class="display">POUVOIR PRATIQUER, C’EST ENCORE MIEUX.</h2>
+    <h3>Un terrain de pratique avec une audience de plus de 97 000 personnes</h3>
+  </div>
+
+  <div class="img-frame large">
+    <img src="eric-97k-audience.png" alt="97K+ / Communautés / Conversations">
+  </div>
+
+  <div class="text-block">
+    <p>C’est l’une des forces particulières de Portail CashFlow.</p>
+    <p>Nous ne voulons pas t’apprendre comment créer des interactions pour ensuite te laisser seule devant une page où personne ne te connaît.</p>
+    <p>L’écosystème donne accès à un terrain permettant de mettre en pratique la communication numérique auprès d’une audience cumulée de plus de 97 000 personnes.</p>
+    <h3>Le but n’est pas d’aller leur lancer des liens à répétition. Bien au contraire.</h3>
+    <p>Tu apprends à communiquer. À publier. À observer les réactions. À participer aux conversations. À développer des relations. À reconnaître les besoins.</p>
+    <h2>PARCE QU’AVANT D’APPRENDRE À VENDRE… TU APPRENDS À PARLER AUX HUMAINS.</h2>
+  </div>
+</section>
+
+<!-- ══════════ 21. STUDIO PROMPT ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Studio Prompt</span>
+    <h2 class="display">BIENVENUE DANS PORTAIL STUDIO PROMPT</h2>
+  </div>
+
+  <div class="img-frame large">
+    <img src="studio-prompt-01.png" alt="Interface Studio Prompt">
+  </div>
+
+  <div class="text-block">
+    <p>Studio Prompt devient ton atelier de travail avec l’intelligence artificielle.</p>
+    <p>Parce qu’avoir accès à une IA extraordinaire ne sert pas à grand-chose si tu ne sais pas comment lui expliquer clairement ce dont tu as besoin.</p>
+    <h3>Studio Prompt t’aide à mieux structurer tes demandes.</h3>
+    <p>Et nous avons poussé le concept encore plus loin.</p>
+  </div>
+</section>
+
+<!-- ══════════ 22. PERSONNAGES DANS STUDIO PROMPT ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">L'écosystème</span>
+    <h2 class="display">RETOUVE LES PERSONNAGES DE L’ÉCOSYSTÈME DANS STUDIO PROMPT</h2>
+  </div>
+
+  <div class="img-frame large">
+    <img src="studio-prompt-02-personnages.png" alt="Personnages dans Studio Prompt">
+  </div>
+
+  <div class="text-block">
+    <p>Les personnages peuvent y intervenir dans leur domaine pour t’aider à construire des prompts adaptés à ton travail.</p>
+    <p>Par exemple, Léna pourrait t’aider à structurer un prompt pour :</p>
+    <p>préparer une réponse claire lors d’une consultation spirituelle;<br>créer un contenu spirituel éthique et rassurant;<br>structurer une offre d’accompagnement spirituel claire;<br>ou encore mieux organiser certaines communications liées à ton activité.</p>
+    <p>Tu ne demandes plus seulement à l’IA : « Écris-moi un post Facebook sur la spiritualité. »</p>
+    <h3>Tu apprends à lui donner le contexte, l’objectif et la structure nécessaires pour obtenir quelque chose de réellement utile.</h3>
+  </div>
+</section>
+
+<!-- ══════════ 23. MODÈLES IA ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Modèles IA</span>
+    <h2 class="display">PLUSIEURS MODÈLES IA. UN MÊME STUDIO.</h2>
+  </div>
+
+  <div class="img-frame large">
+    <img src="studio-prompt-03-ia.png" alt="Modèles IA disponibles">
+  </div>
+
+  <div class="features-row">
+    <span class="feature-badge">ChatGPT</span>
+    <span class="feature-badge">Claude</span>
+    <span class="feature-badge">Gemini</span>
+    <span class="feature-badge">Grok</span>
+    <span class="feature-badge">Z</span>
+  </div>
+
+  <div class="text-block">
+    <p>Et plusieurs autres modèles utiles au travail numérique.</p>
+    <p>Studio Prompt les rassemble pour te permettre de choisir et d’utiliser différents outils selon ce que tu souhaites accomplir.</p>
+    <p>Publications. Idées. Structure d’une offre. Communication avec un client. Réflexion. Prompts spécialisés.</p>
+    <h3>Tu disposes d’un véritable atelier IA plutôt que de dépendre d’un seul outil.</h3>
+  </div>
+</section>
+
+<!-- ══════════ 24. BIBLIOTHÈQUE MULTIMÉDIA ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Ressources</span>
+    <h2 class="display">IMAGES. VIDÉOS. SONS.</h2>
+  </div>
+
+  <div class="img-frame large">
+    <img src="studio-prompt-04-medias.png" alt="Bibliothèque multimédia">
+  </div>
+
+  <div class="text-block">
+    <p>Et parce qu’une publication ne se résume pas à du texte…</p>
+    <p>Studio Prompt comprend également une bibliothèque d’images, de vidéos et de sons pour t’aider à produire des contenus de meilleure qualité.</p>
+    <h3>Tu peux donc travailler ton message, puis disposer de ressources créatives pour lui donner vie.</h3>
+  </div>
+</section>
+
+<!-- ══════════ 25. TÉMOIGNAGES 3 ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Témoignages</span>
+    <h2 class="display">ÉCOUTE CE QU’ILS ONT À RACONTER</h2>
+  </div>
+
+  <div class="auteurs-grid">
+    <div class="auteur-card video-card">
+      <div class="auteur-cover">
+        <video controls preload="metadata" playsinline>
+          <source src="https://d1yei2z3i6k35z.cloudfront.net/1357080/62cb1d00a14b0_290961599_431767931947958_4121902180521074440_n.mp4" type="video/mp4">
+          Ton navigateur ne supporte pas la lecture de vidéos.
+        </video>
+      </div>
+      <h4>TÉMOIGNAGE VIDÉO 5</h4>
+    </div>
+    <div class="auteur-card video-card">
+      <div class="auteur-cover">
+        <video controls preload="metadata" playsinline>
+          <source src="https://d1yei2z3i6k35z.cloudfront.net/1357080/62cb1eec31363_290213141_727164705281773_6480580540931846116_n.mp4" type="video/mp4">
+          Ton navigateur ne supporte pas la lecture de vidéos.
+        </video>
+      </div>
+      <h4>TÉMOIGNAGE VIDÉO 6</h4>
+    </div>
+    <div class="auteur-card">
+      <div class="auteur-cover"><img src="temoignage-fb-5.png" alt="Témoignage Facebook 5"></div>
+      <h4>CAPTURE TÉMOIGNAGE FACEBOOK 5</h4>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 26. CERCLE DE SUCCÈS INTRO ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Cercle de Succès</span>
+    <h2 class="display">ET SI TU POUVAIS COMMENCER À GÉNÉRER DES REVENUS PENDANT QUE TU APPRENDS?</h2>
+  </div>
+
+  <div class="img-frame large">
+    <img src="cercle-succes-01.png" alt="Cercle de Succès">
+  </div>
+
+  <div class="text-block">
+    <p>Tu n’as pas nécessairement besoin d’attendre d’être devenue experte en Tarot, en numérologie ou dans une autre discipline avant de pouvoir mettre en pratique ce qu’Éric t’enseigne.</p>
+    <p>Pendant ton apprentissage avec CashFlow et Studio Prompt, un lien personnalisé avec une empreinte unique peut t’être attribué dans le cadre du programme.</p>
+    <p>Ce lien permet de relier à toi les recommandations admissibles que tu effectues dans l’écosystème NyXia.</p>
+    <h3>Et surtout : tu n’es pas limitée au Portail Léna.</h3>
+    <p>Une personne que tu rencontres pourrait avoir besoin d’un autre produit ou d’un autre portail de l’écosystème NyXia.</p>
+    <p>Ton apprentissage de la communication peut donc être mis en pratique à travers l’ensemble de l’écosystème.</p>
+  </div>
+</section>
+
+<!-- ══════════ 27. 10% COMMISSIONS ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">10 % sur tes références</span>
+    <h2 class="display">10 % SUR TES RÉFÉRENCES PERSONNELLES ADMISSIBLES</h2>
+  </div>
+
+  <div class="text-block">
+    <p>Lorsque quelqu’un découvre un produit grâce à ta recommandation personnelle et qu’une vente admissible est attribuée à ton lien selon les modalités du programme, tu peux recevoir : 10 % de commission.</p>
+    <p>Et remarque bien ce que nous ne te demandons pas de faire : spammer tes amis avec ton lien. Ce serait exactement le contraire de ce qu’Éric enseigne.</p>
+    <h3>Tu apprends plutôt à :</h3>
+    <p>Créer une interaction → ouvrir une conversation → bâtir une relation → comprendre un besoin → recommander lorsque c’est pertinent.</p>
+    <p>Ton lien sert ensuite à attribuer la référence.</p>
+  </div>
+</section>
+
+<!-- ══════════ 28. CERCLE DE SUCCÈS ÉQUIPE ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Ton équipe</span>
+    <h2 class="display">PUIS CONSTRUIS TON PROPRE CERCLE DE SUCCÈS</h2>
+  </div>
+
+  <div class="img-frame large">
+    <img src="cercle-succes-02-equipe.png" alt="Éric + Cercle / Équipe">
+  </div>
+
+  <div class="text-block">
+    <p>Éric peut également t’apprendre à développer progressivement ton équipe de Cercle de Succès.</p>
+    <p>Tu ne te limites alors plus à tes propres recommandations. Tu apprends aussi à accompagner d’autres personnes dans cette approche relationnelle.</p>
+    <p>Selon les modalités du programme, les ventes admissibles générées par ton équipe peuvent te permettre de recevoir : 5 % de commission.</p>
+    <p>Tu disposes donc de deux possibilités complémentaires.</p>
+  </div>
+
+  <div class="start-cards">
+    <div class="start-card">1 — TES RÉFÉRENCES PERSONNELLES — 10 %</div>
+    <div class="start-card">2 — TON CERCLE DE SUCCÈS — 5 % sur les ventes admissibles de ton équipe</div>
+  </div>
+
+  <div class="text-block" style="margin-top:30px">
+    <p>Les commissions ne constituent évidemment pas une garantie de revenus : elles dépendent notamment de l’activité, des recommandations et des ventes admissibles réalisées selon les modalités du programme.</p>
+    <h3>Mais elles créent une possibilité intéressante : utiliser ce que tu apprends avec Éric pour tenter de générer des commissions qui peuvent contribuer progressivement à récupérer ton investissement.</h3>
+  </div>
+</section>
+
+<!-- ══════════ 29. DEUX CHOSES EN MÊME TEMPS ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Ce qui change tout</span>
+    <h2 class="display">TU PEUX DÉVELOPPER DEUX CHOSES EN MÊME TEMPS.</h2>
+  </div>
+
+  <div class="split-layout">
+    <div class="text-block" style="text-align:left">
+      <h3>D’un côté : TA COMPÉTENCE</h3>
+      <p>Tu découvres avec Léna. Tu développes avec tes formatrices. Tu apprends. Tu pratiques.</p>
+      <p>Et éventuellement, tu peux construire ta propre offre ou ton propre service autour d’une compétence réellement développée.</p>
+    </div>
+    <div class="text-block" style="text-align:left">
+      <h3>De l’autre : TON CERCLE DE SUCCÈS</h3>
+      <p>Tu apprends avec Éric. Tu pratiques ta communication. Tu utilises Studio Prompt. Tu crées des interactions. Tu développes des relations. Tu peux recommander l’écosystème NyXia.</p>
+      <p>Tu peux générer 10 % sur tes références personnelles admissibles. Puis apprendre à construire une équipe permettant de générer 5 % sur les ventes admissibles de ton Cercle de Succès.</p>
+    </div>
+  </div>
+
+  <div class="text-block">
+    <p>Tu n’as donc pas nécessairement à attendre la fin de ton apprentissage pour commencer à mettre en pratique le M de DDM.</p>
+  </div>
+</section>
+
+<!-- ══════════ 30. TÉMOIGNAGES 4 ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Témoignages</span>
+    <h2 class="display">ILS L’ONT VÉCU AVEC NOUS</h2>
+  </div>
+
+  <div class="auteurs-grid">
+    <div class="auteur-card video-card">
+      <div class="auteur-cover">
+        <video controls preload="metadata" playsinline>
+          <source src="https://d1yei2z3i6k35z.cloudfront.net/1357080/62cb1d16c707f_VID_20220629_234220.mp4" type="video/mp4">
+          Ton navigateur ne supporte pas la lecture de vidéos.
+        </video>
+      </div>
+      <h4>TÉMOIGNAGE VIDÉO 7</h4>
+    </div>
+    <div class="auteur-card video-card">
+      <div class="auteur-cover">
+        <video controls preload="metadata" playsinline>
+          <source src="https://d1yei2z3i6k35z.cloudfront.net/1357080/62cb1a607b265_TmoignageNatacha-Cercleetvnement.mp4">
+          Ton navigateur ne supporte pas la lecture de vidéos.
+        </video>
+      </div>
+      <h4>TÉMOIGNAGE VIDÉO 8</h4>
+    </div>
+    <div class="auteur-card">
+      <div class="auteur-cover"><img src="temoignage-fb-6.png" alt="Témoignage Facebook 6"></div>
+      <h4>CAPTURE TÉMOIGNAGE FACEBOOK 6</h4>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 31. ÉCOSYSTÈME GLOBAL ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">L'écosystème</span>
+    <h2 class="display">UN PARCOURS. TOUT UN ÉCOSYSTÈME.</h2>
+  </div>
+
+  <div class="img-frame large">
+    <img src="carte-ecosysteme.png" alt="Carte de l'écosystème">
+  </div>
+
+  <div class="parcours-list">
+    <div class="parcours-item">
+      <h4>DÉCOUVRIR</h4>
+      <p>PORTAIL LÉNA — Léna → Explorer tes facultés → Expérimenter → Découvrir ce qui te correspond</p>
+    </div>
+    <div class="parcours-item">
+      <h4>DÉVELOPPER</h4>
+      <p>ATELIER DE DÉVELOPPEMENT — Léna (Facultés psychiques et spirituelles) / Sophia (Numérologie) / Aletheia (Runes) / Cassandre (Tarot) / Céleste (Mancies & rituels) → Formation Vivante → Apprentissage → Expérimentation → Développement d’une compétence</p>
+    </div>
+    <div class="parcours-item">
+      <h4>MONÉTISER</h4>
+      <p>PORTAIL CASHFLOW™ — Éric → Communication à l’ère numérique → Studio Prompt → Plusieurs modèles IA → Bibliothèque images · vidéos · sons → Terrain de pratique 97K+ → Cercle de Succès → Développer ses propres offres et/ou recommander l’écosystème</p>
+    </div>
+    <div class="parcours-item">
+      <h4>DDM</h4>
+      <p>DÉCOUVRIR → DÉVELOPPER → MONÉTISER</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 32. CE QUE TU RETROUVES ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Ce que tu retrouves</span>
+    <h2 class="display">CE QUE TU RETROUVES DANS L’ÉCOSYSTÈME</h2>
+  </div>
+
+  <div class="img-frame large">
+    <img src="mockups-portails.png" alt="Mockups des portails / Ordinateur + Tablette + Téléphone">
+  </div>
+
+  <div class="text-block">
+    <p>Tu ne rejoins pas simplement une série de vidéos. Tu entres dans un environnement comprenant notamment :</p>
+    <p><strong>Portail Léna et sa Formation Vivante</strong><br>Léna et son parcours de découverte et de développement<br>Sophia et l’apprentissage de la numérologie<br>Aletheia et l’univers des runes<br>Cassandre et l’apprentissage du Tarot<br>Céleste, les mancies et l’univers des quelque 350 rituels</p>
+    <p><strong>Portail CashFlow™ avec Éric</strong><br>Une formation en communication à l’ère numérique<br>Un terrain de pratique auprès d’une audience cumulée de 97K+</p>
+    <p><strong>Portail Studio Prompt</strong><br>Différents modèles d’intelligence artificielle<br>Des personnages spécialisés pour t’aider à structurer tes prompts<br>Une bibliothèque d’images, de vidéos et de sons</p>
+    <p><strong>Ton lien personnalisé dans le cadre du Cercle de Succès</strong><br>La possibilité de recevoir 10 % sur tes références personnelles admissibles<br>La possibilité d’apprendre à développer ton Cercle de Succès et de recevoir 5 % sur les ventes admissibles de ton équipe, selon les modalités du programme</p>
+    <h3>Et surtout… un parcours qui ne s’arrête pas à « apprendre ».</h3>
+  </div>
+</section>
+
+<!-- ══════════ 33. DERNIER TÉMOIGNAGE ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Un dernier témoignage</span>
+    <h2 class="display">AVANT DE PARLER DE TOI</h2>
+  </div>
+
+  <div class="auteurs-grid" style="grid-template-columns: 1fr; max-width: 280px; margin: 40px auto;">
+    <div class="auteur-card video-card large-video">
+      <div class="auteur-cover">
+        <video controls preload="metadata" playsinline>
+          <source src="https://d1yei2z3i6k35z.cloudfront.net/1357080/62cb155561c54_20220608_175454.mp4" type="video/mp4">
+          Ton navigateur ne supporte pas la lecture de vidéos.
+        </video>
+      </div>
+      <h4>TÉMOIGNAGE VIDÉO 9</h4>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 34 & 35. ET MAINTENANT & PREMIÈRE ÉTAPE ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Et maintenant…</span>
+    <h2 class="display">QUEL POURRAIT ÊTRE TON PARCOURS?</h2>
+  </div>
+
+  <div class="text-block">
+    <p>Peut-être que tu sais déjà exactement ce que tu veux développer. Ou peut-être pas.</p>
+    <p>Et c’est parfaitement compatible avec Portail Léna.</p>
+    <p>Parce que nous ne voulons pas commencer par te dire ce que tu devrais devenir. Nous voulons commencer par mieux comprendre ce que tu recherches.</p>
+    <p>C’est pour cette raison que tu ne trouveras pas ici un bouton : ACHETER MAINTENANT.</p>
+    <h3>La prochaine étape est différente.</h3>
+    <h2>PREMIÈRE ÉTAPE : FAIS LE QUIZ</h2>
+    <p>Le Quiz nous permet de mieux comprendre où tu en es, ce qui t’attire et ce que tu aimerais développer.</p>
+    <p>Une fois cette première étape complétée, tu pourras poursuivre vers une prise de rendez-vous avec un membre de notre équipe.</p>
+    <p>Ce rendez-vous permet d’échanger avec toi sur ton parcours, tes objectifs et ce que tu recherches afin de déterminer si Portail Léna et son écosystème correspondent réellement à ce que tu souhaites entreprendre.</p>
+    <p>Pas besoin d’avoir toutes les réponses avant de venir nous parler. C’est justement pour ça qu’on commence par quelques questions.</p>
+  </div>
+
+  <div class="hero-cta">
+    <span class="cta-gold-wrap"><a class="btn-gold-xl" href="#quiz">FAIRE LE QUIZ</a></span>
+  </div>
+
+  <div class="text-block" style="margin-top:30px">
+    <h3>Quiz → Prise de rendez-vous → Rencontre avec un membre de notre équipe</h3>
+  </div>
+</section>
+
+<!-- ══════════ 36. FAQ ══════════ -->
+<section class="section-wrap">
+  <div class="section-head">
+    <span class="kicker">Questions</span>
+    <h2 class="display">TU AS ENCORE DES QUESTIONS?</h2>
+    <h3>FAQ — PORTAIL LÉNA</h3>
+  </div>
+
+  <div class="faq-container">
+    <details class="faq-item">
+      <summary>Je ne sais pas encore quelle faculté je veux développer. Est-ce pour moi?</summary>
+      <div class="faq-content">
+        <p>Oui. C’est précisément l’une des raisons d’être du premier D de DDM : Découvrir. Le portail est conçu pour permettre d’explorer avant de décider vers quelle discipline tu souhaites éventuellement aller.</p>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary>Est-ce que je dois déjà avoir de l’expérience?</summary>
+      <div class="faq-content">
+        <p>Non. Le parcours peut commencer par la découverte et évoluer progressivement vers des apprentissages plus spécialisés.</p>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary>Est-ce seulement une plateforme avec des IA?</summary>
+      <div class="faq-content">
+        <p>Non. Les personnages font partie d’un environnement de Formation Vivante. L’objectif n’est pas que l’intelligence artificielle développe une compétence à ta place, mais qu’elle accompagne une structure d’apprentissage.</p>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary>Est-ce que je peux apprendre le pendule?</summary>
+      <div class="faq-content">
+        <p>La radiesthésie fait partie des matières couvertes par l’univers de Léna. La matière pédagogique aborde notamment le pendule comme instrument permettant d’amplifier les mouvements utilisés dans la pratique radiesthésique.</p>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary>Est-ce que je suis obligée de monétiser ce que j’apprends?</summary>
+      <div class="faq-content">
+        <p>Non. Monétiser est une possibilité, pas une obligation. Une personne peut parfaitement utiliser Portail Léna pour son développement et son apprentissage personnels.</p>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary>À quoi sert Portail CashFlow™?</summary>
+      <div class="faq-content">
+        <p>CashFlow prend le relais lorsque tu souhaites apprendre à communiquer à l’ère numérique, créer des interactions, développer des relations et éventuellement mettre en marché une compétence ou une offre.</p>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary>Qu'est-ce que Studio Prompt?</summary>
+      <div class="faq-content">
+        <p>C’est un environnement destiné à mieux travailler avec différents modèles d’intelligence artificielle et à apprendre à structurer des prompts adaptés à tes besoins. Il comprend également des ressources créatives pour les images, vidéos et sons.</p>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary>Puis-je réellement recevoir des commissions?</summary>
+      <div class="faq-content">
+        <p>Dans le cadre du programme Cercle de Succès, les références et ventes admissibles peuvent générer les commissions prévues par le programme : 10 % pour une référence personnelle admissible et 5 % sur les ventes admissibles provenant de ton équipe, selon ses modalités. Il ne s’agit pas d’une garantie de revenus.</p>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary>Est-ce que je dois vendre à mes amis?</summary>
+      <div class="faq-content">
+        <p>Non. L’approche enseignée par Éric repose justement sur la communication, les interactions, les conversations, les relations et la confiance, plutôt que sur l’envoi massif de liens.</p>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary>Pourquoi dois-je faire un Quiz avant de prendre rendez-vous?</summary>
+      <div class="faq-content">
+        <p>Parce que nous préférons commencer par comprendre ton parcours et ce que tu recherches. Tes réponses permettent de préparer la discussion avec le membre de l’équipe qui te rencontrera.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ══════════ 37. CTA FINAL ══════════ -->
+<section class="cercle" id="rdv">
+  <div class="cercle-inner">
+    <h2 class="display" style="margin-bottom:20px;">PEUT-ÊTRE QUE TU NE SAIS PAS ENCORE OÙ TOUT CELA TE MÈNERA.</h2>
+    <div class="text-block" style="margin-bottom:30px;">
+      <p>Et tu n’as pas besoin de le savoir aujourd’hui.</p>
+      <p>Tu peux commencer par Découvrir. Puis Développer ce qui te ressemble.</p>
+      <p>Et si tu souhaites un jour aller plus loin, tu pourras apprendre à Monétiser ce que tu as construit.</p>
+      <p>Entre les deux, tu auras appris. Expérimenté. Pratiqué.</p>
+      <h3>Et surtout… tu auras commencé à transformer une curiosité en connaissance.</h3>
+      <h2>LA PROCHAINE ÉTAPE EST TOUTE SIMPLE.</h2>
+      <h3>Découvrons d’abord où tu en es.</h3>
+    </div>
+    
+    <div class="cercle-cta">
+      <span class="cta-gold-wrap"><a class="btn-gold-xl" href="#">JE FAIS LE QUIZ</a></span>
+    </div>
+    
+    <p style="margin-top: 24px; font-size: 0.9rem; font-style: italic;">À la fin du Quiz, poursuis vers la prise de rendez-vous avec un membre de notre équipe.</p>
+  </div>
+</section>
+
+<!-- ══════════ 38. Footer ══════════ -->
+<footer class="footer">
+  <div class="footer-socials">
+    <a class="social-btn" href="https://www.facebook.com/LeMiroirdeNyXia/" target="_blank" rel="noopener" aria-label="Facebook">
+      <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.7l-.4 2.9h-2.3v7A10 10 0 0022 12z"/></svg>
+    </a>
+    <a class="social-btn" href="https://www.instagram.com/nyxia_ia/" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24"><path d="M12 2c2.7 0 3 0 4.1.1 1 .1 1.7.2 2.3.5.6.2 1.1.5 1.6 1s.8 1 1 1.6c.3.6.4 1.3.5 2.3.1 1.1.1 1.4.1 4.1s0 3-.1 4.1c-.1 1-.2 1.7-.5 2.3-.2.6-.5 1.1-1 1.6s-1 .8-1.6 1c-.6.3-1.3.4-2.3.5-1.1.1-1.4.1-4.1.1s-3 0-4.1-.1c-1-.1-1.7-.2-2.3-.5-.6-.2-1.1-.5-1.6-1s-.8-1-1-1.6c-.3-.6-.4-1.3-.5-2.3C2 15 2 14.7 2 12s0-3 .1-4.1c.1-1 .2-1.7.5-2.3.2-.6.5-1.1 1-1.6s1-.8 1.6-1c.6-.3 1.3-.4 2.3-.5C9 2 9.3 2 12 2zm0 1.8c-2.7 0-3 0-4 .1-.8 0-1.2.2-1.5.3-.4.1-.7.3-1 .6s-.5.6-.6 1c-.1.3-.3.7-.3 1.5-.1 1-.1 1.3-.1 4s0 3 .1 4c0 .8.2 1.2.3 1.5.1.4.3.7.6 1s.6.5 1 .6c.3.1.7.3 1.5.3 1 .1 1.3.1 4 .1s3 0 4-.1c.8 0 1.2-.2 1.5-.3.4-.1.7-.3 1-.6s.5-.6.6-1c.1-.3.3-.7.3-1.5.1-1 .1-1.3.1-4s0-3-.1-4c0-.8-.2-1.2-.3-1.5-.1-.4-.3-.7-.6-1s-.6-.5-1-.6c-.3-.1-.7-.3-1.5-.3-1-.1-1.3-.1-4-.1zm0 3.1a5.1 5.1 0 110 10.2 5.1 5.1 0 010-10.2zm0 1.8a3.3 3.3 0 100 6.6 3.3 3.3 0 000-6.6zm5.3-3.1a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/></svg>
+    </a>
+    <a class="social-btn" href="https://www.tiktok.com/@lemiroirdenyxia" target="_blank" rel="noopener" aria-label="TikTok">
+      <svg viewBox="0 0 24 24"><path d="M16.6 5.8c-.9-.6-1.5-1.5-1.7-2.6h-2.7v11.2c0 1.3-1 2.3-2.3 2.3s-2.3-1-2.3-2.3 1-2.3 2.3-2.3c.3 0 .5 0 .7.1V9.5c-.2 0-.5-.1-.7-.1-3 0-5.4 2.4-5.4 5.4s2.4 5.4 5.4 5.4 5.4-2.4 5.4-5.4V9.4c1 .7 2.3 1.2 3.6 1.2V7.9c-.7 0-1.4-.2-2-.5z"/></svg>
+    </a>
+  </div>
+  <div class="footer-links">
+    <a href="https://m.me/LeMiroirdeNyXia" target="_blank" rel="noopener">Contact</a>
+    <a href="#">Mentions légales</a>
+    <a href="#">Confidentialité</a>
+    <a href="#">CGU</a>
+  </div>
+  <p class="footer-sign">✨ Univers <b>NyXia</b> · L'humaine qui dirige une équipe d'IA · Visionnaire depuis 1997 ✨</p>
+</footer>
+
+<script src="/starry-bg.js" defer></script>
+<script src="/ref-track.js" defer></script>
+</body>
+</html>
