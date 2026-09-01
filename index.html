@@ -372,6 +372,28 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
 }
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+
+/* ─────────── CORRECTION DISPOSITION DEMANDÉE ─────────── */
+.split-layout {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+}
+.split-layout .img-frame {
+  flex: 1 1 300px;
+  margin: 20px auto;
+}
+.split-layout .text-block {
+  flex: 1 1 300px;
+  margin: 0 auto;
+}
+@media (max-width: 768px) {
+  .split-layout {
+    flex-direction: column;
+  }
+}
 </style>
 </head>
 <body>
@@ -686,3 +708,6 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
     </div>
   </div>
 </section>
+
+</body>
+</html>
