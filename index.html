@@ -254,6 +254,29 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
 .diff-img-wide{max-width:100%; margin-top:22px}
 .diff-img-wide img{border:1px solid rgba(244,200,66,.25); box-shadow:0 18px 40px rgba(0,0,0,.45)}
 
+/* ── Rangées formatrices (photo + texte alternés) ── */
+.section-intro{max-width:680px; margin:6px auto 0; text-align:center; color:var(--text); font-size:1.1rem; line-height:1.6}
+.lena-feature{max-width:420px; margin:26px auto 0}
+.formatrices{max-width:920px; margin:34px auto 0; display:flex; flex-direction:column; gap:28px}
+.formatrice-row{display:flex; align-items:center; gap:30px; background:rgba(14,20,48,.6);
+  border:1px solid var(--border); border-radius:var(--radius); padding:26px 30px; transition:all var(--transition)}
+.formatrice-row:hover{border-color:rgba(123,92,255,.4); box-shadow:0 0 26px rgba(123,92,255,.15); transform:translateY(-2px)}
+.formatrice-row.reverse{flex-direction:row-reverse}
+.formatrice-photo{flex:0 0 190px}
+.formatrice-photo img{width:190px; height:190px; object-fit:cover; border-radius:16px;
+  border:2px solid rgba(123,92,255,.45); box-shadow:0 0 30px rgba(123,92,255,.4)}
+.formatrice-text{flex:1}
+.formatrice-text h4{font-family:'Cormorant Garamond',serif; font-size:1.9rem; color:#fff; margin-bottom:2px; line-height:1.1}
+.formatrice-text .role{color:var(--gold); font-size:.8rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:1.5px; margin-bottom:12px; display:block}
+.formatrice-text p{color:var(--text-secondary); font-size:1rem; line-height:1.7; margin-bottom:8px}
+.formatrice-text p:last-child{margin-bottom:0}
+@media(max-width:680px){
+  .formatrice-row,.formatrice-row.reverse{flex-direction:column; text-align:center}
+  .formatrice-photo{flex:0 0 auto}
+  .formatrice-photo img{width:160px; height:160px}
+}
+
 /* ─────────── START CARDS (Tu peux commencer) ─────────── */
 .start-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;max-width:800px;margin:30px auto}
 .start-card{background:rgba(14,20,48,.6);border-left:3px solid var(--gold);padding:18px 22px;border-radius:0 12px 12px 0;color:var(--text);font-weight:500;transition:transform var(--transition)}
@@ -576,37 +599,59 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
     <h2 class="display">Ce que tu rejoins vraiment (ce n’est pas une série de vidéos)</h2>
   </div>
 
-  <div class="atelier-grid">
+  <p class="section-intro">Nous avons plutôt créé une <strong>équipe de formatrices</strong>, chacune possédant son propre univers.</p>
+
+  <div class="lena-feature">
     <div class="atelier-card">
       <div class="atelier-pastille"><img src="lena-vente-02-lena.png" alt="Léna"></div>
       <h4>LÉNA — DÉCOUVRIR</h4>
-      <span class="role">Facultés psychiques et spirituelles</span>
+      <span class="role">Ta guide — facultés psychiques et spirituelles</span>
       <p>Corps subtils, chakras, aura, intuition, clairs, télépathie, médiumnité, magnétisme, radiesthésie et pendule. Tu commences avant la spécialisation.</p>
     </div>
-    <div class="atelier-card">
-      <div class="atelier-pastille"><img src="sophia.png" alt="Sophia"></div>
-      <h4>SOPHIA — DÉVELOPPER</h4>
-      <span class="role">Numérologie</span>
-      <p>Le langage des nombres, pas une interprétation toute faite.</p>
+  </div>
+
+  <div class="formatrices">
+
+    <div class="formatrice-row">
+      <div class="formatrice-photo"><img src="sophia.png" alt="Sophia"></div>
+      <div class="formatrice-text">
+        <h4>Sophia</h4>
+        <span class="role">La Tisseuse des Nombres</span>
+        <p>Les nombres t’ont toujours fascinée ? Sophia t’accompagne dans l’univers de la numérologie. Son rôle n’est pas simplement de te donner une interprétation toute faite.</p>
+        <p>Elle est là pour t’aider à apprendre le langage des nombres, comprendre les calculs, les cycles et les différentes interprétations afin que tu développes progressivement tes propres connaissances.</p>
+      </div>
     </div>
-    <div class="atelier-card">
-      <div class="atelier-pastille"><img src="aletheia.png" alt="Aletheia"></div>
-      <h4>ALETHEIA — DÉVELOPPER</h4>
-      <span class="role">Runes et Futhark</span>
-      <p>Runes et Futhark comme langue, pas une liste à mémoriser.</p>
+
+    <div class="formatrice-row reverse">
+      <div class="formatrice-photo"><img src="aletheia.png" alt="Aletheia"></div>
+      <div class="formatrice-text">
+        <h4>Aletheia</h4>
+        <span class="role">La Scribe des Murmures Runiques</span>
+        <p>Avec Aletheia, tu entres dans l’univers des runes et du Futhark. Tu peux apprendre leur symbolisme, leur langage et progressivement comprendre comment construire une lecture plutôt que simplement mémoriser une liste de significations.</p>
+        <p>Les runes deviennent alors un langage à découvrir.</p>
+      </div>
     </div>
-    <div class="atelier-card">
-      <div class="atelier-pastille"><img src="cassandre.png" alt="Cassandre"></div>
-      <h4>CASSANDRE — DÉVELOPPER</h4>
-      <span class="role">Tarot</span>
-      <p>Tarot : les cartes ensemble, pas 78 définitions isolées.</p>
+
+    <div class="formatrice-row">
+      <div class="formatrice-photo"><img src="cassandre.png" alt="Cassandre"></div>
+      <div class="formatrice-text">
+        <h4>Cassandre</h4>
+        <span class="role">La Voix du Reflet</span>
+        <p>Cassandre t’accompagne dans l’apprentissage du Tarot. Mais apprendre le Tarot ne signifie pas seulement connaître la définition de chaque carte.</p>
+        <p>L’objectif est progressivement de comprendre les cartes ensemble, leurs interactions, leurs symboles et la manière dont une lecture peut devenir cohérente.</p>
+      </div>
     </div>
-    <div class="atelier-card">
-      <div class="atelier-pastille"><img src="celeste.png" alt="Céleste"></div>
-      <h4>CÉLESTE — DÉVELOPPER</h4>
-      <span class="role">Mancies & Rituels</span>
-      <p>Mancies + la logique d’environ 350 rituels (pourquoi cette lune, cette couleur, cette intention).</p>
+
+    <div class="formatrice-row">
+      <div class="formatrice-photo"><img src="celeste.png" alt="Céleste"></div>
+      <div class="formatrice-text">
+        <h4>Céleste</h4>
+        <span class="role">La Cartographe des Présages</span>
+        <p>Et puis il y a Céleste… Son territoire est immense. Céleste explore avec toi les arts divinatoires et les différentes mancies.</p>
+        <p>Tu peux découvrir des pratiques auxquelles tu n’aurais peut-être jamais pensé et comprendre leurs particularités avant de décider lesquelles tu souhaites approfondir. Mais Céleste possède également un autre trésor…</p>
+      </div>
     </div>
+
   </div>
 
   <!-- ── 3e pilier DDM : Monétiser ── -->
@@ -661,6 +706,9 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
       <h3>Apprendre, c’est bien. Pouvoir pratiquer, c’est encore mieux.</h3>
       <p class="diff-sub">Parce qu’avant d’apprendre à vendre… tu apprends à parler aux humains.</p>
       <p class="diff-lead">La plupart des formations t’expliquent la théorie du marketing et te laissent livrée à toi-même devant une page blanche. Avec NyXia, tu bénéficies d’un véritable terrain d’entraînement auprès d’une audience cumulée de <strong>plus de 97 000 personnes</strong>. Tu y apprends à créer de vraies interactions, à nouer des relations sincères et à bâtir la confiance à l’ère numérique.</p>
+      <div class="diff-img diff-img-wide">
+        <img src="eric-97k-audience.png" alt="Éric — un terrain de pratique de plus de 97 000 personnes">
+      </div>
     </div>
 
     <div class="diff-block" data-num="3">
@@ -669,6 +717,9 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
       <ul>
         <li><strong>Retrouve les personnages de l’écosystème dans Studio Prompt :</strong> Léna, Sophia et les spécialistes t’aident à structurer tes demandes pour formuler des réponses éthiques, rédiger des publications magnétiques et valoriser ta guidance — sans jamais te perdre dans la technique.</li>
       </ul>
+      <div class="diff-img diff-img-wide">
+        <img src="studio-prompt-02-personnages.png" alt="Studio Prompt — les personnages de l’écosystème réunis">
+      </div>
     </div>
 
     <div class="diff-block" data-num="4">
