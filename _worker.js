@@ -986,32 +986,63 @@ async function handleOvilusConsultCompat(request, env) {
   const token = String(body?.token || '');
   if (token && env.SPIRITUEL_KV && body?.mode !== 'mots') {
     const stateKey = `ovilus_state:${token}`;
-    const existingStateRaw = await env.SPIRITUEL_KV.get(stateKey);
-    let existingState = {};
-    try { existingState = existingStateRaw ? JSON.parse(existingStateRaw) : {}; } catch (_) { existingState = {}; }
+    const gateKey = `ovilus_first5:${token}`;
 
-    // La nouvelle coque ne signale pas toujours le début de séance.
-    // Ce marqueur externe au bloc Ovilus garantit UNE SEULE initialisation
-    // du délai aléatoire de manifestation, même si un ancien état existe déjà.
+    // RÈGLE PORTAIL LÉNA : les 5 premières questions d'une séance sont
+    // TOUJOURS silencieuses. Aucune IA n'est appelée avant la 6e question.
+    // Un newSeance explicite redémarre ce compteur à zéro.
     if (body?.newSeance) {
-      existingState.startupDelayInitialized = true;
-      await env.SPIRITUEL_KV.put(stateKey, JSON.stringify(existingState), { expirationTtl: SESSION_TTL });
-    } else if (existingState.startupDelayInitialized !== true) {
-      existingState.startupDelayInitialized = true;
-      await env.SPIRITUEL_KV.put(stateKey, JSON.stringify(existingState), { expirationTtl: SESSION_TTL });
-      body.newSeance = true;
+      await env.SPIRITUEL_KV.put(gateKey, '0', { expirationTtl: SESSION_TTL });
+      const raw = await env.SPIRITUEL_KV.get(stateKey);
+      let st = {};
+      try { st = raw ? JSON.parse(raw) : {}; } catch (_) { st = {}; }
+      st.silentLeft = 0;
+      st.spokenOnce = false;
+      st.refusalStreak = 0;
+      delete st.ovilusPersona;
+      delete st.currentEntity;
+      delete st.ovilusIntention;
+      st.castIndex = -1;
+      await env.SPIRITUEL_KV.put(stateKey, JSON.stringify(st), { expirationTtl: SESSION_TTL });
+      body.newSeance = false;
     }
 
-    if (body?.newSeance) {
-      const headers = new Headers(request.headers);
-      headers.set('content-type', 'application/json; charset=utf-8');
-      headers.delete('content-length');
-      request = new Request(request.url, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(body)
+    let asked = Number(await env.SPIRITUEL_KV.get(gateKey) || 0);
+    if (!Number.isFinite(asked) || asked < 0) asked = 0;
+
+    if (asked < 5) {
+      asked += 1;
+      await env.SPIRITUEL_KV.put(gateKey, String(asked), { expirationTtl: SESSION_TTL });
+      return json({
+        silence: true,
+        response: '',
+        status: 'Aucune réponse.',
+        firstFiveSilence: true,
+        questionNumber: asked
       });
     }
+
+    // À partir de la 6e question, on laisse l'Ovilus original fonctionner.
+    // On neutralise seulement un ancien compteur de démarrage qui pourrait
+    // provenir d'un essai précédent, afin qu'il ne prolonge pas artificiellement
+    // les 5 silences obligatoires.
+    const raw = await env.SPIRITUEL_KV.get(stateKey);
+    let st = {};
+    try { st = raw ? JSON.parse(raw) : {}; } catch (_) { st = {}; }
+    if (Number(st.silentLeft || 0) > 0) {
+      st.silentLeft = 0;
+      await env.SPIRITUEL_KV.put(stateKey, JSON.stringify(st), { expirationTtl: SESSION_TTL });
+    }
+    body.newSeance = false;
+
+    const headers = new Headers(request.headers);
+    headers.set('content-type', 'application/json; charset=utf-8');
+    headers.delete('content-length');
+    request = new Request(request.url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body)
+    });
   }
   return handleOvilusConsult(request, env);
 }
