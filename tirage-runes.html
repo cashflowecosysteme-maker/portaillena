@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Oracle des Runes · Aletheia — Portail Léna</title>
+<meta name="theme-color" content="#060a18">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060a18;
+  --panel:rgba(13,18,44,.82);
+  --panel2:rgba(17,24,56,.94);
+  --violet:#7B5CFF;
+  --lavande:#A78BFA;
+  --blue:#4FA3FF;
+  --gold:#F4C842;
+  --gold2:#FFE8A3;
+  --text:#F7F4FF;
+  --muted:#B8B9D6;
+  --line:rgba(167,139,250,.20);
+  --shadow:0 22px 70px rgba(0,0,0,.38);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif}
+body{min-height:100vh;overflow-x:hidden}
+#starry-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,#060a18 0%,#0b1027 55%,#060a18 100%)}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(circle at 18% 10%,rgba(123,92,255,.18),transparent 34%),
+    radial-gradient(circle at 85% 12%,rgba(79,163,255,.10),transparent 32%),
+    radial-gradient(circle at 50% 86%,rgba(244,200,66,.06),transparent 36%);
+}
+.app{position:relative;z-index:1;min-height:100vh}
+.topbar{
+  position:sticky;top:0;z-index:20;height:66px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:0 22px;background:rgba(6,10,24,.78);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-orb{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:18px;font-weight:700;
+  background:radial-gradient(circle at 35% 30%,#d9ccff 0%,#8c6cff 28%,#5838d6 68%,#241760 100%);
+  box-shadow:0 0 26px rgba(123,92,255,.55),inset 0 0 18px rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.20)}
+.brand-title{font-size:14px;font-weight:800;letter-spacing:.2px}
+.brand-sub{font-size:11px;color:var(--lavande);margin-top:1px}
+.back-btn{color:var(--text);text-decoration:none;font-weight:700;font-size:12px;padding:9px 13px;border-radius:999px;border:1px solid rgba(167,139,250,.28);background:rgba(123,92,255,.08)}
+.back-btn:hover{background:rgba(123,92,255,.16)}
+main{width:min(1180px,calc(100% - 28px));margin:0 auto;padding:30px 0 56px}
+.hero{display:grid;grid-template-columns:1.12fr .88fr;gap:22px;align-items:stretch;margin-bottom:22px}
+.hero-card,.side-card,.controls,.reading,.info-card{
+  border:1px solid var(--line);background:linear-gradient(180deg,rgba(18,25,58,.92),rgba(9,14,35,.90));border-radius:24px;box-shadow:var(--shadow)
+}
+.hero-card{padding:30px;position:relative;overflow:hidden}
+.hero-card::after{content:"";position:absolute;width:320px;height:320px;border-radius:50%;right:-140px;top:-140px;background:radial-gradient(circle,rgba(123,92,255,.22),transparent 68%)}
+.eyebrow{color:var(--gold);font-size:11px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,6vw,68px);line-height:.95;margin:10px 0 10px;letter-spacing:.2px}
+.hero-card p{color:var(--muted);font-size:15px;line-height:1.7;max-width:700px;margin:0}
+.aletheia-line{margin-top:22px;display:flex;align-items:center;gap:10px;padding:11px 14px;width:max-content;max-width:100%;border-radius:999px;background:rgba(123,92,255,.10);border:1px solid rgba(123,92,255,.20);color:#ddd5ff;font-size:12px}
+.side-card{padding:24px;display:flex;flex-direction:column;justify-content:center;background:linear-gradient(160deg,rgba(25,18,57,.94),rgba(8,14,34,.94))}
+.side-card h2{font-family:'Cormorant Garamond',serif;font-size:27px;margin:0 0 10px}.side-card p{margin:0;color:var(--muted);line-height:1.6;font-size:13px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.badge{font-size:11px;color:#ddd5ff;border:1px solid rgba(167,139,250,.24);background:rgba(167,139,250,.07);padding:7px 10px;border-radius:999px}
+.controls{padding:20px;margin-bottom:22px}
+.section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:14px}.section-title h2{font-family:'Cormorant Garamond',serif;font-size:28px;margin:0}.section-title span{font-size:11px;color:var(--muted)}
+.spread-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.spread-btn{border:1px solid rgba(167,139,250,.20);background:rgba(255,255,255,.025);color:var(--text);padding:14px 10px;border-radius:16px;cursor:pointer;font:inherit;text-align:left;transition:.2s}
+.spread-btn:hover{transform:translateY(-2px);border-color:rgba(244,200,66,.38);background:rgba(244,200,66,.05)}
+.spread-btn.active{border-color:rgba(244,200,66,.65);background:linear-gradient(135deg,rgba(244,200,66,.12),rgba(123,92,255,.10));box-shadow:0 0 22px rgba(244,200,66,.07)}
+.spread-btn b{display:block;font-size:13px;margin-bottom:4px}.spread-btn small{color:var(--muted);font-size:10px;line-height:1.35}
+.question-row{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:14px}
+.question-row input{width:100%;border-radius:14px;border:1px solid rgba(167,139,250,.20);background:rgba(3,7,20,.54);color:#fff;padding:13px 14px;outline:none;font:inherit}
+.question-row input:focus{border-color:rgba(123,92,255,.68);box-shadow:0 0 0 3px rgba(123,92,255,.08)}
+.draw-btn{border:none;border-radius:14px;padding:0 20px;min-height:46px;background:linear-gradient(135deg,#8e70ff,#5e46e5);color:white;font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(123,92,255,.28)}
+.draw-btn:hover{filter:brightness(1.08)}
+.reading{padding:24px;min-height:380px}
+.reading-empty{min-height:330px;display:grid;place-items:center;text-align:center;color:var(--muted)}
+.reading-empty .symbol{font-size:58px;color:var(--gold);filter:drop-shadow(0 0 16px rgba(244,200,66,.20));margin-bottom:8px}
+.cards-wrap{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;align-items:flex-start}
+.card-slot{width:min(220px,42vw);perspective:1200px;text-align:center}
+.card-position{font-size:11px;color:var(--gold2);font-weight:800;letter-spacing:.5px;margin-bottom:8px;min-height:16px}
+.flip{position:relative;width:100%;aspect-ratio:2.5/4;border-radius:18px;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.2,.7,.2,1);cursor:pointer;box-shadow:0 22px 48px rgba(0,0,0,.42)}
+.flip.revealed{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:18px;overflow:hidden;backface-visibility:hidden;border:1px solid rgba(244,200,66,.42);background:#10162f}
+.face img{width:100%;height:100%;object-fit:cover;display:block}
+.front{transform:rotateY(180deg)}
+.card-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;margin-top:11px}.card-keywords{font-size:11px;color:var(--lavande);margin-top:2px}.card-message{font-size:12px;color:var(--muted);line-height:1.45;margin-top:6px;padding:0 4px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px}.action-btn{border:1px solid rgba(167,139,250,.22);background:rgba(123,92,255,.08);color:#eee9ff;border-radius:999px;padding:9px 13px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}.action-btn:hover{background:rgba(123,92,255,.15)}
+.info-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}.info-card{padding:18px}.info-card h3{margin:0 0 7px;font-family:'Cormorant Garamond',serif;font-size:21px}.info-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.55}
+.note{margin-top:14px;text-align:center;font-size:10px;color:#8588a7}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;z-index:50;background:#11172f;border:1px solid rgba(167,139,250,.28);color:#fff;padding:10px 14px;border-radius:999px;font-size:12px;transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (max-width:900px){.hero{grid-template-columns:1fr}.spread-grid{grid-template-columns:repeat(2,1fr)}.info-row{grid-template-columns:1fr}}
+@media (max-width:560px){.topbar{padding:0 12px}.brand-title{font-size:12px}.brand-sub{display:none}.back-btn{font-size:11px;padding:8px 10px}main{width:min(100% - 18px,1180px);padding-top:18px}.hero-card,.side-card,.controls,.reading{border-radius:19px}.hero-card{padding:23px}.spread-grid{grid-template-columns:1fr}.question-row{grid-template-columns:1fr}.draw-btn{min-height:46px}.card-slot{width:min(260px,78vw)}}
+</style>
+</head>
+<body>
+<canvas id="starry-canvas"></canvas>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-orb">ᚱ</div>
+      <div>
+        <div class="brand-title">Portail Léna · Outils</div>
+        <div class="brand-sub">Aletheia — Oracle des Runes</div>
+      </div>
+    </div>
+    <a class="back-btn" href="/dashbord.html">← Retour au portail</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow">Aletheia · La Scribe des Murmures Runiques</div>
+        <h1>Oracle des Runes</h1>
+        <p>Choisis ton tirage, formule ton intention et révèle les runes une à une. Chaque carte utilise ton oracle visuel et conserve l’univers du Portail Léna.</p>
+        <div class="aletheia-line">✦ Tirer · Révéler · Interpréter · Consigner</div>
+      </div>
+      <aside class="side-card">
+        <h2>Ton espace de tirage</h2>
+        <p>La lecture reste simple et visuelle. Tu peux utiliser une question précise ou demander un message général.</p>
+        <div class="badges">
+          <span class="badge">25 cartes</span><span class="badge">Rune blanche incluse</span><span class="badge">5 types de tirages</span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="controls">
+      <div class="section-title"><h2>Choisis ton tirage</h2><span>Un clic suffit</span></div>
+      <div class="spread-grid" id="spreadGrid">
+        <button class="spread-btn active" data-count="1" data-spread="one"><b>1 rune</b><small>Message central</small></button>
+        <button class="spread-btn" data-count="3" data-spread="three"><b>3 runes</b><small>Passé · Présent · Orientation</small></button>
+        <button class="spread-btn" data-count="5" data-spread="five"><b>5 runes</b><small>Situation · Défi · Ressource · Conseil · Évolution</small></button>
+        <button class="spread-btn" data-count="5" data-spread="cross"><b>Croix runique</b><small>Centre · Racine · Chemin · Conscience · Ombre</small></button>
+        <button class="spread-btn" data-count="7" data-spread="mandala"><b>Mandala 7</b><small>Essence · Passé · Présent · Défi · Ressources · Conseil · Futur</small></button>
+      </div>
+      <div class="question-row">
+        <input id="question" type="text" maxlength="220" placeholder="Écris ta question ou laisse vide pour un message général…">
+        <button class="draw-btn" id="drawBtn">✦ Tirer les runes</button>
+      </div>
+    </section>
+
+    <section class="reading" id="reading">
+      <div class="reading-empty" id="emptyState">
+        <div>
+          <div class="symbol">ᚱ</div>
+          <strong>Ton tirage apparaîtra ici.</strong>
+          <div style="font-size:12px;margin-top:6px">Choisis un tirage puis clique sur « Tirer les runes ».</div>
+        </div>
+      </div>
+      <div id="result" hidden>
+        <div class="cards-wrap" id="cardsWrap"></div>
+        <div class="actions">
+          <button class="action-btn" id="revealAll">✨ Révéler toutes les cartes</button>
+          <button class="action-btn" id="newDraw">↺ Nouveau tirage</button>
+          <button class="action-btn" id="copyDraw">📋 Copier le tirage</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="info-row">
+      <article class="info-card"><h3>Avec Aletheia</h3><p>Cette page peut ensuite envoyer le tirage au chat d’Aletheia pour une interprétation guidée sans changer la logique actuelle du portail.</p></article>
+      <article class="info-card"><h3>Journal de Runes</h3><p>Le bouton de sauvegarde pourra être relié au journal lorsque tu voudras brancher la persistance dans le nouveau worker.</p></article>
+      <article class="info-card"><h3>Images officielles</h3><p>La page est déjà prévue pour afficher exactement les cartes de ton oracle depuis <code>/images/oracle-runes/</code>.</p></article>
+    </section>
+    <div class="note">Les runes soutiennent la réflexion et l’intuition. Elles ne remplacent pas un avis médical, juridique ou financier.</div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script src="/js/starry-bg.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  var CARD_BACK = '/images/oracle-runes/dos.png';
+  var RUNES = [
+    {id:'fehu',name:'Fehu',img:'/images/oracle-runes/fehu.png',keys:'Richesse · Prospérité · Énergie',msg:'Ce qui circule peut grandir.'},
+    {id:'uruz',name:'Uruz',img:'/images/oracle-runes/uruz.png',keys:'Force · Vitalité · Courage',msg:'Ta puissance se révèle dans l’action juste.'},
+    {id:'thurisaz',name:'Thurisaz',img:'/images/oracle-runes/thurisaz.png',keys:'Protection · Rupture · Pouvoir',msg:'Pose tes limites avant de franchir le seuil.'},
+    {id:'ansuz',name:'Ansuz',img:'/images/oracle-runes/ansuz.png',keys:'Parole · Message · Sagesse',msg:'Écoute ce qui cherche à être entendu.'},
+    {id:'raidho',name:'Raidho',img:'/images/oracle-runes/raidho.png',keys:'Mouvement · Voyage · Direction',msg:'Le chemin devient clair lorsque tu avances.'},
+    {id:'kenaz',name:'Kenaz',img:'/images/oracle-runes/kenaz.png',keys:'Feu · Ouverture · Clarté',msg:'La lumière révèle ce qui était caché.'},
+    {id:'gebo',name:'Gebo',img:'/images/oracle-runes/gebo.png',keys:'Échange · Don · Partenariat',msg:'L’équilibre naît entre donner et recevoir.'},
+    {id:'wunjo',name:'Wunjo',img:'/images/oracle-runes/wunjo.png',keys:'Joie · Harmonie · Réussite',msg:'La joie confirme ce qui est aligné.'},
+    {id:'hagalaz',name:'Hagalaz',img:'/images/oracle-runes/hagalaz.png',keys:'Rupture · Transformation · Renouveau',msg:'Ce qui se brise peut libérer un nouvel espace.'},
+    {id:'nauthiz',name:'Nauthiz',img:'/images/oracle-runes/nauthiz.png',keys:'Nécessité · Épreuve · Résilience',msg:'La contrainte révèle ta force essentielle.'},
+    {id:'isa',name:'Isa',img:'/images/oracle-runes/isa.png',keys:'Pause · Glace · Préservation',msg:'Ne pas avancer est parfois une décision juste.'},
+    {id:'jera',name:'Jera',img:'/images/oracle-runes/jera.png',keys:'Récolte · Cycle · Récompense',msg:'Ce qui a été semé arrive à maturité.'},
+    {id:'eihwaz',name:'Eihwaz',img:'/images/oracle-runes/eihwaz.png',keys:'Défense · Transition · Persévérance',msg:'Traverse la transformation sans perdre ton axe.'},
+    {id:'perthro',name:'Perthro',img:'/images/oracle-runes/perthro.png',keys:'Mystère · Destin · Révélation',msg:'L’inconnu contient une information prête à émerger.'},
+    {id:'algiz',name:'Algiz',img:'/images/oracle-runes/algiz.png',keys:'Protection · Soutien · Élévation',msg:'Protège ton espace et reste reliée à ce qui te soutient.'},
+    {id:'sowilo',name:'Sowilo',img:'/images/oracle-runes/sowilo.png',keys:'Victoire · Lumière · Clarté',msg:'Ta lumière éclaire la prochaine étape.'},
+    {id:'teiwaz',name:'Teiwaz',img:'/images/oracle-runes/teiwaz.png',keys:'Courage · Justice · Honneur',msg:'Avance avec intégrité, même lorsque le choix demande du courage.'},
+    {id:'berkana',name:'Berkana',img:'/images/oracle-runes/berkana.png',keys:'Renaissance · Croissance · Soin',msg:'Ce qui naît demande douceur, patience et protection.'},
+    {id:'ehwaz',name:'Ehwaz',img:'/images/oracle-runes/ehwaz.png',keys:'Partenariat · Confiance · Mouvement',msg:'Le mouvement devient plus fort lorsqu’il est partagé.'},
+    {id:'mannaz',name:'Mannaz',img:'/images/oracle-runes/mannaz.png',keys:'Humanité · Conscience · Communauté',msg:'La relation à l’autre révèle une part de toi.'},
+    {id:'laguz',name:'Laguz',img:'/images/oracle-runes/laguz.png',keys:'Intuition · Flux · Adaptation',msg:'Ton intuition connaît déjà le courant juste.'},
+    {id:'inguz',name:'Inguz',img:'/images/oracle-runes/inguz.png',keys:'Graine · Potentiel · Gestation',msg:'Quelque chose grandit encore dans le silence.'},
+    {id:'dagaz',name:'Dagaz',img:'/images/oracle-runes/dagaz.png',keys:'Éveil · Transformation · Clarté',msg:'Une nouvelle lumière change ta façon de voir.'},
+    {id:'othala',name:'Othala',img:'/images/oracle-runes/othala.png',keys:'Héritage · Lignée · Appartenance',msg:'Tes racines peuvent devenir une force plutôt qu’une limite.'},
+    {id:'rune-blanche',name:'Rune blanche',img:'/images/oracle-runes/rune-blanche.png',keys:'Potentiel · Choix · Liberté',msg:'Un espace ouvert : toutes les possibilités sont encore vivantes.'}
+  ];
+
+  var positions = {
+    one:['Message central'],
+    three:['Passé','Présent','Orientation'],
+    five:['Situation actuelle','Défi principal','Ressource','Conseil','Évolution possible'],
+    cross:['Centre','Racine / cause','Chemin / réponse','Conscience','Ombre / base cachée'],
+    mandala:['Essence','Passé','Présent','Défi','Ressources','Conseil','Orientation future']
+  };
+
+  var selectedSpread='one';
+  var selectedCount=1;
+  var current=[];
+
+  var spreadButtons=[].slice.call(document.querySelectorAll('.spread-btn'));
+  spreadButtons.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      spreadButtons.forEach(function(b){b.classList.remove('active')});
+      btn.classList.add('active');
+      selectedSpread=btn.dataset.spread;
+      selectedCount=parseInt(btn.dataset.count,10)||1;
+    });
+  });
+
+  function shuffle(arr){
+    var a=arr.slice();
+    for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+    return a;
+  }
+
+  function buildCard(rune, label, index){
+    var slot=document.createElement('div');slot.className='card-slot';
+    slot.innerHTML = '<div class="card-position">'+label+'</div>'+
+      '<div class="flip" data-index="'+index+'">'+
+        '<div class="face back"><img src="'+CARD_BACK+'" alt="Dos de carte"></div>'+
+        '<div class="face front"><img src="'+rune.img+'" alt="'+rune.name+'"></div>'+
+      '</div>'+
+      '<div class="card-name" hidden>'+rune.name+'</div>'+
+      '<div class="card-keywords" hidden>'+rune.keys+'</div>'+
+      '<div class="card-message" hidden>'+rune.msg+'</div>';
+    var flip=slot.querySelector('.flip');
+    flip.addEventListener('click',function(){ revealSlot(slot); });
+    return slot;
+  }
+
+  function revealSlot(slot){
+    var flip=slot.querySelector('.flip');
+    if(flip.classList.contains('revealed')) return;
+    flip.classList.add('revealed');
+    [].slice.call(slot.querySelectorAll('.card-name,.card-keywords,.card-message')).forEach(function(el){el.hidden=false});
+  }
+
+  function draw(){
+    current=shuffle(RUNES).slice(0,selectedCount);
+    var wrap=document.getElementById('cardsWrap');wrap.innerHTML='';
+    var labels=positions[selectedSpread]||[];
+    current.forEach(function(r,i){wrap.appendChild(buildCard(r,labels[i]||('Rune '+(i+1)),i));});
+    document.getElementById('emptyState').hidden=true;
+    document.getElementById('result').hidden=false;
+    document.getElementById('reading').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},1900)}
+
+  document.getElementById('drawBtn').addEventListener('click',draw);
+  document.getElementById('revealAll').addEventListener('click',function(){[].slice.call(document.querySelectorAll('.card-slot')).forEach(revealSlot)});
+  document.getElementById('newDraw').addEventListener('click',function(){draw()});
+  document.getElementById('copyDraw').addEventListener('click',function(){
+    if(!current.length) return;
+    var q=document.getElementById('question').value.trim();
+    var labels=positions[selectedSpread]||[];
+    var text=(q?'Question : '+q+'\n\n':'')+current.map(function(r,i){return (labels[i]||('Rune '+(i+1)))+' — '+r.name+' — '+r.keys+' — '+r.msg}).join('\n');
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){toast('Tirage copié')}).catch(function(){fallbackCopy(text)})}else fallbackCopy(text);
+  });
+  function fallbackCopy(text){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Tirage copié')}catch(e){toast('Copie impossible')}document.body.removeChild(ta)}
+})();
+</script>
+</body>
+</html>

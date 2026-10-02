@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journal de Rune · Aletheia — Portail Léna</title>
+  <meta name="description" content="Journal de Rune d’Aletheia — carnet sacré de tirages, intuitions, synchronicités et cheminement." />
+  <style>
+    :root{
+      --bg:#060a18;
+      --bg2:#0d1024;
+      --violet:#7B5CFF;
+      --lavande:#a78bfa;
+      --or:#d9ad63;
+      --or2:#f2d39a;
+      --texte:#f7f3ff;
+      --muted:#c7bfd9;
+      --card:rgba(12, 10, 28, .78);
+      --line:rgba(217,173,99,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--texte);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    body{min-height:100vh;overflow-x:hidden;background:
+      radial-gradient(circle at 20% 0%, rgba(123,92,255,.18), transparent 35%),
+      radial-gradient(circle at 80% 10%, rgba(217,173,99,.08), transparent 30%),
+      linear-gradient(180deg,#060a18 0%,#090a17 55%,#050711 100%)}
+    #starry-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+    .veil{position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(6,10,24,.05),rgba(6,10,24,.25) 55%,rgba(6,10,24,.65))}
+    .page{position:relative;z-index:2;min-height:100vh;padding:22px 18px 50px}
+    .shell{max-width:1180px;margin:0 auto}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:24px}
+    .back{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--texte);padding:10px 14px;border:1px solid rgba(167,139,250,.22);border-radius:999px;background:rgba(14,12,31,.6);backdrop-filter:blur(12px);font-size:14px}
+    .badge{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--or2);padding:9px 12px;border-radius:999px;border:1px solid rgba(217,173,99,.26);background:rgba(12,10,28,.55)}
+    .hero{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(300px,.88fr);gap:28px;align-items:center}
+    .copy{padding:14px 0}
+    .eyebrow{color:var(--or2);letter-spacing:.16em;text-transform:uppercase;font-size:12px;margin-bottom:14px}
+    h1{font-family:Georgia,"Times New Roman",serif;font-weight:600;line-height:.95;margin:0 0 18px;font-size:clamp(46px,7vw,92px);background:linear-gradient(180deg,#fff4d6 0%,#e0b468 55%,#9f6d2c 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 30px rgba(217,173,99,.08)}
+    .lead{font-size:clamp(18px,2vw,23px);line-height:1.55;color:#efe9fb;max-width:680px;margin:0 0 20px}
+    .sub{color:var(--muted);font-size:15px;line-height:1.7;max-width:680px;margin:0 0 26px}
+    .actions{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{appearance:none;border:0;border-radius:14px;padding:14px 20px;font-weight:800;font-size:15px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:.2s ease}
+    .btn-primary{color:#160e1d;background:linear-gradient(135deg,#f0d7a5,#c99043);box-shadow:0 10px 40px rgba(217,173,99,.18)}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 14px 44px rgba(217,173,99,.24)}
+    .btn-secondary{color:#f8f4ff;background:rgba(123,92,255,.12);border:1px solid rgba(167,139,250,.28)}
+    .visual{position:relative}
+    .visual:before{content:"";position:absolute;inset:8% 2% 5%;border-radius:32px;background:radial-gradient(circle at 50% 35%,rgba(123,92,255,.30),transparent 46%),radial-gradient(circle at 60% 65%,rgba(217,173,99,.18),transparent 42%);filter:blur(28px);z-index:-1}
+    .visual img{width:100%;display:block;border-radius:28px;border:1px solid rgba(217,173,99,.28);box-shadow:0 28px 80px rgba(0,0,0,.45),0 0 40px rgba(123,92,255,.12)}
+    .info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}
+    .info{background:linear-gradient(180deg,rgba(16,13,35,.78),rgba(7,8,20,.78));border:1px solid rgba(217,173,99,.18);border-radius:18px;padding:18px;backdrop-filter:blur(12px)}
+    .info .ico{font-size:22px;margin-bottom:8px}.info h3{font-size:15px;margin:0 0 6px;color:#f5e7c7}.info p{font-size:13px;line-height:1.55;margin:0;color:var(--muted)}
+    .note{margin-top:24px;padding:16px 18px;border-radius:16px;border:1px dashed rgba(167,139,250,.28);background:rgba(123,92,255,.08);color:#d9d3e8;font-size:13px;line-height:1.6}
+    @media (max-width:900px){.hero{grid-template-columns:1fr}.visual{order:-1;max-width:680px;margin:0 auto}.copy{text-align:center}.lead,.sub{margin-left:auto;margin-right:auto}.actions{justify-content:center}.info-grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:560px){.page{padding:16px 12px 34px}.topbar{align-items:flex-start}.badge{display:none}.info-grid{grid-template-columns:1fr}.visual img{border-radius:20px}.btn{width:100%;justify-content:center}}
+  </style>
+</head>
+<body>
+  <canvas id="starry-canvas"></canvas>
+  <div class="veil"></div>
+  <main class="page">
+    <div class="shell">
+      <div class="topbar">
+        <a class="back" href="/dashbord.html">← Retour au portail</a>
+        <div class="badge">Aletheia · Atelier des Runes</div>
+      </div>
+
+      <section class="hero">
+        <div class="copy">
+          <div class="eyebrow">Carnet sacré de tirages, intuitions et cheminement</div>
+          <h1>Journal<br>de Rune</h1>
+          <p class="lead">Un espace personnel pour conserver tes tirages, écouter tes ressentis, reconnaître les synchronicités et suivre ton évolution avec les runes.</p>
+          <p class="sub">Le Journal de Rune accompagne l’Oracle d’Aletheia. Chaque consultation peut devenir une trace vivante : la question posée, les runes tirées, ton interprétation, ce que tu ressens et ce qui se confirme avec le temps.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="/journal-runes-app.html">📖 Ouvrir le Journal</a>
+            <a class="btn btn-secondary" href="/tirage-runes.html">ᚱ Faire un tirage</a>
+          </div>
+        </div>
+
+        <div class="visual">
+          <img src="/images/outils/journal-runes-presentation.png" alt="Présentation du Journal de Rune avec Aletheia" />
+        </div>
+      </section>
+
+      <section class="info-grid" aria-label="Fonctions du Journal de Rune">
+        <article class="info"><div class="ico">✦</div><h3>Conserver tes tirages</h3><p>Question, date, cartes tirées et message reçu restent regroupés au même endroit.</p></article>
+        <article class="info"><div class="ico">◈</div><h3>Écrire ton ressenti</h3><p>Ajoute ce que la lecture éveille en toi avant même de chercher une explication.</p></article>
+        <article class="info"><div class="ico">☾</div><h3>Observer les synchronicités</h3><p>Reviens plus tard sur tes notes et vois les liens, répétitions et confirmations.</p></article>
+        <article class="info"><div class="ico">ᚱ</div><h3>Approfondir avec Aletheia</h3><p>Ton journal devient le prolongement de ton apprentissage et de tes lectures runiques.</p></article>
+      </section>
+
+      <div class="note">Cette page est la page de présentation du Journal dans <strong>Outils</strong>. Le bouton « Ouvrir le Journal » pointe volontairement vers <code>/journal-runes-app.html</code>, afin que le futur journal interactif puisse être branché sans modifier cette présentation.</div>
+    </div>
+  </main>
+  <script src="/js/starry-bg.js"></script>
+</body>
+</html>
