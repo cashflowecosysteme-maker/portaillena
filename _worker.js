@@ -833,7 +833,7 @@ async function handleOvilusConsult(request, env) {
 
   function isRefusalText(text) {
     const t = String(text || '').toLowerCase().replace(/[’]/g, "'");
-    return /(?:je (?:préfère|prefere) ne pas répondre|je ne veux pas répondre|je ne peux pas répondre|pas cette question|je ne veux pas aller là|demande-moi autre chose|je préfère éviter|je ne souhaite pas répondre|je n(?:'|’)ai pas envie de répondre|je refuse de répondre)/i.test(t);
+    return /(?:je (?:préfère|prefere) ne pas répondre|je ne veux pas répondre|je ne peux pas répondre|pas cette question|je ne veux pas aller là|demande-moi autre chose|je préfère éviter|je ne souhaite pas répondre|je n(?:'|’)ai pas envie de répondre|je refuse de répondre|je n(?:'|’)ai rien de plus à ajouter(?: maintenant)?|rien de plus à ajouter(?: maintenant)?)/i.test(t);
   }
 
   async function forceRealAnswer() {
@@ -864,6 +864,23 @@ async function handleOvilusConsult(request, env) {
       .replace(/\*[^*]{0,80}\*/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
+  }
+
+  // Si la présence refuse de répondre, ce refus devient un vrai silence Ovilus.
+  // Aucun texte de refus ne doit être affiché à l'utilisateur.
+  if (isRefusalText(content)) {
+    ovState.refusalStreak = 1;
+    ovState.silentLeft = 0;
+    ovState.lastPersona = persona.id;
+    await env.SPIRITUEL_KV.put(`ovilus_state:${token}`, JSON.stringify(ovState), { expirationTtl: SESSION_TTL });
+    return json({
+      silence: true,
+      response: '',
+      status: 'Aucune réponse.',
+      mode: 'fluide',
+      persona: persona.label || '',
+      interrupt: null
+    });
   }
 
   // Après la manifestation, « … » n'est jamais une réponse. On retente une vraie réponse.
@@ -957,6 +974,33 @@ async function handleOvilusPrenomsSet(request, env) {
 
 // ═══════════ FIN OVILUS ═══════════
 
+// Compatibilité Nouvelle Coque Léna → Ovilus historique.
+// Le bloc Ovilus ci-dessus reste inchangé : si la nouvelle page n'envoie pas
+// explicitement newSeance:true au premier appel, on le fait uniquement lorsque
+// aucun état Ovilus n'existe encore pour ce token.
+async function handleOvilusConsultCompat(request, env) {
+  let body;
+  try { body = await request.clone().json(); }
+  catch (_) { return handleOvilusConsult(request, env); }
+
+  const token = String(body?.token || '');
+  if (!body?.newSeance && token && env.SPIRITUEL_KV) {
+    const existingState = await env.SPIRITUEL_KV.get(`ovilus_state:${token}`);
+    if (!existingState) {
+      body.newSeance = true;
+      const headers = new Headers(request.headers);
+      headers.set('content-type', 'application/json; charset=utf-8');
+      headers.delete('content-length');
+      request = new Request(request.url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body)
+      });
+    }
+  }
+  return handleOvilusConsult(request, env);
+}
+
 function staticReq(req,path){return new Request(new URL(path,req.url),req)}
 export default{async fetch(req,env){const u=new URL(req.url),p=u.pathname;try{
  if(p==='/api/login'&&req.method==='POST')return login(req,env);
@@ -964,7 +1008,7 @@ export default{async fetch(req,env){const u=new URL(req.url),p=u.pathname;try{
  if(p==='/api/resume-session'&&req.method==='POST')return resumeSession(req,env);
  if(p==='/api/check-auth'){const b=await req.json().catch(()=>({})),s=await session(env,b.token);return json({valid:!!s,email:s?.email||'',firstname:s?.firstname||''})}
  if(p==='/api/chat'&&req.method==='POST')return chat(req,env);
- if(p==='/api/ovilus/consult'&&req.method==='POST')return handleOvilusConsult(req,env);
+ if(p==='/api/ovilus/consult'&&req.method==='POST')return handleOvilusConsultCompat(req,env);
  if(p==='/api/ovilus/cast'&&req.method==='GET')return handleOvilusCast(req,env);
  if(p==='/api/admin/ovilus/config'&&req.method==='GET')return handleOvilusConfigGet(req,env);
  if(p==='/api/admin/ovilus/config'&&req.method==='POST')return handleOvilusConfigSet(req,env);
