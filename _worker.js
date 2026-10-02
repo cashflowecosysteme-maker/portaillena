@@ -53,6 +53,7 @@ async function login(req,env){
  const ttl=remember?REMEMBER_TTL:SESSION_TTL;
  const t=tok(),sess={email,firstname,portal:PORTAL.id,accessType:access.type,expiresAt:access.expiresAt||null,remember};
  await env.CASHFLOW_KV.put('portal:session:'+t,JSON.stringify(sess),{expirationTtl:ttl});
+ await env.CASHFLOW_KV.put('session:'+t,JSON.stringify(sess),{expirationTtl:ttl});
  return json({success:true,token:t,firstname:sess.firstname,user:sess,remember},200,{'Set-Cookie':sessionCookie(t,remember?REMEMBER_TTL:null)})
 }
 
@@ -68,12 +69,13 @@ async function resumeSession(req,env){
  const t=tok();
  const sess={email:remembered.email,firstname:remembered.firstname,portal:PORTAL.id,accessType:access.type,expiresAt:access.expiresAt||null,remember:false,resumedFromRemember:true};
  await env.CASHFLOW_KV.put('portal:session:'+t,JSON.stringify(sess),{expirationTtl:SESSION_TTL});
+ await env.CASHFLOW_KV.put('session:'+t,JSON.stringify(sess),{expirationTtl:SESSION_TTL});
  return json({valid:true,token:t,email:sess.email,firstname:sess.firstname});
 }
 async function logout(req,env){
  let bodyToken='';try{const b=await req.json();bodyToken=String(b.token||'')}catch(_){}
  const cookieToken=cookieValue(req,'nyxia_portal_session');
- for(const t of new Set([bodyToken,cookieToken].filter(Boolean))){try{await env.CASHFLOW_KV.delete('portal:session:'+t)}catch(_){}}
+ for(const t of new Set([bodyToken,cookieToken].filter(Boolean))){try{await env.CASHFLOW_KV.delete('portal:session:'+t)}catch(_){} try{await env.CASHFLOW_KV.delete('session:'+t)}catch(_){}}
  return json({success:true},200,{'Set-Cookie':clearSessionCookie()})
 }
 async function requireSession(req,env){const u=new URL(req.url);let t=u.searchParams.get('token')||u.searchParams.get('t')||'';if(req.method!=='GET'){try{const c=req.clone();const b=await c.json();t=b.token||t}catch(_){}}return session(env,t)}
@@ -468,18 +470,25 @@ async function nyxiaRepertoireFeed(){
 }
 
 
-// ── Compatibilité de branchement pour l'Ovilus historique de Léna ──
-// Le bloc Ovilus ci-dessous reste copié mot pour mot depuis l'ancien Worker.
-// Le nouveau portail stocke toutefois ses sessions sous portal:session:<token>.
+
+// --- Compatibilité stricte avec l’Ovilus historique de Léna ---
 async function getSessionFromToken(env, token) {
-  return session(env, token);
+  if (!token) return null;
+  try {
+    const raw = await env.CASHFLOW_KV.get(`session:${token}`);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (_) { return null; }
 }
+
+
 async function requireAdmin(request, env) {
   const token = request.headers.get('X-Admin-Token');
   if (!token) return false;
   const raw = await env.CASHFLOW_KV.get(`admin_session:${token}`);
   return !!raw;
 }
+
 
 // ═══════════ OVILUS (branché au dashboard — données sur SPIRITUEL_KV, auth via la session du portail) ═══════════
 const OVILUS_MODEL_FALLBACK = 'aion-labs/aion-3.5-mini';
@@ -833,7 +842,7 @@ async function handleOvilusConsult(request, env) {
 
   function isRefusalText(text) {
     const t = String(text || '').toLowerCase().replace(/[’]/g, "'");
-    return /(?:je (?:préfère|prefere) ne pas répondre|je ne veux pas répondre|je ne peux pas répondre|pas cette question|je ne veux pas aller là|demande-moi autre chose|je préfère éviter|je ne souhaite pas répondre|je n(?:'|’)ai pas envie de répondre|je refuse de répondre|je n(?:'|’)ai rien de plus à ajouter(?: maintenant)?|rien de plus à ajouter(?: maintenant)?)/i.test(t);
+    return /(?:je (?:préfère|prefere) ne pas répondre|je ne veux pas répondre|je ne peux pas répondre|pas cette question|je ne veux pas aller là|demande-moi autre chose|je préfère éviter|je ne souhaite pas répondre|je n(?:'|’)ai pas envie de répondre|je refuse de répondre)/i.test(t);
   }
 
   async function forceRealAnswer() {
@@ -864,23 +873,6 @@ async function handleOvilusConsult(request, env) {
       .replace(/\*[^*]{0,80}\*/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
-  }
-
-  // Si la présence refuse de répondre, ce refus devient un vrai silence Ovilus.
-  // Aucun texte de refus ne doit être affiché à l'utilisateur.
-  if (isRefusalText(content)) {
-    ovState.refusalStreak = 1;
-    ovState.silentLeft = 0;
-    ovState.lastPersona = persona.id;
-    await env.SPIRITUEL_KV.put(`ovilus_state:${token}`, JSON.stringify(ovState), { expirationTtl: SESSION_TTL });
-    return json({
-      silence: true,
-      response: '',
-      status: 'Aucune réponse.',
-      mode: 'fluide',
-      persona: persona.label || '',
-      interrupt: null
-    });
   }
 
   // Après la manifestation, « … » n'est jamais une réponse. On retente une vraie réponse.
@@ -974,79 +966,6 @@ async function handleOvilusPrenomsSet(request, env) {
 
 // ═══════════ FIN OVILUS ═══════════
 
-// Compatibilité Nouvelle Coque Léna → Ovilus historique.
-// Le bloc Ovilus ci-dessus reste inchangé : si la nouvelle page n'envoie pas
-// explicitement newSeance:true au premier appel, on le fait uniquement lorsque
-// aucun état Ovilus n'existe encore pour ce token.
-async function handleOvilusConsultCompat(request, env) {
-  let body;
-  try { body = await request.clone().json(); }
-  catch (_) { return handleOvilusConsult(request, env); }
-
-  const token = String(body?.token || '');
-  if (token && env.SPIRITUEL_KV) {
-    const stateKey = `ovilus_state:${token}`;
-    const gateKey = `ovilus_first5_v2:${token}`;
-
-    // RÈGLE PORTAIL LÉNA : les 5 premières questions d'une séance sont
-    // TOUJOURS silencieuses. Aucune IA n'est appelée avant la 6e question.
-    // Un newSeance explicite redémarre ce compteur à zéro.
-    if (body?.newSeance) {
-      await env.SPIRITUEL_KV.put(gateKey, '0', { expirationTtl: SESSION_TTL });
-      const raw = await env.SPIRITUEL_KV.get(stateKey);
-      let st = {};
-      try { st = raw ? JSON.parse(raw) : {}; } catch (_) { st = {}; }
-      st.silentLeft = 0;
-      st.spokenOnce = false;
-      st.refusalStreak = 0;
-      delete st.ovilusPersona;
-      delete st.currentEntity;
-      delete st.ovilusIntention;
-      st.castIndex = -1;
-      await env.SPIRITUEL_KV.put(stateKey, JSON.stringify(st), { expirationTtl: SESSION_TTL });
-      body.newSeance = false;
-    }
-
-    let asked = Number(await env.SPIRITUEL_KV.get(gateKey) || 0);
-    if (!Number.isFinite(asked) || asked < 0) asked = 0;
-
-    if (asked < 5) {
-      asked += 1;
-      await env.SPIRITUEL_KV.put(gateKey, String(asked), { expirationTtl: SESSION_TTL });
-      return json({
-        silence: true,
-        response: '',
-        status: 'Aucune réponse.',
-        firstFiveSilence: true,
-        questionNumber: asked
-      });
-    }
-
-    // À partir de la 6e question, on laisse l'Ovilus original fonctionner.
-    // On neutralise seulement un ancien compteur de démarrage qui pourrait
-    // provenir d'un essai précédent, afin qu'il ne prolonge pas artificiellement
-    // les 5 silences obligatoires.
-    const raw = await env.SPIRITUEL_KV.get(stateKey);
-    let st = {};
-    try { st = raw ? JSON.parse(raw) : {}; } catch (_) { st = {}; }
-    if (Number(st.silentLeft || 0) > 0) {
-      st.silentLeft = 0;
-      await env.SPIRITUEL_KV.put(stateKey, JSON.stringify(st), { expirationTtl: SESSION_TTL });
-    }
-    body.newSeance = false;
-
-    const headers = new Headers(request.headers);
-    headers.set('content-type', 'application/json; charset=utf-8');
-    headers.delete('content-length');
-    request = new Request(request.url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body)
-    });
-  }
-  return handleOvilusConsult(request, env);
-}
-
 function staticReq(req,path){return new Request(new URL(path,req.url),req)}
 export default{async fetch(req,env){const u=new URL(req.url),p=u.pathname;try{
  if(p==='/api/login'&&req.method==='POST')return login(req,env);
@@ -1054,16 +973,6 @@ export default{async fetch(req,env){const u=new URL(req.url),p=u.pathname;try{
  if(p==='/api/resume-session'&&req.method==='POST')return resumeSession(req,env);
  if(p==='/api/check-auth'){const b=await req.json().catch(()=>({})),s=await session(env,b.token);return json({valid:!!s,email:s?.email||'',firstname:s?.firstname||''})}
  if(p==='/api/chat'&&req.method==='POST')return chat(req,env);
- if(p==='/api/ovilus/consult'&&req.method==='POST')return handleOvilusConsultCompat(req,env);
- if(p==='/api/ovilus/cast'&&req.method==='GET')return handleOvilusCast(req,env);
- if(p==='/api/admin/ovilus/config'&&req.method==='GET')return handleOvilusConfigGet(req,env);
- if(p==='/api/admin/ovilus/config'&&req.method==='POST')return handleOvilusConfigSet(req,env);
- if(p==='/api/admin/ovilus/mots'&&req.method==='GET')return handleOvilusMotsGet(req,env);
- if(p==='/api/admin/ovilus/mots'&&req.method==='POST')return handleOvilusMotsAdd(req,env);
- if(p==='/api/admin/ovilus/mots'&&req.method==='DELETE')return handleOvilusMotsDelete(req,env);
- if(p==='/api/admin/ovilus/prenoms'&&req.method==='GET')return handleOvilusPrenomsGet(req,env);
- if(p==='/api/admin/ovilus/prenoms'&&req.method==='POST')return handleOvilusPrenomsSet(req,env);
-
  if((p==='/api/image/generate'||p==='/api/image')&&req.method==='POST')return imageGenerate(req,env);
  if(p==='/api/tts'&&req.method==='POST')return tts(req,env);
  if(p==='/api/media/search'&&req.method==='GET')return mediaSearch(req,env);
@@ -1085,6 +994,15 @@ export default{async fetch(req,env){const u=new URL(req.url),p=u.pathname;try{
  if(p==='/api/agent/profile'&&req.method==='GET')return agentProfileApi(req,env);
  if(p==='/api/nyxia-universe/boutique'&&req.method==='GET')return nyxiaBoutiqueFeed();
  if(p==='/api/nyxia-universe/repertoire'&&req.method==='GET')return nyxiaRepertoireFeed();
+ if(p==='/api/ovilus/consult'&&req.method==='POST')return await handleOvilusConsult(req,env);
+ if(p==='/api/ovilus/cast'&&req.method==='GET')return await handleOvilusCast(req,env);
+ if(p==='/api/admin/ovilus/config'&&req.method==='GET')return await handleOvilusConfigGet(req,env);
+ if(p==='/api/admin/ovilus/config'&&req.method==='POST')return await handleOvilusConfigSet(req,env);
+ if(p==='/api/admin/ovilus/mots'&&req.method==='GET')return await handleOvilusMotsGet(req,env);
+ if(p==='/api/admin/ovilus/mots'&&req.method==='POST')return await handleOvilusMotsAdd(req,env);
+ if(p==='/api/admin/ovilus/mots'&&req.method==='DELETE')return await handleOvilusMotsDelete(req,env);
+ if(p==='/api/admin/ovilus/prenoms'&&req.method==='GET')return await handleOvilusPrenomsGet(req,env);
+ if(p==='/api/admin/ovilus/prenoms'&&req.method==='POST')return await handleOvilusPrenomsSet(req,env);
  if(p==='/api/health')return json({ok:true,portal:PORTAL.id,features:['chat','formation','messagerie','media-bank','image-generation','tts','degustation']});
  }catch(e){console.error(e);return json({error:String(e?.message||e)},500)}
  if(env.ASSETS){
