@@ -984,9 +984,9 @@ async function handleOvilusConsultCompat(request, env) {
   catch (_) { return handleOvilusConsult(request, env); }
 
   const token = String(body?.token || '');
-  if (token && env.SPIRITUEL_KV && body?.mode !== 'mots') {
+  if (token && env.SPIRITUEL_KV) {
     const stateKey = `ovilus_state:${token}`;
-    const gateKey = `ovilus_first5:${token}`;
+    const gateKey = `ovilus_first5_v2:${token}`;
 
     // RÈGLE PORTAIL LÉNA : les 5 premières questions d'une séance sont
     // TOUJOURS silencieuses. Aucune IA n'est appelée avant la 6e question.
