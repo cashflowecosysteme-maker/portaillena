@@ -833,7 +833,7 @@ async function handleOvilusConsult(request, env) {
 
   function isRefusalText(text) {
     const t = String(text || '').toLowerCase().replace(/[’]/g, "'");
-    return /(?:je (?:préfère|prefere) ne pas répondre|je ne veux pas répondre|je ne peux pas répondre|pas cette question|je ne veux pas aller là|demande-moi autre chose|je préfère éviter|je ne souhaite pas répondre|je n(?:'|’)ai pas envie de répondre|je refuse de répondre)/i.test(t);
+    return /(?:je (?:préfère|prefere) ne pas répondre|je ne veux pas répondre|je ne peux pas répondre|pas cette question|je ne veux pas aller là|demande-moi autre chose|je préfère éviter|je ne souhaite pas répondre|je n(?:'|’)ai pas envie de répondre|je refuse de répondre|je n(?:'|’)ai rien de plus à ajouter(?: maintenant)?|rien de plus à ajouter(?: maintenant)?)/i.test(t);
   }
 
   async function forceRealAnswer() {
@@ -864,6 +864,23 @@ async function handleOvilusConsult(request, env) {
       .replace(/\*[^*]{0,80}\*/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
+  }
+
+  // Si la présence refuse de répondre, ce refus devient un vrai silence Ovilus.
+  // Aucun texte de refus ne doit être affiché à l'utilisateur.
+  if (isRefusalText(content)) {
+    ovState.refusalStreak = 1;
+    ovState.silentLeft = 0;
+    ovState.lastPersona = persona.id;
+    await env.SPIRITUEL_KV.put(`ovilus_state:${token}`, JSON.stringify(ovState), { expirationTtl: SESSION_TTL });
+    return json({
+      silence: true,
+      response: '',
+      status: 'Aucune réponse.',
+      mode: 'fluide',
+      persona: persona.label || '',
+      interrupt: null
+    });
   }
 
   // Après la manifestation, « … » n'est jamais une réponse. On retente une vraie réponse.
@@ -967,10 +984,25 @@ async function handleOvilusConsultCompat(request, env) {
   catch (_) { return handleOvilusConsult(request, env); }
 
   const token = String(body?.token || '');
-  if (!body?.newSeance && token && env.SPIRITUEL_KV) {
-    const existingState = await env.SPIRITUEL_KV.get(`ovilus_state:${token}`);
-    if (!existingState) {
+  if (token && env.SPIRITUEL_KV && body?.mode !== 'mots') {
+    const stateKey = `ovilus_state:${token}`;
+    const existingStateRaw = await env.SPIRITUEL_KV.get(stateKey);
+    let existingState = {};
+    try { existingState = existingStateRaw ? JSON.parse(existingStateRaw) : {}; } catch (_) { existingState = {}; }
+
+    // La nouvelle coque ne signale pas toujours le début de séance.
+    // Ce marqueur externe au bloc Ovilus garantit UNE SEULE initialisation
+    // du délai aléatoire de manifestation, même si un ancien état existe déjà.
+    if (body?.newSeance) {
+      existingState.startupDelayInitialized = true;
+      await env.SPIRITUEL_KV.put(stateKey, JSON.stringify(existingState), { expirationTtl: SESSION_TTL });
+    } else if (existingState.startupDelayInitialized !== true) {
+      existingState.startupDelayInitialized = true;
+      await env.SPIRITUEL_KV.put(stateKey, JSON.stringify(existingState), { expirationTtl: SESSION_TTL });
       body.newSeance = true;
+    }
+
+    if (body?.newSeance) {
       const headers = new Headers(request.headers);
       headers.set('content-type', 'application/json; charset=utf-8');
       headers.delete('content-length');
