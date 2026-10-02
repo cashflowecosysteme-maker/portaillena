@@ -994,6 +994,7 @@ export default{async fetch(req,env){const u=new URL(req.url),p=u.pathname;try{
  if(p==='/api/agent/profile'&&req.method==='GET')return agentProfileApi(req,env);
  if(p==='/api/nyxia-universe/boutique'&&req.method==='GET')return nyxiaBoutiqueFeed();
  if(p==='/api/nyxia-universe/repertoire'&&req.method==='GET')return nyxiaRepertoireFeed();
+ if((p.startsWith('/api/ovilus/')||p.startsWith('/api/admin/ovilus/'))&&!env.SPIRITUEL_KV)return json({error:'Binding Cloudflare manquant : SPIRITUEL_KV. Relie ce Worker au même namespace KV spirituel que l’ancien Worker Léna.'},500);
  if(p==='/api/ovilus/consult'&&req.method==='POST')return await handleOvilusConsult(req,env);
  if(p==='/api/ovilus/cast'&&req.method==='GET')return await handleOvilusCast(req,env);
  if(p==='/api/admin/ovilus/config'&&req.method==='GET')return await handleOvilusConfigGet(req,env);
