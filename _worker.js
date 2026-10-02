@@ -250,8 +250,227 @@ async function formationOpen(req,env){
  return json({content:formationContent(f,pos,s.firstname,false),mode:'follow',formationId:f.id,status:'active'});
 }
 
+function sanitizeAssistantContent(content){
+ const fallback='Je suis là avec toi. Dis-moi ce que tu veux faire avancer.';
+ let s=String(content||'').trim();
+ if(!s)return fallback;
+ s=s
+  .replace(/\[(?:VIDEO|AUDIO|PDF|LINK|PHOTO)\s*:[^\]]+\]/gi,'')
+  .replace(/\[[^\]]+\]\((https?:\/\/[^\s)]+)\)/gi,'')
+  .replace(/https?:\/\/[^\s<]+/gi,'')
+  .replace(/\n{3,}/g,'\n\n')
+  .trim();
+ return s||fallback;
+}
 
-// ───────────── COMPATIBILITÉ OVILUS AVEC LA COQUE PORTAIL V2 ─────────────
+async function openrouter(env,messages,model){const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.OPENROUTER_API_KEY,'HTTP-Referer':'https://nyxia.top','X-Title':'NyXia Portail'},body:JSON.stringify({model:model||DEFAULT_MODEL,messages,max_tokens:900,temperature:.72})});if(!r.ok)throw Error('OpenRouter '+r.status);const d=await r.json();return d.choices?.[0]?.message?.content?.trim()||''}
+async function chat(req,env){const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);const key=norm(b.agent),a=AGENTS[key];if(!a||!ACTIVE.has(key))return json({error:'Personnage indisponible.'},403);
+ const ft=await formationTurn(env,s,key,b.message||'',b.formationId||'',b.formationMode||'');if(ft)return json(ft);
+ const brain=await retrieve(env,a.vectorNamespace||key,b.message||'');let imageInfo='';if(b.attachment?.dataUrl)imageInfo='\nLa personne a joint une image nommée '+String(b.attachment.name||'image')+'.';
+ const sys=`Tu es ${a.name||key}, personnage de l’univers NyXia dans le portail « ${PORTAL.title} ».
+Rôle : ${a.sub||a.visibleRole||''}
+Mission : ${a.mission||a.prompt||''}
+Personnalité : ${a.personality||''}
+Style : ${a.tone||a.languageStyle||''}
+Tu réponds en français naturel. Tu restes fidèle à ton identité et à la mission de ce portail.
+Tu n’inventes jamais de PDF, vidéo, audio, lien ou URL. Tu n’envoies aucun média spontané et tu ne simules jamais une ressource inexistante. Si une ressource n’est pas réellement configurée dans le portail, tu n’en parles pas comme si elle existait. Si la personne veut une image, réponds naturellement sans inventer de lien : le portail gère la création d’image via le bouton 🎨 ou une demande explicite.
+${brain?'\nConnaissances pertinentes :\n'+brain:''}${imageInfo}`;
+ const messages=[{role:'system',content:sys},...(Array.isArray(b.history)?b.history.slice(-14):[]),{role:'user',content:String(b.message||'')}];
+ let content;try{content=await openrouter(env,messages,a.modelPrimary||DEFAULT_MODEL)}catch(_){content=await openrouter(env,messages,a.modelFallback||FALLBACK_MODEL)}content=sanitizeAssistantContent(content);return json({content})}
+async function imageGenerate(req,env){const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);const p=String(b.prompt||'').trim();if(!p)return json({error:'Décris l’image à créer.'},400);
+ const apiKey=String(env.AIMLAPI_CREATOR_KEY||'');if(!apiKey)return json({error:'Aucune clé AIMLAPI n’est configurée pour ce portail.'},500);const agent=AGENTS[norm(b.agent)]||{};
+ const style=[p,'esthétique élégante NyXia','haute qualité','sans texte sauf demandé explicitement'];if(agent.name)style.push('cohérent avec l’univers de '+agent.name);
+ const payload={model:'flux/schnell',prompt:style.join(', '),num_images:1,image_size:String(b.format||'square_hd'),enable_safety_checker:true};
+ const r=await fetch('https://api.aimlapi.com/v1/images/generations',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},body:JSON.stringify(payload)});
+ if(!r.ok){const txt=await r.text().catch(()=> '');return json({error:'Génération d’image indisponible pour le moment.',details:txt.slice(0,240)},502)}
+ const d=await r.json().catch(()=>({}));let url='';const first=Array.isArray(d.data)&&d.data[0]?d.data[0]:null;
+ if(first){if(first.url)url=String(first.url);else if(first.b64_json)url='data:image/png;base64,'+String(first.b64_json);else if(first.b64)url='data:image/png;base64,'+String(first.b64)}
+ if(!url&&d.url)url=String(d.url);if(!url&&d.b64_json)url='data:image/png;base64,'+String(d.b64_json);if(!url)return json({error:'Aucune image valide n’a été retournée par AIMLAPI.'},502);
+ return json({url,caption:'Voici l’image que j’ai créée pour toi.'})}
+async function tts(req,env){const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);const a=AGENTS[norm(b.agent)]||{},voice=String(a.voiceId||'');if(!voice||!env.ELEVENLABS_API_KEY)return json({error:'Voix non configurée.'},404);const r=await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+encodeURIComponent(voice),{method:'POST',headers:{'xi-api-key':env.ELEVENLABS_API_KEY,'Content-Type':'application/json','Accept':'audio/mpeg'},body:JSON.stringify({text:String(b.text||'').slice(0,4500),model_id:'eleven_multilingual_v2'})});if(!r.ok)return json({error:'Voix indisponible.'},502);return new Response(await r.arrayBuffer(),{headers:{'Content-Type':'audio/mpeg'}})}
+function mediaFormatSize(format){if(format==='portrait')return{orientation:'portrait',pixabayOrientation:'vertical'};if(format==='landscape')return{orientation:'landscape',pixabayOrientation:'horizontal'};return{orientation:'',pixabayOrientation:'all'}}
+async function searchImages(env,q,format){
+ const results=[],seen=new Set(),fmt=mediaFormatSize(format);
+ const add=x=>{const k=x&&x.downloadUrl;if(!k||seen.has(k))return;seen.add(k);results.push(x)}
+ const pexels=String(env.PEXELS_KEY||'');
+ if(pexels){
+  try{
+   let url='https://api.pexels.com/v1/search?per_page=18&query='+encodeURIComponent(q);
+   if(fmt.orientation)url+='&orientation='+fmt.orientation;
+   const r=await fetch(url,{headers:{Authorization:pexels}}),d=await r.json();
+   for(const p of d.photos||[])add({type:'image',provider:'Pexels',previewUrl:p.src?.medium||p.src?.small,downloadUrl:p.src?.original||p.src?.large2x||p.src?.large});
+  }catch(_){}
+ }
+ const pix=String(env.PIXABAY_KEY_IMAGES||'');
+ if(pix){
+  try{
+   const url='https://pixabay.com/api/?key='+encodeURIComponent(pix)+'&q='+encodeURIComponent(q)+'&per_page=18&safesearch=true&orientation='+fmt.pixabayOrientation;
+   const r=await fetch(url),d=await r.json();
+   for(const p of d.hits||[])add({type:'image',provider:'Pixabay',previewUrl:p.webformatURL||p.previewURL,downloadUrl:p.largeImageURL||p.webformatURL});
+  }catch(_){}
+ }
+ const unsplash=String(env.UNSPLASH_ACCES_KEY||'');
+ if(unsplash){
+  try{
+   let url='https://api.unsplash.com/search/photos?per_page=18&query='+encodeURIComponent(q);
+   if(fmt.orientation)url+='&orientation='+fmt.orientation;
+   const r=await fetch(url,{headers:{Authorization:'Client-ID '+unsplash}}),d=await r.json();
+   for(const p of d.results||[])add({type:'image',provider:'Unsplash',previewUrl:p.urls?.small||p.urls?.thumb,downloadUrl:p.urls?.full||p.urls?.regular});
+  }catch(_){}
+ }
+ return results.slice(0,36)
+}
+async function searchVideos(env,q){
+ const results=[],seen=new Set(),add=x=>{const k=x&&x.videoUrl;if(!k||seen.has(k))return;seen.add(k);results.push(x)}
+ const pexels=String(env.PEXELS_KEY||'');
+ if(pexels){
+  try{
+   const r=await fetch('https://api.pexels.com/videos/search?per_page=12&query='+encodeURIComponent(q),{headers:{Authorization:pexels}}),d=await r.json();
+   for(const v of d.videos||[]){const f=(v.video_files||[]).slice().sort((a,b)=>(b.width||0)-(a.width||0))[0];if(f)add({type:'video',provider:'Pexels',previewUrl:v.image||'',videoUrl:f.link,downloadUrl:f.link})}
+  }catch(_){}
+ }
+ const pix=String(env.PIXABAY_KEY_VIDEO||'');
+ if(pix){
+  try{
+   const r=await fetch('https://pixabay.com/api/videos/?key='+encodeURIComponent(pix)+'&q='+encodeURIComponent(q)+'&per_page=12&safesearch=true'),d=await r.json();
+   for(const v of d.hits||[]){const f=v.videos?.medium||v.videos?.small||v.videos?.tiny||v.videos?.large;if(f)add({type:'video',provider:'Pixabay',previewUrl:v.picture_id?('https://i.vimeocdn.com/video/'+v.picture_id+'_640x360.jpg'):'',videoUrl:f.url,downloadUrl:f.url})}
+  }catch(_){}
+ }
+ return results.slice(0,24)
+}
+async function searchSounds(env,q){
+ const results=[];
+ const key=String(env.FREESOUND_API_KEY||'');
+ if(!key)return results;
+ try{
+  const url='https://freesound.org/apiv2/search/text/?query='+encodeURIComponent(q)+'&page_size=24&fields=id,name,previews,duration,url';
+  const r=await fetch(url,{headers:{Authorization:'Token '+key}}),d=await r.json();
+  for(const s of d.results||[]){const audio=s.previews?.['preview-hq-mp3']||s.previews?.['preview-lq-mp3']||s.previews?.['preview-hq-ogg'];if(audio)results.push({type:'sound',provider:'Freesound',name:s.name||'Son',duration:Math.round(Number(s.duration||0)),audioUrl:audio,downloadUrl:s.url||audio})}
+ }catch(_){}
+ return results
+}
+async function mediaImages(req,env){
+ const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);
+ const q=String(b.query||'').trim();if(!q)return json({results:[]});
+ const images=await searchImages(env,q,String(b.format||'')),videos=await searchVideos(env,q);
+ return json({results:[...images,...videos]})
+}
+async function mediaSounds(req,env){
+ const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);
+ const q=String(b.query||'').trim();if(!q)return json({results:[]});
+ return json({results:await searchSounds(env,q)})
+}
+async function mediaSearch(req,env){
+ const u=new URL(req.url),s=await session(env,u.searchParams.get('token'));if(!s)return json({error:'Session expirée.'},401);
+ const q=String(u.searchParams.get('q')||'').trim();if(!q)return json({results:[]});
+ return json({results:await searchImages(env,q,String(u.searchParams.get('format')||''))})
+}
+async function msgSend(req,env){
+ const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);
+ const to=String(b.to||b.toEmail||'__admin__').trim()||'__admin__';
+ const id=crypto.randomUUID(),createdAt=new Date().toISOString();
+ const m={id,from:s.email,fromName:s.firstname||s.email,to,subject:String(b.subject||'Message depuis '+PORTAL.shortTitle),body:String(b.body||''),createdAt,read:false,kind:to==='__admin__'?'to_admin':'direct',portal:PORTAL.title};
+ await env.CASHFLOW_KV.put('message:'+to+':'+createdAt+'_'+id,JSON.stringify(m));
+ return json({success:true,message:m})
+}
+async function msgInbox(req,env){
+ const u=new URL(req.url),token=u.searchParams.get('token')||'';let s=await session(env,token);
+ if(!s&&req.method!=='GET'){const b=await req.json().catch(()=>({}));s=await session(env,b.token)}
+ if(!s)return json({error:'Session expirée.'},401);
+ const out=[];let cur;
+ do{
+  const l=await env.CASHFLOW_KV.list({prefix:'message:'+s.email+':',cursor:cur});
+  for(const k of l.keys||[]){try{const m=JSON.parse(await env.CASHFLOW_KV.get(k.name)||'{}');m.key=k.name;out.push(m)}catch(_){}}
+  cur=l.list_complete?null:l.cursor
+ }while(cur);
+ out.sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+ return json({messages:out,unreadCount:out.filter(m=>!m.read).length})
+}
+async function msgContacts(req,env){
+ const b=req.method==='GET'?{}:await req.json().catch(()=>({}));
+ const u=new URL(req.url),s=await session(env,b.token||u.searchParams.get('token'));if(!s)return json({error:'Session expirée.'},401);
+ return json({contacts:[{id:'__admin__',email:'__admin__',firstName:'Diane',name:'Diane — Super Admin'}],gardiennes:[{email:'__admin__',firstName:'Diane'}]})
+}
+async function msgRead(req,env){
+ const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);
+ const key=String(b.key||'');if(!key.startsWith('message:'+s.email+':'))return json({error:'Message invalide.'},403);
+ const raw=await env.CASHFLOW_KV.get(key);if(!raw)return json({error:'Message introuvable.'},404);
+ const m=JSON.parse(raw);m.read=true;await env.CASHFLOW_KV.put(key,JSON.stringify(m));return json({success:true})
+}
+async function msgDelete(req,env){
+ const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);
+ const key=String(b.key||'');if(!key.startsWith('message:'+s.email+':'))return json({error:'Message invalide.'},403);
+ await env.CASHFLOW_KV.delete(key);return json({success:true})
+}
+async function formationList(req,env){
+ const u=new URL(req.url),s=await session(env,u.searchParams.get('token'));if(!s)return json({error:'Session expirée.'},401);
+ const a=norm(u.searchParams.get('agent')),fs=await formations(env,a);
+ if(!fs.length)return json({formations:[],currentFormation:null,hasProgress:false,allCompleted:false});
+ const state=await readFormationProgress(env,s,a,fs),st=state.st,current=firstIncompleteFormation(fs,st);
+ const rows=fs.map(f=>{
+  const completed=!!st.completed?.[f.id],p=progressForFormation(st,f.id),active=!!current&&current.id===f.id;
+  return{id:f.id,titre:f.titre||'',description:f.description||'',ordre:Number(f.ordre||0),status:completed?'completed':active?'active':'locked',hasProgress:active&&p.started};
+ });
+ return json({formations:rows,currentFormation:current?rows.find(x=>x.id===current.id)||null:null,hasProgress:current?progressForFormation(st,current.id).started:false,allCompleted:!!fs.length&&!current});
+}
+async function parcoursFormations(req,env){
+ const u=new URL(req.url),s=await session(env,u.searchParams.get('token')||u.searchParams.get('t'));if(!s)return json({error:'Session expirée.'},401);
+ const trainers=[];
+ for(const agent of (PORTAL.activeAgents||[])){
+  const key=norm(agent),fs=await formations(env,key);if(!fs.length)continue;
+  const state=await readFormationProgress(env,s,key,fs),st=state.st,current=firstIncompleteFormation(fs,st);
+  const profile=await runtimeAgentProfile(env,key);
+  trainers.push({
+   agent:key,
+   name:profile?.name||AGENTS[key]?.name||key,
+   role:profile?.sub||AGENTS[key]?.sub||'',
+   image:profile?.image||AGENTS[key]?.image||'',
+   formations:fs.map(f=>({
+    id:f.id,titre:f.titre||'',description:f.description||'',ordre:Number(f.ordre||0),
+    status:st.completed?.[f.id]?'completed':(current&&current.id===f.id?'active':'locked'),
+    hasProgress:!!progressForFormation(st,f.id).started
+   }))
+  });
+ }
+ return json({portal:{id:PORTAL.id,title:PORTAL.title||PORTAL.shortTitle||'Portail NyXia'},trainers});
+}
+
+async function nyxiaPublicJson(url){
+ try{
+  const r=await fetch(url,{headers:{'Accept':'application/json'}});
+  if(!r.ok)return{ok:false,status:r.status,data:{error:'Source NyXia indisponible ('+r.status+').'}};
+  return{ok:true,status:200,data:await r.json()};
+ }catch(e){
+  return{ok:false,status:502,data:{error:'Connexion à la source NyXia impossible.',detail:String(e&&e.message||e)}};
+ }
+}
+async function nyxiaBoutiqueFeed(){
+ const [catalog,config]=await Promise.all([
+  nyxiaPublicJson('https://boutique.nyxia.top/api/catalog'),
+  nyxiaPublicJson('https://boutique.nyxia.top/api/config')
+ ]);
+ return json({
+  success:catalog.ok,
+  products:Array.isArray(catalog.data&&catalog.data.products)?catalog.data.products:[],
+  settings:(config.data&&config.data.settings)||{},
+  source:'Boutique NyXia',
+  error:catalog.ok?'':(catalog.data&&catalog.data.error)||'Boutique indisponible.'
+ },catalog.ok?200:502);
+}
+async function nyxiaRepertoireFeed(){
+ const feed=await nyxiaPublicJson('https://repertoire.nyxia.top/api/repertoire');
+ return json({
+  success:feed.ok,
+  products:Array.isArray(feed.data&&feed.data.products)?feed.data.products:[],
+  source:"Répertoire du Cercle NyXia",
+  error:feed.ok?'':(feed.data&&feed.data.error)||'Répertoire indisponible.'
+ },feed.ok?200:502);
+}
+
+
+// ── Compatibilité de branchement pour l'Ovilus historique de Léna ──
+// Le bloc Ovilus ci-dessous reste copié mot pour mot depuis l'ancien Worker.
+// Le nouveau portail stocke toutefois ses sessions sous portal:session:<token>.
 async function getSessionFromToken(env, token) {
   return session(env, token);
 }
@@ -738,223 +957,6 @@ async function handleOvilusPrenomsSet(request, env) {
 
 // ═══════════ FIN OVILUS ═══════════
 
-function sanitizeAssistantContent(content){
- const fallback='Je suis là avec toi. Dis-moi ce que tu veux faire avancer.';
- let s=String(content||'').trim();
- if(!s)return fallback;
- s=s
-  .replace(/\[(?:VIDEO|AUDIO|PDF|LINK|PHOTO)\s*:[^\]]+\]/gi,'')
-  .replace(/\[[^\]]+\]\((https?:\/\/[^\s)]+)\)/gi,'')
-  .replace(/https?:\/\/[^\s<]+/gi,'')
-  .replace(/\n{3,}/g,'\n\n')
-  .trim();
- return s||fallback;
-}
-
-async function openrouter(env,messages,model){const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.OPENROUTER_API_KEY,'HTTP-Referer':'https://nyxia.top','X-Title':'NyXia Portail'},body:JSON.stringify({model:model||DEFAULT_MODEL,messages,max_tokens:900,temperature:.72})});if(!r.ok)throw Error('OpenRouter '+r.status);const d=await r.json();return d.choices?.[0]?.message?.content?.trim()||''}
-async function chat(req,env){const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);const key=norm(b.agent),a=AGENTS[key];if(!a||!ACTIVE.has(key))return json({error:'Personnage indisponible.'},403);
- const ft=await formationTurn(env,s,key,b.message||'',b.formationId||'',b.formationMode||'');if(ft)return json(ft);
- const brain=await retrieve(env,a.vectorNamespace||key,b.message||'');let imageInfo='';if(b.attachment?.dataUrl)imageInfo='\nLa personne a joint une image nommée '+String(b.attachment.name||'image')+'.';
- const sys=`Tu es ${a.name||key}, personnage de l’univers NyXia dans le portail « ${PORTAL.title} ».
-Rôle : ${a.sub||a.visibleRole||''}
-Mission : ${a.mission||a.prompt||''}
-Personnalité : ${a.personality||''}
-Style : ${a.tone||a.languageStyle||''}
-Tu réponds en français naturel. Tu restes fidèle à ton identité et à la mission de ce portail.
-Tu n’inventes jamais de PDF, vidéo, audio, lien ou URL. Tu n’envoies aucun média spontané et tu ne simules jamais une ressource inexistante. Si une ressource n’est pas réellement configurée dans le portail, tu n’en parles pas comme si elle existait. Si la personne veut une image, réponds naturellement sans inventer de lien : le portail gère la création d’image via le bouton 🎨 ou une demande explicite.
-${brain?'\nConnaissances pertinentes :\n'+brain:''}${imageInfo}`;
- const messages=[{role:'system',content:sys},...(Array.isArray(b.history)?b.history.slice(-14):[]),{role:'user',content:String(b.message||'')}];
- let content;try{content=await openrouter(env,messages,a.modelPrimary||DEFAULT_MODEL)}catch(_){content=await openrouter(env,messages,a.modelFallback||FALLBACK_MODEL)}content=sanitizeAssistantContent(content);return json({content})}
-async function imageGenerate(req,env){const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);const p=String(b.prompt||'').trim();if(!p)return json({error:'Décris l’image à créer.'},400);
- const apiKey=String(env.AIMLAPI_CREATOR_KEY||'');if(!apiKey)return json({error:'Aucune clé AIMLAPI n’est configurée pour ce portail.'},500);const agent=AGENTS[norm(b.agent)]||{};
- const style=[p,'esthétique élégante NyXia','haute qualité','sans texte sauf demandé explicitement'];if(agent.name)style.push('cohérent avec l’univers de '+agent.name);
- const payload={model:'flux/schnell',prompt:style.join(', '),num_images:1,image_size:String(b.format||'square_hd'),enable_safety_checker:true};
- const r=await fetch('https://api.aimlapi.com/v1/images/generations',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},body:JSON.stringify(payload)});
- if(!r.ok){const txt=await r.text().catch(()=> '');return json({error:'Génération d’image indisponible pour le moment.',details:txt.slice(0,240)},502)}
- const d=await r.json().catch(()=>({}));let url='';const first=Array.isArray(d.data)&&d.data[0]?d.data[0]:null;
- if(first){if(first.url)url=String(first.url);else if(first.b64_json)url='data:image/png;base64,'+String(first.b64_json);else if(first.b64)url='data:image/png;base64,'+String(first.b64)}
- if(!url&&d.url)url=String(d.url);if(!url&&d.b64_json)url='data:image/png;base64,'+String(d.b64_json);if(!url)return json({error:'Aucune image valide n’a été retournée par AIMLAPI.'},502);
- return json({url,caption:'Voici l’image que j’ai créée pour toi.'})}
-async function tts(req,env){const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);const a=AGENTS[norm(b.agent)]||{},voice=String(a.voiceId||'');if(!voice||!env.ELEVENLABS_API_KEY)return json({error:'Voix non configurée.'},404);const r=await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+encodeURIComponent(voice),{method:'POST',headers:{'xi-api-key':env.ELEVENLABS_API_KEY,'Content-Type':'application/json','Accept':'audio/mpeg'},body:JSON.stringify({text:String(b.text||'').slice(0,4500),model_id:'eleven_multilingual_v2'})});if(!r.ok)return json({error:'Voix indisponible.'},502);return new Response(await r.arrayBuffer(),{headers:{'Content-Type':'audio/mpeg'}})}
-function mediaFormatSize(format){if(format==='portrait')return{orientation:'portrait',pixabayOrientation:'vertical'};if(format==='landscape')return{orientation:'landscape',pixabayOrientation:'horizontal'};return{orientation:'',pixabayOrientation:'all'}}
-async function searchImages(env,q,format){
- const results=[],seen=new Set(),fmt=mediaFormatSize(format);
- const add=x=>{const k=x&&x.downloadUrl;if(!k||seen.has(k))return;seen.add(k);results.push(x)}
- const pexels=String(env.PEXELS_KEY||'');
- if(pexels){
-  try{
-   let url='https://api.pexels.com/v1/search?per_page=18&query='+encodeURIComponent(q);
-   if(fmt.orientation)url+='&orientation='+fmt.orientation;
-   const r=await fetch(url,{headers:{Authorization:pexels}}),d=await r.json();
-   for(const p of d.photos||[])add({type:'image',provider:'Pexels',previewUrl:p.src?.medium||p.src?.small,downloadUrl:p.src?.original||p.src?.large2x||p.src?.large});
-  }catch(_){}
- }
- const pix=String(env.PIXABAY_KEY_IMAGES||'');
- if(pix){
-  try{
-   const url='https://pixabay.com/api/?key='+encodeURIComponent(pix)+'&q='+encodeURIComponent(q)+'&per_page=18&safesearch=true&orientation='+fmt.pixabayOrientation;
-   const r=await fetch(url),d=await r.json();
-   for(const p of d.hits||[])add({type:'image',provider:'Pixabay',previewUrl:p.webformatURL||p.previewURL,downloadUrl:p.largeImageURL||p.webformatURL});
-  }catch(_){}
- }
- const unsplash=String(env.UNSPLASH_ACCES_KEY||'');
- if(unsplash){
-  try{
-   let url='https://api.unsplash.com/search/photos?per_page=18&query='+encodeURIComponent(q);
-   if(fmt.orientation)url+='&orientation='+fmt.orientation;
-   const r=await fetch(url,{headers:{Authorization:'Client-ID '+unsplash}}),d=await r.json();
-   for(const p of d.results||[])add({type:'image',provider:'Unsplash',previewUrl:p.urls?.small||p.urls?.thumb,downloadUrl:p.urls?.full||p.urls?.regular});
-  }catch(_){}
- }
- return results.slice(0,36)
-}
-async function searchVideos(env,q){
- const results=[],seen=new Set(),add=x=>{const k=x&&x.videoUrl;if(!k||seen.has(k))return;seen.add(k);results.push(x)}
- const pexels=String(env.PEXELS_KEY||'');
- if(pexels){
-  try{
-   const r=await fetch('https://api.pexels.com/videos/search?per_page=12&query='+encodeURIComponent(q),{headers:{Authorization:pexels}}),d=await r.json();
-   for(const v of d.videos||[]){const f=(v.video_files||[]).slice().sort((a,b)=>(b.width||0)-(a.width||0))[0];if(f)add({type:'video',provider:'Pexels',previewUrl:v.image||'',videoUrl:f.link,downloadUrl:f.link})}
-  }catch(_){}
- }
- const pix=String(env.PIXABAY_KEY_VIDEO||'');
- if(pix){
-  try{
-   const r=await fetch('https://pixabay.com/api/videos/?key='+encodeURIComponent(pix)+'&q='+encodeURIComponent(q)+'&per_page=12&safesearch=true'),d=await r.json();
-   for(const v of d.hits||[]){const f=v.videos?.medium||v.videos?.small||v.videos?.tiny||v.videos?.large;if(f)add({type:'video',provider:'Pixabay',previewUrl:v.picture_id?('https://i.vimeocdn.com/video/'+v.picture_id+'_640x360.jpg'):'',videoUrl:f.url,downloadUrl:f.url})}
-  }catch(_){}
- }
- return results.slice(0,24)
-}
-async function searchSounds(env,q){
- const results=[];
- const key=String(env.FREESOUND_API_KEY||'');
- if(!key)return results;
- try{
-  const url='https://freesound.org/apiv2/search/text/?query='+encodeURIComponent(q)+'&page_size=24&fields=id,name,previews,duration,url';
-  const r=await fetch(url,{headers:{Authorization:'Token '+key}}),d=await r.json();
-  for(const s of d.results||[]){const audio=s.previews?.['preview-hq-mp3']||s.previews?.['preview-lq-mp3']||s.previews?.['preview-hq-ogg'];if(audio)results.push({type:'sound',provider:'Freesound',name:s.name||'Son',duration:Math.round(Number(s.duration||0)),audioUrl:audio,downloadUrl:s.url||audio})}
- }catch(_){}
- return results
-}
-async function mediaImages(req,env){
- const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);
- const q=String(b.query||'').trim();if(!q)return json({results:[]});
- const images=await searchImages(env,q,String(b.format||'')),videos=await searchVideos(env,q);
- return json({results:[...images,...videos]})
-}
-async function mediaSounds(req,env){
- const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);
- const q=String(b.query||'').trim();if(!q)return json({results:[]});
- return json({results:await searchSounds(env,q)})
-}
-async function mediaSearch(req,env){
- const u=new URL(req.url),s=await session(env,u.searchParams.get('token'));if(!s)return json({error:'Session expirée.'},401);
- const q=String(u.searchParams.get('q')||'').trim();if(!q)return json({results:[]});
- return json({results:await searchImages(env,q,String(u.searchParams.get('format')||''))})
-}
-async function msgSend(req,env){
- const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);
- const to=String(b.to||b.toEmail||'__admin__').trim()||'__admin__';
- const id=crypto.randomUUID(),createdAt=new Date().toISOString();
- const m={id,from:s.email,fromName:s.firstname||s.email,to,subject:String(b.subject||'Message depuis '+PORTAL.shortTitle),body:String(b.body||''),createdAt,read:false,kind:to==='__admin__'?'to_admin':'direct',portal:PORTAL.title};
- await env.CASHFLOW_KV.put('message:'+to+':'+createdAt+'_'+id,JSON.stringify(m));
- return json({success:true,message:m})
-}
-async function msgInbox(req,env){
- const u=new URL(req.url),token=u.searchParams.get('token')||'';let s=await session(env,token);
- if(!s&&req.method!=='GET'){const b=await req.json().catch(()=>({}));s=await session(env,b.token)}
- if(!s)return json({error:'Session expirée.'},401);
- const out=[];let cur;
- do{
-  const l=await env.CASHFLOW_KV.list({prefix:'message:'+s.email+':',cursor:cur});
-  for(const k of l.keys||[]){try{const m=JSON.parse(await env.CASHFLOW_KV.get(k.name)||'{}');m.key=k.name;out.push(m)}catch(_){}}
-  cur=l.list_complete?null:l.cursor
- }while(cur);
- out.sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
- return json({messages:out,unreadCount:out.filter(m=>!m.read).length})
-}
-async function msgContacts(req,env){
- const b=req.method==='GET'?{}:await req.json().catch(()=>({}));
- const u=new URL(req.url),s=await session(env,b.token||u.searchParams.get('token'));if(!s)return json({error:'Session expirée.'},401);
- return json({contacts:[{id:'__admin__',email:'__admin__',firstName:'Diane',name:'Diane — Super Admin'}],gardiennes:[{email:'__admin__',firstName:'Diane'}]})
-}
-async function msgRead(req,env){
- const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);
- const key=String(b.key||'');if(!key.startsWith('message:'+s.email+':'))return json({error:'Message invalide.'},403);
- const raw=await env.CASHFLOW_KV.get(key);if(!raw)return json({error:'Message introuvable.'},404);
- const m=JSON.parse(raw);m.read=true;await env.CASHFLOW_KV.put(key,JSON.stringify(m));return json({success:true})
-}
-async function msgDelete(req,env){
- const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);
- const key=String(b.key||'');if(!key.startsWith('message:'+s.email+':'))return json({error:'Message invalide.'},403);
- await env.CASHFLOW_KV.delete(key);return json({success:true})
-}
-async function formationList(req,env){
- const u=new URL(req.url),s=await session(env,u.searchParams.get('token'));if(!s)return json({error:'Session expirée.'},401);
- const a=norm(u.searchParams.get('agent')),fs=await formations(env,a);
- if(!fs.length)return json({formations:[],currentFormation:null,hasProgress:false,allCompleted:false});
- const state=await readFormationProgress(env,s,a,fs),st=state.st,current=firstIncompleteFormation(fs,st);
- const rows=fs.map(f=>{
-  const completed=!!st.completed?.[f.id],p=progressForFormation(st,f.id),active=!!current&&current.id===f.id;
-  return{id:f.id,titre:f.titre||'',description:f.description||'',ordre:Number(f.ordre||0),status:completed?'completed':active?'active':'locked',hasProgress:active&&p.started};
- });
- return json({formations:rows,currentFormation:current?rows.find(x=>x.id===current.id)||null:null,hasProgress:current?progressForFormation(st,current.id).started:false,allCompleted:!!fs.length&&!current});
-}
-async function parcoursFormations(req,env){
- const u=new URL(req.url),s=await session(env,u.searchParams.get('token')||u.searchParams.get('t'));if(!s)return json({error:'Session expirée.'},401);
- const trainers=[];
- for(const agent of (PORTAL.activeAgents||[])){
-  const key=norm(agent),fs=await formations(env,key);if(!fs.length)continue;
-  const state=await readFormationProgress(env,s,key,fs),st=state.st,current=firstIncompleteFormation(fs,st);
-  const profile=await runtimeAgentProfile(env,key);
-  trainers.push({
-   agent:key,
-   name:profile?.name||AGENTS[key]?.name||key,
-   role:profile?.sub||AGENTS[key]?.sub||'',
-   image:profile?.image||AGENTS[key]?.image||'',
-   formations:fs.map(f=>({
-    id:f.id,titre:f.titre||'',description:f.description||'',ordre:Number(f.ordre||0),
-    status:st.completed?.[f.id]?'completed':(current&&current.id===f.id?'active':'locked'),
-    hasProgress:!!progressForFormation(st,f.id).started
-   }))
-  });
- }
- return json({portal:{id:PORTAL.id,title:PORTAL.title||PORTAL.shortTitle||'Portail NyXia'},trainers});
-}
-
-async function nyxiaPublicJson(url){
- try{
-  const r=await fetch(url,{headers:{'Accept':'application/json'}});
-  if(!r.ok)return{ok:false,status:r.status,data:{error:'Source NyXia indisponible ('+r.status+').'}};
-  return{ok:true,status:200,data:await r.json()};
- }catch(e){
-  return{ok:false,status:502,data:{error:'Connexion à la source NyXia impossible.',detail:String(e&&e.message||e)}};
- }
-}
-async function nyxiaBoutiqueFeed(){
- const [catalog,config]=await Promise.all([
-  nyxiaPublicJson('https://boutique.nyxia.top/api/catalog'),
-  nyxiaPublicJson('https://boutique.nyxia.top/api/config')
- ]);
- return json({
-  success:catalog.ok,
-  products:Array.isArray(catalog.data&&catalog.data.products)?catalog.data.products:[],
-  settings:(config.data&&config.data.settings)||{},
-  source:'Boutique NyXia',
-  error:catalog.ok?'':(catalog.data&&catalog.data.error)||'Boutique indisponible.'
- },catalog.ok?200:502);
-}
-async function nyxiaRepertoireFeed(){
- const feed=await nyxiaPublicJson('https://repertoire.nyxia.top/api/repertoire');
- return json({
-  success:feed.ok,
-  products:Array.isArray(feed.data&&feed.data.products)?feed.data.products:[],
-  source:"Répertoire du Cercle NyXia",
-  error:feed.ok?'':(feed.data&&feed.data.error)||'Répertoire indisponible.'
- },feed.ok?200:502);
-}
-
 function staticReq(req,path){return new Request(new URL(path,req.url),req)}
 export default{async fetch(req,env){const u=new URL(req.url),p=u.pathname;try{
  if(p==='/api/login'&&req.method==='POST')return login(req,env);
@@ -962,16 +964,16 @@ export default{async fetch(req,env){const u=new URL(req.url),p=u.pathname;try{
  if(p==='/api/resume-session'&&req.method==='POST')return resumeSession(req,env);
  if(p==='/api/check-auth'){const b=await req.json().catch(()=>({})),s=await session(env,b.token);return json({valid:!!s,email:s?.email||'',firstname:s?.firstname||''})}
  if(p==='/api/chat'&&req.method==='POST')return chat(req,env);
- // ── Ovilus (copié du vieux Worker Léna ; données sur SPIRITUEL_KV) ──
- if(p==='/api/ovilus/consult'&&req.method==='POST')return await handleOvilusConsult(req,env);
- if(p==='/api/ovilus/cast'&&req.method==='GET')return await handleOvilusCast(req,env);
- if(p==='/api/admin/ovilus/config'&&req.method==='GET')return await handleOvilusConfigGet(req,env);
- if(p==='/api/admin/ovilus/config'&&req.method==='POST')return await handleOvilusConfigSet(req,env);
- if(p==='/api/admin/ovilus/mots'&&req.method==='GET')return await handleOvilusMotsGet(req,env);
- if(p==='/api/admin/ovilus/mots'&&req.method==='POST')return await handleOvilusMotsAdd(req,env);
- if(p==='/api/admin/ovilus/mots'&&req.method==='DELETE')return await handleOvilusMotsDelete(req,env);
- if(p==='/api/admin/ovilus/prenoms'&&req.method==='GET')return await handleOvilusPrenomsGet(req,env);
- if(p==='/api/admin/ovilus/prenoms'&&req.method==='POST')return await handleOvilusPrenomsSet(req,env);
+ if(p==='/api/ovilus/consult'&&req.method==='POST')return handleOvilusConsult(req,env);
+ if(p==='/api/ovilus/cast'&&req.method==='GET')return handleOvilusCast(req,env);
+ if(p==='/api/admin/ovilus/config'&&req.method==='GET')return handleOvilusConfigGet(req,env);
+ if(p==='/api/admin/ovilus/config'&&req.method==='POST')return handleOvilusConfigSet(req,env);
+ if(p==='/api/admin/ovilus/mots'&&req.method==='GET')return handleOvilusMotsGet(req,env);
+ if(p==='/api/admin/ovilus/mots'&&req.method==='POST')return handleOvilusMotsAdd(req,env);
+ if(p==='/api/admin/ovilus/mots'&&req.method==='DELETE')return handleOvilusMotsDelete(req,env);
+ if(p==='/api/admin/ovilus/prenoms'&&req.method==='GET')return handleOvilusPrenomsGet(req,env);
+ if(p==='/api/admin/ovilus/prenoms'&&req.method==='POST')return handleOvilusPrenomsSet(req,env);
+
  if((p==='/api/image/generate'||p==='/api/image')&&req.method==='POST')return imageGenerate(req,env);
  if(p==='/api/tts'&&req.method==='POST')return tts(req,env);
  if(p==='/api/media/search'&&req.method==='GET')return mediaSearch(req,env);
