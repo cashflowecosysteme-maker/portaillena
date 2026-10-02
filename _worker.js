@@ -833,7 +833,7 @@ async function handleOvilusConsult(request, env) {
 
   function isRefusalText(text) {
     const t = String(text || '').toLowerCase().replace(/[’]/g, "'");
-    return /(?:je (?:préfère|prefere) ne pas répondre|je ne veux pas répondre|je ne peux pas répondre|pas cette question|je ne veux pas aller là|demande-moi autre chose|je préfère éviter|je ne souhaite pas répondre|je n(?:'|’)ai pas envie de répondre|je refuse de répondre|je n(?:'|’)ai rien de plus à ajouter(?: maintenant)?|rien de plus à ajouter(?: maintenant)?)/i.test(t);
+    return /(?:je (?:préfère|prefere) ne pas répondre|je ne veux pas répondre|je ne peux pas répondre|pas cette question|je ne veux pas aller là|demande-moi autre chose|je préfère éviter|je ne souhaite pas répondre|je n(?:'|’)ai pas envie de répondre|je refuse de répondre)/i.test(t);
   }
 
   async function forceRealAnswer() {
@@ -864,23 +864,6 @@ async function handleOvilusConsult(request, env) {
       .replace(/\*[^*]{0,80}\*/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
-  }
-
-  // Si la présence refuse de répondre, ce refus devient un vrai silence Ovilus.
-  // Aucun texte de refus ne doit être affiché à l'utilisateur.
-  if (isRefusalText(content)) {
-    ovState.refusalStreak = 1;
-    ovState.silentLeft = 0;
-    ovState.lastPersona = persona.id;
-    await env.SPIRITUEL_KV.put(`ovilus_state:${token}`, JSON.stringify(ovState), { expirationTtl: SESSION_TTL });
-    return json({
-      silence: true,
-      response: '',
-      status: 'Aucune réponse.',
-      mode: 'fluide',
-      persona: persona.label || '',
-      interrupt: null
-    });
   }
 
   // Après la manifestation, « … » n'est jamais une réponse. On retente une vraie réponse.
