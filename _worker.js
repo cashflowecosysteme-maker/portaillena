@@ -803,7 +803,7 @@ async function handleOvilusConsult(request, env) {
   }
   function looksMeta(text) {
     const t = String(text || '').toLowerCase();
-    return /l['’]utilisateur a dit|on me demande|je dois répondre|la consigne|les instructions|phase\s*[:—-]|présence,?\s*\d|je vais répondre|ma tâche|le prompt|system prompt|assistant doit|réponse attendue/.test(t);
+    return /l['’]utilisateur a dit|on me demande|je dois répondre|la consigne|les instructions|phase\s*[:—-]|présence,?\s*\d|je vais répondre|ma tâche|le prompt|system prompt|assistant doit|réponse attendue|\bthe instructions?\s+(?:say|says|said|state|states|tell|tells|require|requires)\b|\baccording to (?:the )?(?:instructions?|prompt|system(?: message)?)\b|\bwait[,!. ]+(?:the |these |my )?instructions?\b|\bi (?:should|need to|must|have to) (?:not )?(?:use|mention|say|answer|respond|follow|avoid)\b|\bi was instructed\b|\bsystem message\b|\bdeveloper message\b|\bmy reasoning\b|\binternal reasoning\b/.test(t);
   }
 
   if (looksMeta(content)) {
@@ -829,7 +829,10 @@ async function handleOvilusConsult(request, env) {
     if (retryMeta.ok) {
       const d2 = await retryMeta.json();
       const c2 = d2.choices?.[0]?.message?.content?.trim();
-      if (c2) content = c2;
+      if (c2 && !looksMeta(c2) && !looksEnglish(c2)) content = c2;
+      else content = '';
+    } else {
+      content = '';
     }
   }
 
