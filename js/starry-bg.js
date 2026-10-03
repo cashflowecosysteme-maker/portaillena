@@ -98,3 +98,20 @@
     createStars()
   })
 })()
+
+/* Charge le correctif média commun uniquement dans les pages de chat. */
+;(function () {
+  function loadMediaPatch() {
+    if (!document.querySelector('.chat-area')) return
+    if (document.querySelector('script[data-nyxia-media-patch]')) return
+    var s = document.createElement('script')
+    s.src = '/js/media-render-patch.js'
+    s.setAttribute('data-nyxia-media-patch', '1')
+    document.head.appendChild(s)
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadMediaPatch, { once: true })
+  } else {
+    loadMediaPatch()
+  }
+})()
