@@ -170,8 +170,11 @@ function blockAtFormation(f,p){
 function formationContent(f,pos,first,review=false){
  if(!pos||pos.done)return'';
  const body=renderBlock(pos.b,first);
- const prefix=review?'🔁 **Révision · ':'🎓 **';
- return prefix+(f.titre||'Formation')+' — Module '+(pos.m.numero||pos.mi+1)+' · '+(pos.m.titre||'')+'**\n\n'+body+
+ const showHeader=Number(pos.bi||0)===0;
+ const header=showHeader
+  ? (review?'🔁 **Révision · ':'🎓 **')+(f.titre||'Formation')+' — Module '+(pos.m.numero||pos.mi+1)+' · '+(pos.m.titre||'')+'**\n\n'
+  : '';
+ return header+body+
    (review?'\n\n— Dis-moi « suite » pour continuer ta révision.':'\n\n— Quand tu es prête, dis-moi « suite ».');
 }
 
