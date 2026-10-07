@@ -269,28 +269,72 @@ function sanitizeAssistantContent(content){
 }
 
 function decodeByteLevelText(input){
- const s=String(input||'');
- if(!/[ĠĊ]|(?:Ã.|Â.|â.)/.test(s))return s;
- const bs=[];
- for(let i=33;i<=126;i++)bs.push(i);
- for(let i=161;i<=172;i++)bs.push(i);
- for(let i=174;i<=255;i++)bs.push(i);
- const cs=bs.slice();
- let n=0;
- for(let b=0;b<256;b++){
-  if(!bs.includes(b)){bs.push(b);cs.push(256+n);n++}
+ const original=String(input||'');
+ if(!original)return original;
+
+ function corruptionScore(t){
+  const m=String(t||'').match(/�|Ã.|Â.|â.|Ġ|Ċ/g);
+  return m?m.length:0;
  }
- const inv=new Map();
- for(let i=0;i<bs.length;i++)inv.set(String.fromCodePoint(cs[i]),bs[i]);
- const dec=new TextDecoder('utf-8',{fatal:false});
- let out='',buf=[];
- const flush=()=>{if(buf.length){out+=dec.decode(Uint8Array.from(buf));buf=[]}};
- for(const ch of s){
-  if(inv.has(ch))buf.push(inv.get(ch));
-  else{flush();out+=ch}
+
+ function tryUtf8(bytes){
+  try{return new TextDecoder('utf-8',{fatal:true}).decode(Uint8Array.from(bytes))}
+  catch(_){return null}
  }
- flush();
- return out;
+
+ let best=original;
+ let bestScore=corruptionScore(original);
+
+ // 1) Sortie byte-level de type GPT-2 : Ġ = espace, Ċ = retour de ligne.
+ if(/[ĠĊ]/.test(original)){
+  const bs=[];
+  for(let i=33;i<=126;i++)bs.push(i);
+  for(let i=161;i<=172;i++)bs.push(i);
+  for(let i=174;i<=255;i++)bs.push(i);
+  const cs=bs.slice();
+  let n=0;
+  for(let b=0;b<256;b++){
+   if(!bs.includes(b)){bs.push(b);cs.push(256+n);n++}
+  }
+  const inv=new Map();
+  for(let i=0;i<bs.length;i++)inv.set(String.fromCodePoint(cs[i]),bs[i]);
+
+  let out='',buf=[],valid=true;
+  const flush=()=>{
+   if(!buf.length)return true;
+   const d=tryUtf8(buf);
+   if(d===null)return false;
+   out+=d;buf=[];
+   return true;
+  };
+
+  for(const ch of original){
+   if(inv.has(ch))buf.push(inv.get(ch));
+   else{
+    if(!flush()){valid=false;break}
+    out+=ch;
+   }
+  }
+  if(valid&&flush()){
+   const sc=corruptionScore(out);
+   if(!out.includes('�')&&sc<bestScore){best=out;bestScore=sc}
+  }
+ }
+
+ // 2) Mojibake classique UTF-8 lu comme latin-1 (ex. pÃ©riode -> période).
+ if(/[ÃÂâ]/.test(best)&&!best.includes('�')){
+  const chars=Array.from(best);
+  if(chars.every(ch=>ch.codePointAt(0)<=255)){
+   const bytes=chars.map(ch=>ch.codePointAt(0));
+   const d=tryUtf8(bytes);
+   if(d!==null&&!d.includes('�')){
+    const sc=corruptionScore(d);
+    if(sc<bestScore){best=d;bestScore=sc}
+   }
+  }
+ }
+
+ return best;
 }
 async function openrouter(env,messages,model){const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.OPENROUTER_API_KEY,'HTTP-Referer':'https://nyxia.top','X-Title':'NyXia Portail'},body:JSON.stringify({model:model||DEFAULT_MODEL,messages,max_tokens:900,temperature:.72})});if(!r.ok)throw Error('OpenRouter '+r.status);const d=await r.json();return decodeByteLevelText(d.choices?.[0]?.message?.content?.trim()||'')}
 async function chat(req,env){const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);const key=norm(b.agent),a=AGENTS[key];if(!a||!ACTIVE.has(key))return json({error:'Personnage indisponible.'},403);
