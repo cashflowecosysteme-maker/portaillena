@@ -30,7 +30,7 @@ function sessionCookie(token,maxAge=null){
 function clearSessionCookie(){return 'nyxia_portal_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax'}
 async function browserSession(req,env){return session(env,cookieValue(req,'nyxia_portal_session'))}
 function loginRedirect(req){const u=new URL('/login.html',req.url);return Response.redirect(u.toString(),302)}
-function isProtectedHtml(path){if(path==='/'||path===''||path==='/index.html'||path==='/login.html'||path==='/login')return false;return /\.html$/i.test(path)}
+function isProtectedHtml(path){if(path==='/'||path===''||path==='/index.html'||path==='/login.html'||path==='/login'||path==='/mot-de-passe-oublie.html'||path==='/reinitialiser-mot-de-passe.html')return false;return /\.html$/i.test(path)}
 
 async function sha256Hex(value){
  const data=new TextEncoder().encode(String(value||''));
