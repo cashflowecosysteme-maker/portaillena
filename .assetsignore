@@ -1,2 +1,2 @@
-*.zip
-README*
+_worker.js
+wrangler.toml
