@@ -102,13 +102,61 @@
   #nx-journey [data-nx-block-id="primary:s45"],
   #nx-content [data-nx-block-id="primary:s67"] {font-size:1rem;line-height:1.8;hyphens:none}
 }
+
+/* Ajustements ciblés : emblème DDM™ et section Rencontre Léna */
+.hero .hero-eyebrow.nx-ddm-seal {
+  position:relative;
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  vertical-align:middle;
+  width:156px;
+  height:156px;
+  min-width:156px;
+  padding:22px 14px 14px;
+  margin:0 auto 30px;
+  border-radius:50%;
+  border:2px solid rgba(244,200,66,.8);
+  background:radial-gradient(circle at 30% 20%,rgba(167,139,250,.26),transparent 58%),linear-gradient(145deg,#131a39,#070b1b 80%);
+  box-shadow:0 0 0 5px rgba(244,200,66,.065),0 0 28px rgba(244,200,66,.22),0 0 48px rgba(123,92,255,.19),inset 0 1px 0 rgba(255,255,255,.16);
+  line-height:1.1;
+  letter-spacing:normal;
+  text-align:center;
+  text-transform:none;
+  animation:float-soft 5s ease-in-out infinite;
+}
+.hero .nx-ddm-seal::before {
+  content:'✦';position:absolute;top:13px;left:50%;transform:translateX(-50%);
+  font-size:15px;color:#F4C842;text-shadow:0 0 12px rgba(244,200,66,.6);
+}
+.hero .nx-ddm-seal::after {
+  content:'';position:absolute;inset:9px;border-radius:50%;border:1px solid rgba(167,139,250,.28);pointer-events:none;
+}
+.hero .nx-ddm-seal .nx-ddm-method {
+  display:block;font-family:Outfit,sans-serif;color:#F4C842;font-size:15px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+}
+.hero .nx-ddm-seal .nx-ddm-letters {
+  display:block;margin-top:5px;font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:43px;line-height:1;
+  color:#ffe69c;text-shadow:0 0 15px rgba(244,200,66,.4);
+}
+#nx-journey > .section-head {text-align:center!important;margin-bottom:30px;}
+#nx-journey > .section-head .kicker, #nx-journey > .section-head h2 {text-align:center!important;}
+#nx-journey > .nx-spotlight {
+  max-width:860px;margin:35px auto 0;text-align:center;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-weight:700;font-size:clamp(1.55rem,3vw,2.15rem);line-height:1.35;
+  color:#F4C842;text-shadow:0 0 18px rgba(244,200,66,.18);
+}
+@media(max-width:620px){.hero .hero-eyebrow.nx-ddm-seal{width:134px;height:134px;min-width:134px;margin-bottom:24px}.hero .nx-ddm-seal .nx-ddm-letters{font-size:37px}.hero .nx-ddm-seal .nx-ddm-method{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.hero .hero-eyebrow.nx-ddm-seal{animation:none}}
 </style></head>
 <body>
 <canvas id="starry-canvas"></canvas>
 <div class="aura"></div>
 
 <header class="site-header" id="nx-header"><a class="brand" href="/"><img src="/images/NyXia.png" alt="NyXia"><span class="brand-name"><b>NyXia</b><span>L’univers</span></span></a><div class="header-right"><div class="socials"><a class="social-btn" href="https://www.facebook.com/UniversNyXia/" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.7c0-.9.3-1.6 1.7-1.6H17V4.2c-.3 0-1.4-.2-2.6-.2-2.6 0-4.4 1.6-4.4 4.5v2.3H7V14h3v8h3.5z"></path></svg></a><a class="social-btn" href="https://www.instagram.com/nyxia_ia/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="1.8"></rect><circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="1.8"></circle><circle cx="17.4" cy="6.8" r="1.15" fill="currentColor"></circle></svg></a><a class="social-btn" href="https://www.tiktok.com/@univers_nyxia?lang=fr" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M14.2 3h3.1c.3 1.7 1.3 3.1 3 3.8v3.1c-1.2 0-2.4-.4-3.5-1.1v6.2a6 6 0 1 1-5.2-5.9v3.2a2.8 2.8 0 1 0 2.6 2.8V3z"></path></svg></a></div><span class="cta-glass-wrap" data-nx-block-id="primary:headerCtaLabel"><a class="btn-glass" style="border-color:rgba(244,200,66,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 8px 30px rgba(244,200,66,.16)" href="/login.html">Portail Lena</a></span></div></header>
-<section class="hero" id="nx-hero"><div class="img-frame nx-image-glow large" data-nx-block-id="primary:heroMedia"><img class="nx-image-float" src="https://d1yei2z3i6k35z.cloudfront.net/1872133/6aceb96b496d22.71531901_Portail_Lena.png" alt=""></div><span class="hero-eyebrow" data-nx-block-id="primary:heroEyebrow">Méthode DDM™</span><h1 data-nx-block-id="primary:heroTitle">DÉCOUVRIR · DÉVELOPPER · MONÉTISER</h1><h2 data-nx-block-id="primary:heroSubtitle">Découvre enfin la faculté qui est déjà en toi. Sans te disperser. Sans devoir tout savoir avant de commencer.</h2><div class="hero-lead" data-nx-block-id="primary:heroText"><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<section class="hero" id="nx-hero"><div class="img-frame nx-image-glow large" data-nx-block-id="primary:heroMedia"><img class="nx-image-float" src="https://d1yei2z3i6k35z.cloudfront.net/1872133/6aceb96b496d22.71531901_Portail_Lena.png" alt=""></div><span class="hero-eyebrow nx-ddm-seal" data-nx-block-id="primary:heroEyebrow"><span class="nx-ddm-method">Méthode</span><span class="nx-ddm-letters">DDM™</span></span><h1 data-nx-block-id="primary:heroTitle">DÉCOUVRIR · DÉVELOPPER · MONÉTISER</h1><h2 data-nx-block-id="primary:heroSubtitle">Découvre enfin la faculté qui est déjà en toi. Sans te disperser. Sans devoir tout savoir avant de commencer.</h2><div class="hero-lead" data-nx-block-id="primary:heroText"><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&amp;display=swap" rel="stylesheet">
 
 <style>
   .lena-ressentis {
@@ -241,14 +289,14 @@
 
 ✦ Un échange bienveillant de 30 min pour cartographier tes ressentis et voir par où commencer.</div><div class="hero-cta" data-nx-block-id="primary:problemCtaLabel" style="margin-top:28px"><span class="cta-gold-wrap"><a class="btn-gold-xl" href="https://www.universnyxia.top/nyxia/rdvlena">Prendre Rendez-vous</a></span></div><div class="img-frame nx-image-glow large" data-nx-block-id="primary:s3Media"><img class="nx-image-float" src="https://d1yei2z3i6k35z.cloudfront.net/1872133/6ace4236a6f0f6.18736234_lena-vente-04-pendule.png" alt=""></div><div class="text-block nx-extra-text" data-nx-block-id="cdf4562f-bdb2-4a0c-9ab5-51e6c67a774a"><h2 class="display">Et c’est là que Léna <br>
 entre dans ton parcours.</h2></div></section>
-<section class="section-wrap" id="nx-journey"><div class="nx-image-layout"><div class="nx-image-slot"><div class="img-frame nx-image-glow large" data-nx-block-id="primary:s45Media"><img class="nx-image-float" src="https://d1yei2z3i6k35z.cloudfront.net/1872133/6ace4236aca564.56467321_lena-vente-02-lena.png" alt=""></div></div><div class="nx-image-copy"><div class="section-head" style="text-align: justify;"><span class="kicker" data-nx-block-id="primary:s45Kicker" style="text-align: justify;">Rencontre Léna</span><h2 class="display" data-nx-block-id="primary:s45Title" style="text-align: justify;">Ta guide à la découverte de tes facultés</h2></div><div class="text-block" data-nx-block-id="primary:s45" style="text-align: justify;">
+<section class="section-wrap" id="nx-journey"><div class="section-head" style="text-align: justify;"><span class="kicker" data-nx-block-id="primary:s45Kicker" style="text-align: justify;">Rencontre Léna</span><h2 class="display" data-nx-block-id="primary:s45Title" style="text-align: justify;">Ta guide à la découverte de tes facultés</h2></div><div class="nx-image-layout"><div class="nx-image-slot"><div class="img-frame nx-image-glow large" data-nx-block-id="primary:s45Media"><img class="nx-image-float" src="https://d1yei2z3i6k35z.cloudfront.net/1872133/6ace4236aca564.56467321_lena-vente-02-lena.png" alt=""></div></div><div class="nx-image-copy"><div class="text-block" data-nx-block-id="primary:s45" style="text-align: justify;">
 <p class="nx-lead">Léna est au cœur du portail. Elle n’est pas simplement là pour répondre à quelques questions.</p>
 <p>Elle devient ta formatrice principale dans un parcours consacré à la découverte et au développement de différentes facultés psychiques, spirituelles et intuitives.</p>
 <p>Sa matière de formation explore notamment les corps subtils, les chakras et l’aura, puis différentes facultés comme la clairvoyance, la clairaudience, l’intuition, la télépathie, la médiumnité, les ressentis énergétiques, le magnétisme et la radiesthésie.</p>
 <p>La philosophie derrière cet apprentissage est importante : <span class="nx-emphasis">tu ne fais pas qu’apprendre des concepts. Tu expérimentes.</span></p>
 <p>La matière source elle-même présente une grande diversité de facultés et insiste sur leur développement par l’expérimentation et la pratique.</p>
-<p class="nx-spotlight">C’est cette idée que nous amenons beaucoup plus loin grâce à la Formation Vivante.</p>
-</div></div></div></section>
+
+</div></div></div><p class="nx-spotlight">C’est cette idée que nous amenons beaucoup plus loin grâce à la Formation Vivante.</p></section>
 <section class="section-wrap" id="nx-content"><div class="section-head"><span class="kicker" data-nx-block-id="primary:s67Kicker">Découvrir, Développer, Monétiser.</span><h2 class="display" data-nx-block-id="primary:s67Title">Une méthode complète du premier ressenti à ton activité.</h2></div><div class="text-block" data-nx-block-id="primary:s67" style="text-align: justify;">
 <p class="nx-lead">Tu n’entres pas dans « <strong>une formation vidéo de plus</strong> ».</p>
 <p>Tu entres dans une <strong class="nx-emphasis">Formation Vivante</strong> : la leçon transmet, le personnage t’accompagne quand la vraie question arrive même à 22 h 43.</p>
