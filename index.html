@@ -21,6 +21,87 @@
 .img-frame.nx-image-glow img{filter:drop-shadow(0 0 16px rgba(123,92,255,.7)) drop-shadow(0 0 32px rgba(123,92,255,.35))}
 @media(max-width:700px){.nx-image-layout{grid-template-columns:minmax(0,1fr);grid-auto-flow:row}}
 @media(prefers-reduced-motion:reduce){.nx-image-float{animation:none!important}}
+
+/* Présentation typographique — uniquement les deux passages demandés */
+#nx-journey [data-nx-block-id="primary:s45"],
+#nx-content [data-nx-block-id="primary:s67"] {
+  color:#c9c3e4;
+  font-family:'Outfit',sans-serif;
+  font-size:clamp(1rem,1.15vw,1.09rem);
+  line-height:1.85;
+  letter-spacing:.005em;
+  text-align:justify!important;
+  text-wrap:pretty;
+  hyphens:auto;
+}
+#nx-journey [data-nx-block-id="primary:s45"] p,
+#nx-content [data-nx-block-id="primary:s67"] p {
+  margin:0 0 1.2em;
+  line-height:inherit;
+  text-align:justify;
+}
+#nx-journey [data-nx-block-id="primary:s45"] p:last-child,
+#nx-content [data-nx-block-id="primary:s67"] p:last-child {margin-bottom:0}
+#nx-journey [data-nx-block-id="primary:s45"] .nx-lead,
+#nx-content [data-nx-block-id="primary:s67"] .nx-lead {
+  color:#f3eeff;
+  font-size:1.12em;
+  font-weight:500;
+  line-height:1.75;
+}
+#nx-journey [data-nx-block-id="primary:s45"] .nx-emphasis,
+#nx-content [data-nx-block-id="primary:s67"] .nx-emphasis {
+  color:#F4C842;
+  font-weight:600;
+  text-shadow:0 0 18px rgba(244,200,66,.15);
+}
+#nx-journey [data-nx-block-id="primary:s45"] .nx-spotlight {
+  margin:1.55em 0;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(1.55rem,2.4vw,2.1rem);
+  font-weight:700;
+  line-height:1.38;
+  color:#f6e7ae;
+  text-align:left;
+}
+#nx-content [data-nx-block-id="primary:s67"] .nx-opportunities {
+  margin:1.75em 0 .95em;
+  color:#F4C842;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:clamp(1.7rem,2.8vw,2.15rem);
+  font-weight:700;
+  line-height:1.2;
+  text-align:left;
+}
+#nx-content [data-nx-block-id="primary:s67"] .nx-opportunity-list {
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  gap:12px;
+}
+#nx-content [data-nx-block-id="primary:s67"] .nx-opportunity-list li {
+  position:relative;
+  padding-left:25px;
+  color:#ded8f1;
+  line-height:1.72;
+  text-align:left;
+}
+#nx-content [data-nx-block-id="primary:s67"] .nx-opportunity-list li::before {
+  content:'✦';
+  position:absolute;
+  top:0;left:0;
+  color:#F4C842;
+  font-size:.87em;
+}
+#nx-content [data-nx-block-id="primary:s67"] strong {
+  font-weight:600;
+  color:#e8d8ff;
+}
+@media(max-width:700px){
+  #nx-journey [data-nx-block-id="primary:s45"],
+  #nx-content [data-nx-block-id="primary:s67"] {font-size:1rem;line-height:1.8;hyphens:none}
+}
 </style></head>
 <body>
 <canvas id="starry-canvas"></canvas>
@@ -160,14 +241,25 @@
 
 ✦ Un échange bienveillant de 30 min pour cartographier tes ressentis et voir par où commencer.</div><div class="hero-cta" data-nx-block-id="primary:problemCtaLabel" style="margin-top:28px"><span class="cta-gold-wrap"><a class="btn-gold-xl" href="https://www.universnyxia.top/nyxia/rdvlena">Prendre Rendez-vous</a></span></div><div class="img-frame nx-image-glow large" data-nx-block-id="primary:s3Media"><img class="nx-image-float" src="https://d1yei2z3i6k35z.cloudfront.net/1872133/6ace4236a6f0f6.18736234_lena-vente-04-pendule.png" alt=""></div><div class="text-block nx-extra-text" data-nx-block-id="cdf4562f-bdb2-4a0c-9ab5-51e6c67a774a"><h2 class="display">Et c’est là que Léna <br>
 entre dans ton parcours.</h2></div></section>
-<section class="section-wrap" id="nx-journey"><div class="nx-image-layout"><div class="nx-image-slot"><div class="img-frame nx-image-glow large" data-nx-block-id="primary:s45Media"><img class="nx-image-float" src="https://d1yei2z3i6k35z.cloudfront.net/1872133/6ace4236aca564.56467321_lena-vente-02-lena.png" alt=""></div></div><div class="nx-image-copy"><div class="section-head" style="text-align: justify;"><span class="kicker" data-nx-block-id="primary:s45Kicker" style="text-align: justify;">Rencontre Léna</span><h2 class="display" data-nx-block-id="primary:s45Title" style="text-align: justify;">Ta guide à la découverte de tes facultés</h2></div><div class="text-block" data-nx-block-id="primary:s45" style="text-align: justify;">Léna est au cœur du portail.  Elle n’est pas simplement là pour répondre à quelques questions.  Elle devient ta formatrice principale dans un parcours consacré à la découverte et au développement de différentes facultés psychiques, spirituelles et intuitives.  Sa matière de formation explore notamment les corps subtils, les chakras et l’aura, puis différentes facultés comme la clairvoyance, la clairaudience, l’intuition, la télépathie, la médiumnité, les ressentis énergétiques, le magnétisme et la radiesthésie.  La philosophie derrière cet apprentissage est importante : tu ne fais pas qu’apprendre des concepts. Tu expérimentes.  La matière source elle-même présente une grande diversité de facultés et insiste sur leur développement par l’expérimentation et la pratique.  C’est cette idée que nous amenons beaucoup plus loin grâce à la Formation Vivante.</div></div></div></section>
-<section class="section-wrap" id="nx-content"><div class="section-head"><span class="kicker" data-nx-block-id="primary:s67Kicker">Découvrir, Développer, Monétiser.</span><h2 class="display" data-nx-block-id="primary:s67Title">Une méthode complète du premier ressenti à ton activité.</h2></div><div class="text-block" data-nx-block-id="primary:s67" style="text-align: justify;">Tu n’entres pas dans « <strong>une formation vidéo de plus</strong> ». <br>Tu entres dans une <strong>Formation Vivante</strong> : la leçon transmet, le personnage t’accompagne quand la vraie question arrive même à 22 h 43.
-
-Tu vas pouvoir…
-Mettre un nom sur ce que tu vis déjà (intuition, clairvoyance, clairaudience, ressentis, radiesthésie, médiumnité…) sans te forcer dans une case le jour 1.
-Pratiquer pour vrai — pas seulement lire « voici ce qu’est l’intuition ».
-Approfondir avec la spécialiste qui te correspond.
-Monétiser ce que tu maîtrises : communiquer sans spammer, structurer tes contenus, créer ton offre et t’entraîner tout de suite.</div><div class="text-block nx-extra-text" data-nx-block-id="9c8b83fa-a55d-49d0-aae2-5c238e31c647"><h2 class="display" style="color: rgb(244, 200, 66);">D comme DÉCOUVRIR</h2></div><div class="text-block nx-extra-text" data-nx-block-id="9536bdb8-7428-433c-943a-1f7e7f6e08a9"><h3 class="display">AVANT DE VOULOIR MAÎTRISER UNE DISCIPLINE, ENCORE FAUT-IL DÉCOUVRIR CE QUI RÉSONNE AVEC TOI.</h3></div><div class="text-block nx-extra-text" data-nx-block-id="fb856039-88b8-410f-b6f9-7b9438cf1071" style="text-align: justify;"><p>C’est la première mission de Portail Léna.</p><p>Tu vas pouvoir explorer différents univers, mieux comprendre certaines perceptions et surtout expérimenter.</p><p>Parce qu’entre lire : « Voici ce qu’est l’intuition » et commencer à reconnaître comment toi, tu vis tes propres ressentis… il y a tout un monde.</p><p>Le portail est justement là pour créer ce pont.</p></div><div class="text-block nx-extra-text" data-nx-block-id="cea4d13a-c1a2-48d5-8d2d-934c1883cc39"><h2 class="display" style="color: rgb(244, 200, 66);">D comme DÉVELOPPER</h2></div><div class="text-block nx-extra-text" data-nx-block-id="4ee5653f-03cd-4ba3-a5c7-d9850cff6bf4"><h3 class="display">QUAND UNE VOIE T’APPELLE DAVANTAGE, UN DES SPÉCIALISTES PEUT PRENDRE LE RELAIS.</h3></div><div class="img-frame nx-extra-image nx-image-glow" data-nx-image-id="9e1e8ede-4ffa-4243-a775-38184436b2bd" data-nx-block-id="9e1e8ede-4ffa-4243-a775-38184436b2bd"><img src="https://d1yei2z3i6k35z.cloudfront.net/1872133/6acfbd847e7590.69321305_EquipeCompleteLena.png" alt="" class="nx-image-float"></div><div class="text-block nx-extra-text" style="text-align: justify;" data-nx-block-id="c4bb7b02-15d3-4c37-b52d-3c0a863044a0">
+<section class="section-wrap" id="nx-journey"><div class="nx-image-layout"><div class="nx-image-slot"><div class="img-frame nx-image-glow large" data-nx-block-id="primary:s45Media"><img class="nx-image-float" src="https://d1yei2z3i6k35z.cloudfront.net/1872133/6ace4236aca564.56467321_lena-vente-02-lena.png" alt=""></div></div><div class="nx-image-copy"><div class="section-head" style="text-align: justify;"><span class="kicker" data-nx-block-id="primary:s45Kicker" style="text-align: justify;">Rencontre Léna</span><h2 class="display" data-nx-block-id="primary:s45Title" style="text-align: justify;">Ta guide à la découverte de tes facultés</h2></div><div class="text-block" data-nx-block-id="primary:s45" style="text-align: justify;">
+<p class="nx-lead">Léna est au cœur du portail. Elle n’est pas simplement là pour répondre à quelques questions.</p>
+<p>Elle devient ta formatrice principale dans un parcours consacré à la découverte et au développement de différentes facultés psychiques, spirituelles et intuitives.</p>
+<p>Sa matière de formation explore notamment les corps subtils, les chakras et l’aura, puis différentes facultés comme la clairvoyance, la clairaudience, l’intuition, la télépathie, la médiumnité, les ressentis énergétiques, le magnétisme et la radiesthésie.</p>
+<p>La philosophie derrière cet apprentissage est importante : <span class="nx-emphasis">tu ne fais pas qu’apprendre des concepts. Tu expérimentes.</span></p>
+<p>La matière source elle-même présente une grande diversité de facultés et insiste sur leur développement par l’expérimentation et la pratique.</p>
+<p class="nx-spotlight">C’est cette idée que nous amenons beaucoup plus loin grâce à la Formation Vivante.</p>
+</div></div></div></section>
+<section class="section-wrap" id="nx-content"><div class="section-head"><span class="kicker" data-nx-block-id="primary:s67Kicker">Découvrir, Développer, Monétiser.</span><h2 class="display" data-nx-block-id="primary:s67Title">Une méthode complète du premier ressenti à ton activité.</h2></div><div class="text-block" data-nx-block-id="primary:s67" style="text-align: justify;">
+<p class="nx-lead">Tu n’entres pas dans « <strong>une formation vidéo de plus</strong> ».</p>
+<p>Tu entres dans une <strong class="nx-emphasis">Formation Vivante</strong> : la leçon transmet, le personnage t’accompagne quand la vraie question arrive même à 22 h 43.</p>
+<h3 class="nx-opportunities">Tu vas pouvoir…</h3>
+<ul class="nx-opportunity-list">
+<li>Mettre un nom sur ce que tu vis déjà (intuition, clairvoyance, clairaudience, ressentis, radiesthésie, médiumnité…) sans te forcer dans une case le jour 1.</li>
+<li>Pratiquer pour vrai — pas seulement lire « voici ce qu’est l’intuition ».</li>
+<li>Approfondir avec la spécialiste qui te correspond.</li>
+<li>Monétiser ce que tu maîtrises : communiquer sans spammer, structurer tes contenus, créer ton offre et t’entraîner tout de suite.</li>
+</ul>
+</div><div class="text-block nx-extra-text" data-nx-block-id="9c8b83fa-a55d-49d0-aae2-5c238e31c647"><h2 class="display" style="color: rgb(244, 200, 66);">D comme DÉCOUVRIR</h2></div><div class="text-block nx-extra-text" data-nx-block-id="9536bdb8-7428-433c-943a-1f7e7f6e08a9"><h3 class="display">AVANT DE VOULOIR MAÎTRISER UNE DISCIPLINE, ENCORE FAUT-IL DÉCOUVRIR CE QUI RÉSONNE AVEC TOI.</h3></div><div class="text-block nx-extra-text" data-nx-block-id="fb856039-88b8-410f-b6f9-7b9438cf1071" style="text-align: justify;"><p>C’est la première mission de Portail Léna.</p><p>Tu vas pouvoir explorer différents univers, mieux comprendre certaines perceptions et surtout expérimenter.</p><p>Parce qu’entre lire : « Voici ce qu’est l’intuition » et commencer à reconnaître comment toi, tu vis tes propres ressentis… il y a tout un monde.</p><p>Le portail est justement là pour créer ce pont.</p></div><div class="text-block nx-extra-text" data-nx-block-id="cea4d13a-c1a2-48d5-8d2d-934c1883cc39"><h2 class="display" style="color: rgb(244, 200, 66);">D comme DÉVELOPPER</h2></div><div class="text-block nx-extra-text" data-nx-block-id="4ee5653f-03cd-4ba3-a5c7-d9850cff6bf4"><h3 class="display">QUAND UNE VOIE T’APPELLE DAVANTAGE, UN DES SPÉCIALISTES PEUT PRENDRE LE RELAIS.</h3></div><div class="img-frame nx-extra-image nx-image-glow" data-nx-image-id="9e1e8ede-4ffa-4243-a775-38184436b2bd" data-nx-block-id="9e1e8ede-4ffa-4243-a775-38184436b2bd"><img src="https://d1yei2z3i6k35z.cloudfront.net/1872133/6acfbd847e7590.69321305_EquipeCompleteLena.png" alt="" class="nx-image-float"></div><div class="text-block nx-extra-text" style="text-align: justify;" data-nx-block-id="c4bb7b02-15d3-4c37-b52d-3c0a863044a0">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@400;500;600;700&display=swap');
 
