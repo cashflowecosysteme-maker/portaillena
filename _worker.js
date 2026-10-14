@@ -1175,7 +1175,7 @@ const nxOriginalWorker = {async fetch(req,env){const u=new URL(req.url),p=u.path
  if(p==='/api/health')return json({ok:true,portal:PORTAL.id,features:['chat','formation','messagerie','media-bank','image-generation','tts','degustation']});
  }catch(e){console.error(e);return json({error:String(e?.message||e)},500)}
  if(env.ASSETS){
-  if(p==='/'||p==='')return env.ASSETS.fetch(staticReq(req,'/index.html'));
+  if(p==='/'||p==='')return env.ASSETS.fetch(staticReq(req,'/'));
   if(p==='/login')return env.ASSETS.fetch(staticReq(req,'/login.html'));
   if(isProtectedHtml(p)){const s=await browserSession(req,env);if(!s)return loginRedirect(req)}
   return env.ASSETS.fetch(req)
