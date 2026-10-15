@@ -579,6 +579,7 @@ var PORTAL_AGENT_META = {"nyxia":{"key":"nyxia","name":"NyXia","sub":"Assistante
     // Chaque personnage a sa propre page, chargée dans l'iframe du tableau de bord.
     var AGENT_PAGES = {"nyxia":"/chat-nyxia.html","diane":"/chat-diane.html","lena":"/chat-lena.html","aletheia":"/chat-aletheia.html","aurelie":"/chat-aurelie.html","cassandre":"/chat-cassandre.html","celeste":"/chat-celeste.html","chloe":"/chat-chloe.html","dylan":"/chat-dylan.html","julianna":"/chat-julianna.html","keven":"/chat-keven.html","mathieu":"/chat-mathieu.html","mikael":"/chat-mikael.html","sabrina":"/chat-sabrina.html","sophia":"/chat-sophia.html","eric":"/chat-eric.html","tool-c6a62d3c179b":"/ovilus.html","tool-44a39e7935e2":"/tirage-runes.html","tool-551d6e1f606c":"/journal-runes.html","tool-396f607b6cf3":"/tirage-cartes.html","tool-ec66e9b11530":"/tirage-tarots.html"}
 
+    AGENT_PAGES['journal-cartes'] = '/journal-cartes.html';
     function openAgentTab(key, pendingMessage) {
       // Affiche le panel chat
       document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active') })

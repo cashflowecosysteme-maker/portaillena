@@ -51,22 +51,20 @@
   <script src="/js/chat-cassandre.js"></script>
 
   <script>
-  // Liaison ciblée depuis le tirage NyXia : préremplissage, jamais d'envoi automatique.
   (function(){
-    var params = new URLSearchParams(window.location.search);
-    var msg = params.get('tirage');
-    if (!msg || msg.length > 4500) return;
-    function prepare(){
-      var input = document.getElementById('chat-input');
-      if (!input) return;
-      input.value = msg;
-      input.dispatchEvent(new Event('input', {bubbles:true}));
-      input.focus();
-    }
-    if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',prepare);
-    else prepare();
-    // Ne laisse pas les données de consultation dans la barre d'adresse.
-    history.replaceState(null,'',window.location.pathname);
+    var raw=sessionStorage.getItem('nyxia:cassandre:tirage-en-attente');
+    if(!raw)return;
+    var val;
+    try{val=JSON.parse(raw)}catch(e){sessionStorage.removeItem('nyxia:cassandre:tirage-en-attente');return;}
+    if(!val || !val.message || Date.now()-val.createdAt>120000){sessionStorage.removeItem('nyxia:cassandre:tirage-en-attente');return;}
+    var attempts=0;
+    var waiter=setInterval(function(){
+      attempts++;
+      if(typeof window.nyxiaEnvoyerTirageCassandre==='function' && window.nyxiaEnvoyerTirageCassandre(val.message)){
+        clearInterval(waiter);
+        sessionStorage.removeItem('nyxia:cassandre:tirage-en-attente');
+      } else if(attempts>=50){clearInterval(waiter);}
+    },250);
   })();
   </script>
 </body>

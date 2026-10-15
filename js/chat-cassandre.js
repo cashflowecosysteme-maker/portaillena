@@ -583,6 +583,17 @@ function nyxiaUserContextText() {
     saveChatToStorage()
   }
 
+  // Entrée réservée au tirage : conversation ordinaire, jamais le mode formation.
+  window.nyxiaEnvoyerTirageCassandre = function(texte) {
+    if (!sessionToken || !texte || !document.getElementById('chat-input')) return false;
+    _selectedFormation = null;
+    var input = document.getElementById('chat-input');
+    input.value = texte;
+    input.dispatchEvent(new Event('input', {bubbles:true}));
+    sendMessage();
+    return true;
+  };
+
   function sendMessage() {
     var input = document.getElementById('chat-input')
     var text = input.value.trim()
