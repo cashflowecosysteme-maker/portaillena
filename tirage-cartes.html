@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Tirage de cartes | Portail Léna</title>
+<style>
+:root{color-scheme:dark;--gold:#e7c27d;--lav:#b9a6fb;--line:rgba(231,194,125,.28)}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#060a18;color:#f5efe9;font:16px/1.55 Outfit,system-ui,sans-serif}main{max-width:1120px;margin:auto;padding:36px 20px 70px;text-align:center}h1{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;color:var(--gold);font-size:clamp(30px,5vw,52px);margin:4px 0}p{margin:8px auto 18px;max-width:670px;color:#dfd5e8}.eyebrow{color:var(--lav);text-transform:uppercase;letter-spacing:.18em;font-size:12px}.panel{margin:23px auto;padding:18px;max-width:700px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,rgba(18,25,58,.92),rgba(9,14,35,.90))}button{font:inherit;cursor:pointer;border:1px solid #b68e4f;border-radius:30px;background:linear-gradient(135deg,#f5d99d,#b78340);color:#22182a;padding:11px 23px;font-weight:650;margin:5px;transition:transform .15s}button:hover{transform:translateY(-2px)}button:focus-visible{outline:3px solid #fff;outline-offset:3px}button.secondary{background:transparent;color:#f5d99d}button:disabled{opacity:.4;cursor:not-allowed;transform:none}.status{min-height:25px;color:#d7d4e7}.cards{display:flex;justify-content:center;align-items:start;flex-wrap:wrap;gap:18px;margin:30px auto;min-height:285px}.card{background:none;border:0;margin:0;padding:0;border-radius:15px;box-shadow:none;max-width:min(31%,230px);width:210px;min-width:130px;perspective:1200px}.card-inner{position:relative;width:100%;aspect-ratio:2/3;transform-style:preserve-3d;transition:transform .65s}.card.revealed .card-inner{transform:rotateY(180deg)}.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}.front{transform:rotateY(180deg)}.face img{max-width:100%;max-height:100%;object-fit:contain}.back{background:radial-gradient(circle,#282044,#0c142c);border:2px solid var(--gold);box-shadow:inset 0 0 0 6px #0c142c,inset 0 0 0 8px #af8755,0 10px 24px #0008}.back:before{content:'✦';font-family:Georgia,serif;font-size:75px;color:var(--gold);text-shadow:0 0 30px #9e7cff}.card-label{color:#e6c889;margin:9px 0 0;font-size:14px;min-height:22px}.notice{color:#ffdda7}.hidden{display:none!important}@media(max-width:560px){main{padding:24px 9px}.panel{padding:14px 8px}.cards{gap:10px}.card{min-width:90px;width:30%;max-width:30%}.back:before{font-size:45px}button{padding:10px 14px}}
+#starry-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,#060a18 0%,#0b1027 55%,#060a18 100%)}body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle at 18% 10%,rgba(123,92,255,.18),transparent 34%),radial-gradient(circle at 85% 12%,rgba(79,163,255,.10),transparent 32%)}main{position:relative;z-index:1}button{font-family:Outfit, sans-serif}
+</style>
+</head>
+<body><canvas id="starry-canvas"></canvas><main><div class="eyebrow">Portail Léna · Cartomancie</div><h1>Le tirage des cartes</h1><p>Concentre-toi sur ta question, mélange le jeu et découvre les cartes qui se présentent à toi.</p>
+
+<section id="game"><div class="panel"><div>Choisis ton tirage</div><button id="one" type="button">1 carte</button><button id="three" type="button">3 cartes</button><button id="shuffle" type="button" class="secondary">Mélanger à nouveau</button><p id="message" class="status" aria-live="polite">Choisis le nombre de cartes.</p></div><div id="cards" class="cards" aria-live="polite"></div><p>Appuie sur une carte pour la retourner.</p></section>
+
+</main><script src="/js/starry-bg.js"></script><script>
+(()=>{'use strict';
+// Répertoire relatif à la racine du portail. Ne pas changer les noms de fichiers.
+const IMAGE_DIR='/images/cartes/';
+const suites=[['coeur','Cœur'],['carreau','Carreau'],['trefle','Trèfle'],['pique','Pique']];
+const values=[['as','As'],...Array.from({length:9},(_,i)=>[String(i+2),String(i+2)]),['valet','Valet'],['reine','Reine'],['roi','Roi']];
+const deck=suites.flatMap(([s,caption])=>values.map(([v,name])=>({id:`${v}-${s}`,label:`${name} de ${caption}`,url:`${IMAGE_DIR}${v}-${s}.png`})));
+deck.push({id:'joker-rouge',label:'Joker rouge',url:`${IMAGE_DIR}joker-rouge.png`},{id:'joker-noir',label:'Joker noir',url:`${IMAGE_DIR}joker-noir.png`});
+const $=id=>document.getElementById(id);let pile=[];
+const symbols={coeur:'♥',carreau:'♦',trefle:'♣',pique:'♠'};
+const colors={coeur:['#c52345','#7c0c2e'],carreau:['#e44246','#8c1530'],trefle:['#268d60','#06432e'],pique:['#3b75be','#172c68']};
+function esc(v){return String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+// Illustration de secours vectorielle intégrée : toutes les cartes sont jouables
+// immédiatement, même avant le dépôt des images personnalisées.
+function fallbackSvg(item){
+ const suit=item.id.split('-').slice(-1)[0], isJoker=item.id.startsWith('joker-');
+ const redJoker=item.id==='joker-rouge';
+ const [primary,shade]=isJoker?(redJoker?colors.coeur:colors.pique):colors[suit];
+ const glyph=isJoker?'✦':symbols[suit],val=isJoker?'J':item.id.split('-')[0];
+ const display=({as:'A',roi:'R',reine:'D',valet:'V'})[val]||val;
+ const large=['as','roi','reine','valet'].includes(val)||isJoker;
+ let pips='';
+ if(large){
+   pips=`<text x="150" y="274" text-anchor="middle" font-size="156" fill="url(#gem)" stroke="#e9c982" stroke-width="2" paint-order="stroke fill">${glyph}</text><text x="150" y="342" text-anchor="middle" font-size="23" fill="#b89658" font-family="Georgia">${esc(isJoker?(redJoker?'JOKER ROUGE':'JOKER NOIR'):item.label.toUpperCase())}</text>`;
+ }else{
+   const n=Number(val),pts=[];
+   for(let k=0;k<n;k++){
+     const cols=n===1?1:n%2===1&&k===n-1?1:2;
+     const center=n%2===1&&k===n-1;
+     const row=center?Math.ceil(n/2)-1:Math.floor(k/2);
+     const rows=Math.ceil(n/2);
+     const x=center?150:(k%2===0?94:206);
+     const y=145+(rows<=1?98:row*198/Math.max(1,rows-1));
+     pts.push(`<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="${n>=9?42:49}" fill="url(#gem)" stroke="#c9a36c" stroke-width=".7" paint-order="stroke fill">${glyph}</text>`)
+   }
+   pips=pts.join('');
+ }
+ const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 450" width="300" height="450"><defs><linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffbed"/><stop offset=".54" stop-color="#f0e5ce"/><stop offset="1" stop-color="#fff8e9"/></linearGradient><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0b5"/><stop offset=".45" stop-color="#b98734"/><stop offset=".75" stop-color="#fbe2a0"/><stop offset="1" stop-color="#a16d28"/></linearGradient><radialGradient id="gem"><stop stop-color="#fff3d4"/><stop offset=".22" stop-color="${primary}"/><stop offset="1" stop-color="${shade}"/></radialGradient></defs><rect x="3" y="3" width="294" height="444" rx="19" fill="url(#paper)" stroke="url(#gold)" stroke-width="6"/><rect x="14" y="14" width="272" height="422" rx="13" fill="none" stroke="#ae813d" stroke-width="2"/><rect x="22" y="22" width="256" height="406" rx="8" fill="none" stroke="#d8b675" stroke-width="1"/><g fill="none" stroke="url(#gold)" stroke-width="2" opacity=".92"><path d="M75 61 Q150 83 225 61 M75 389 Q150 367 225 389"/><path d="M38 100 Q65 145 38 190 M262 260 Q235 310 262 350"/></g><g fill="url(#gold)"><path d="M150 46 l7 11 -7 10 -7 -10z"/><path d="M150 404 l7 -11 -7 -10 -7 10z"/><circle cx="44" cy="70" r="4"/><circle cx="256" cy="380" r="4"/></g><g font-family="Georgia,serif" font-weight="bold" fill="${primary}"><text x="35" y="57" font-size="35">${display}</text><text x="43" y="83" font-size="28" text-anchor="middle">${glyph}</text><g transform="rotate(180 150 225)"><text x="35" y="57" font-size="35">${display}</text><text x="43" y="83" font-size="28" text-anchor="middle">${glyph}</text></g></g><g font-family="Georgia,serif">${pips}</g><path d="M72 112 Q150 92 228 112 M72 365 Q150 387 228 365" fill="none" stroke="#c5a368" stroke-width="2"/></svg>`;
+ return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+
+function shuffle(items){const a=items.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function reset(){pile=shuffle(deck);$('cards').replaceChildren();$('message').textContent='Jeu mélangé. Choisis ton tirage.'}
+function draw(n){if(pile.length<n)reset();const drawn=pile.splice(0,n);const zone=$('cards');zone.replaceChildren();drawn.forEach(item=>{const wrap=document.createElement('div');const btn=document.createElement('button');btn.type='button';btn.className='card';btn.setAttribute('aria-label',`Retourner la carte ${item.label}`);const inner=document.createElement('div');inner.className='card-inner';const back=document.createElement('div');back.className='face back';const face=document.createElement('div');face.className='face front';const img=document.createElement('img');img.src=fallbackSvg(item);img.alt=item.label;const custom=new Image();custom.onload=()=>{img.src=item.url};custom.src=item.url;face.append(img);inner.append(back,face);btn.append(inner);const label=document.createElement('div');label.className='card-label';btn.addEventListener('click',()=>{btn.classList.toggle('revealed');label.textContent=btn.classList.contains('revealed')?item.label:'';btn.setAttribute('aria-label',(btn.classList.contains('revealed')?'Masquer':'Retourner')+' '+item.label)});wrap.append(btn,label);zone.append(wrap)});$('message').textContent=`${n} carte${n>1?'s':''} tirée${n>1?'s':''}. Retourne ${n>1?'les cartes':'la carte'} pour les découvrir.`}
+$('one').addEventListener('click',()=>draw(1));$('three').addEventListener('click',()=>draw(3));$('shuffle').addEventListener('click',reset);reset();
+})();
+</script></body></html>
