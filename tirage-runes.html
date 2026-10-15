@@ -51,7 +51,7 @@ html,body{background-color:#0A1628!important;}
 <header class="topbar"><div class="brand"><div class="brand-orb">ᚱ</div><div><div class="brand-title">Portail Léna · Outils</div><div class="brand-sub">Aletheia — Oracle des Runes</div></div></div><a class="back-btn" href="/dashbord.html" target="_top">← Retour au portail</a></header>
 <main>
 <nav aria-label="Accès rapides aux runes" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:0 0 20px">
-<a class="back-btn" href="/journal-runes-app.html" style="font-size:14px;padding:12px 18px">📖 Ouvrir mon Journal de runes</a>
+<a class="back-btn" href="/journal-runes.html" style="font-size:14px;padding:12px 18px">📖 Ouvrir mon Journal de runes</a>
 <a class="back-btn" href="/chat-aletheia.html" style="font-size:14px;padding:12px 18px">ᚱ Discuter avec Aletheia, formatrice des runes</a>
 </nav>
 <section class="hero"><div class="hero-card"><div class="eyebrow">Aletheia · La Scribe des Murmures Runiques</div><h1>Oracle des Runes</h1><p>Choisis ton tirage, formule ton intention et révèle les runes une à une.</p><div class="aletheia-line">✦ Tirer · Révéler · Interpréter · Consigner</div></div>
@@ -72,10 +72,10 @@ html,body{background-color:#0A1628!important;}
 <button class="action-btn" id="newDraw" disabled>↺ Nouveau tirage</button>
 <button class="action-btn" id="copyDraw" disabled>📋 Copier le tirage</button>
 <button class="action-btn gold" id="saveDraw" disabled>📖 Sauvegarder au Journal</button>
-<a class="action-btn" href="/journal-runes-app.html" style="text-decoration:none">📖 Ouvrir mon Journal</a>
+<a class="action-btn" href="/journal-runes.html" style="text-decoration:none">📖 Ouvrir mon Journal</a>
 <button class="action-btn primary" id="askAletheia" disabled>ᚱ Interpréter avec Aletheia</button>
 </div></section>
-<section class="info-row"><article class="info-card"><h3>Avec Aletheia</h3><p>Le bouton d’interprétation transmet exactement les runes sorties, leur position et ta question au chat d’Aletheia.</p></article><article class="info-card"><h3>Ton journal</h3><p>Conserve tes tirages et retrouve-les ici.</p><a href="/journal-runes-app.html" target="_self" style="display:inline-flex;align-items:center;justify-content:center;margin-top:15px;padding:14px 24px;border:1.5px solid #dfb96e;border-radius:16px;background:linear-gradient(135deg,rgba(255,255,255,.17),rgba(123,92,255,.10));color:#ffe7ae;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.20),0 9px 25px rgba(0,0,0,.2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);text-decoration:none">📖 Ouvrir mon journal</a></article></section>
+<section class="info-row"><article class="info-card"><h3>Avec Aletheia</h3><p>Le bouton d’interprétation transmet exactement les runes sorties, leur position et ta question au chat d’Aletheia.</p></article><article class="info-card"><h3>Ton journal</h3><p>Conserve tes tirages et retrouve-les ici.</p><a href="/journal-runes.html" target="_self" style="display:inline-flex;align-items:center;justify-content:center;margin-top:15px;padding:14px 24px;border:1.5px solid #dfb96e;border-radius:16px;background:linear-gradient(135deg,rgba(255,255,255,.17),rgba(123,92,255,.10));color:#ffe7ae;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.20),0 9px 25px rgba(0,0,0,.2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);text-decoration:none">📖 Ouvrir mon journal</a></article></section>
 </main></div><div class="toast" id="toast"></div>
 <script src="/js/starry-bg.js"></script>
 <script>
@@ -125,7 +125,7 @@ document.getElementById('revealAll').addEventListener('click',function(){[].slic
 document.getElementById('newDraw').addEventListener('click',draw);
 document.getElementById('copyDraw').addEventListener('click',function(){if(!current.length)return;navigator.clipboard.writeText(format(payload())).then(function(){toast('Tirage copié')}).catch(function(){toast('Copie impossible')})});
 document.getElementById('saveDraw').addEventListener('click',function(){if(!current.length)return;var p=payload();var k='nyxia:runes:journal';var a=[];try{a=JSON.parse(localStorage.getItem(k)||'[]')}catch(e){}a.unshift(p);try{localStorage.setItem(k,JSON.stringify(a.slice(0,200)));toast('Tirage sauvegardé au Journal')}catch(e){toast('Sauvegarde impossible sur ce navigateur')}});
-document.getElementById('askAletheia').addEventListener('click',function(){if(!current.length)return;var p=payload();sessionStorage.setItem('nyxia:aletheia:rune-reading',JSON.stringify(p));window.location.href='/chat-aletheia.html?source=runes';});
+document.getElementById('askAletheia').addEventListener('click',function(){if(!current.length){toast('Effectue un tirage avant de demander une interprétation');return;}var p=payload();try{sessionStorage.setItem('nyxia:aletheia:rune-reading',JSON.stringify(p));localStorage.setItem('nyxia:aletheia:rune-reading-backup',JSON.stringify(p));}catch(e){toast('Impossible de transmettre le tirage dans ce navigateur');return;}window.location.assign('/chat-aletheia.html?source=runes');});
 })();
 </script>
 </body>

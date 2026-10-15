@@ -3,7 +3,7 @@
 function getReading(){
   try{
     var raw=sessionStorage.getItem('nyxia:aletheia:rune-reading');
-    return raw?JSON.parse(raw):null;
+    if(!raw)raw=localStorage.getItem('nyxia:aletheia:rune-reading-backup');return raw?JSON.parse(raw):null;
   }catch(e){return null}
 }
 function formatReading(p){
@@ -23,25 +23,27 @@ function formatReading(p){
 function inject(){
   var p=getReading();
   if(!p)return;
-  var input=document.getElementById('chat-input');
-  if(!input){setTimeout(inject,250);return}
   var msg=formatReading(p);
   if(!msg)return;
-  input.value=msg;
-  input.dispatchEvent(new Event('input',{bubbles:true}));
-  sessionStorage.removeItem('nyxia:aletheia:rune-reading');
-
-  // Laisse le chat finir son initialisation puis envoie automatiquement.
   var tries=0;
-  (function sendWhenReady(){
+  (function waitUntilChatIsReady(){
     tries++;
-    if(typeof window.sendMessage==='function'){
-      try{window.sendMessage()}catch(e){}
+    var input=document.getElementById('chat-input');
+    var title=document.getElementById('chat-header-name');
+    var send=document.getElementById('btn-send');
+    // Attendre l'initialisation effective du chat et l'authentification.
+    if(!input||!send||!title||title.textContent.trim()!=='Aletheia'){
+      if(tries<90)setTimeout(waitUntilChatIsReady,300);
       return;
     }
-    if(tries<30)setTimeout(sendWhenReady,200);
+    input.value=msg;
+    input.dispatchEvent(new Event('input',{bubbles:true}));
+    input.focus();
+    try{sessionStorage.removeItem('nyxia:aletheia:rune-reading');localStorage.removeItem('nyxia:aletheia:rune-reading-backup');}catch(e){}
+    // Le message est prêt : la personne choisit « Envoyer » dans le chat.
+    // Cela évite tout déclenchement prématuré avant la connexion.
   })();
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(inject,500)});
-else setTimeout(inject,500);
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',inject);
+else inject();
 })();
