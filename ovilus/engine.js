@@ -58,10 +58,24 @@ Pour une question technique ou pédagogique, utilise les connaissances fournies 
 ${mayLeave?'Tu peux annoncer ton départ si la conversation, les conditions préparées ou la demande de l’étudiant le justifient. Le moteur organisera ensuite le silence et une autre identité.':'La conversation commence : réponds à la question sans prendre congé automatiquement.'}
 Réponse orale concise, environ 200 caractères, sans balises, sans liste technique. Retourne uniquement un objet JSON : {"response":"ta réplique en français","depart":false,"prenom":"destinataire choisi ou vide","fil":"fil court du message, sans nouveau fait"}. depart=true seulement si tu prends réellement congé. Ne mentionne pas le JSON à l'étudiant.`;
  const messages=[{role:'system',content:prompt},...(state.turns||[]).slice(-16),{role:'user',content:question}];
- async function generate(model){const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.OPENROUTER_API_KEY,'HTTP-Referer':'https://portaillena.nyxia.top','X-Title':'NyXia — Ovilus'},body:JSON.stringify({model,messages,max_tokens:350,temperature:.62})});if(!r.ok)throw Error('Génération indisponible');const d=await r.json();return replyObject(d.choices?.[0]?.message?.content)}
+ async function generate(model){
+  if(!env.OPENROUTER_API_KEY)throw Object.assign(new Error('Clé IA absente'),{code:'missing_api_key'});
+  const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.OPENROUTER_API_KEY,'HTTP-Referer':new URL(request.url).origin,'X-Title':'NyXia — Ovilus'},body:JSON.stringify({model,messages,max_tokens:1200,reasoning:{enabled:false},temperature:.62})});
+  const d=await r.json().catch(()=>null);
+  if(!r.ok||!d||d.error)throw Object.assign(new Error('Génération indisponible'),{status:r.status,code:d?.error?.code||'provider_error'});
+  const choice=d.choices?.[0];let raw=choice?.message?.content;
+  if(Array.isArray(raw))raw=raw.filter(p=>p&&p.type==='text'&&typeof p.text==='string').map(p=>p.text).join('');
+  if(typeof raw!=='string')throw Object.assign(new Error('Réponse absente'),{code:'missing_content',finishReason:choice?.finish_reason});
+  const output=replyObject(raw);
+  if(!output.response||output.response==='…'||output.response==='...'||/^[{[]/.test(output.response)||/<think\b/i.test(output.response))throw Object.assign(new Error('Réponse inutilisable'),{code:'invalid_content',finishReason:choice?.finish_reason});
+  return output;
+ }
  const model=text(profile.modelPrimary)||await env.SPIRITUEL_KV.get('config:ovilus_model')||'aion-labs/aion-3.5-mini';let output;
- try{output=await generate(model)}catch(_){try{output=await generate(text(profile.modelFallback)||'mistralai/mistral-small-3.2-24b-instruct')}catch(_){return h.json({error:'Le voile est trouble, réessaie.'},502)}}
- if(!output.response||output.response==='…'||output.response.startsWith('{'))return h.json({error:'Le voile est trouble, réessaie.'},502);
+ const failures=[];
+ for(const candidate of [...new Set([model,text(profile.modelFallback)||'mistralai/mistral-small-3.2-24b-instruct'])]){
+  try{output=await generate(candidate);break}catch(error){const failure={model:candidate,status:error.status||null,code:error.code||'network_error',finishReason:error.finishReason||null};failures.push(failure);console.error('OVILUS_GENERATION_FAILED',JSON.stringify(failure))}
+ }
+ if(!output)return h.json({error:'Le voile est trouble, réessaie.',errorCode:failures.some(f=>f.code==='missing_api_key')?'missing_api_key':'generation_failed'},502);
  if(output.prenom&&!state.addressee&&nameKnowledge&&norm(nameKnowledge).includes(norm(output.prenom)))state.addressee=output.prenom.slice(0,100);
  if(output.fil)state.fil=output.fil.slice(0,500);
  state.turns.push({role:'user',content:question},{role:'assistant',content:output.response});state.turns=state.turns.slice(-20);state.spokenTurns++;
