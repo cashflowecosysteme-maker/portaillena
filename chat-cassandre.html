@@ -49,5 +49,25 @@
 
   <script src="/js/starry-bg.js" defer></script>
   <script src="/js/chat-cassandre.js"></script>
+
+  <script>
+  // Liaison ciblée depuis le tirage NyXia : préremplissage, jamais d'envoi automatique.
+  (function(){
+    var params = new URLSearchParams(window.location.search);
+    var msg = params.get('tirage');
+    if (!msg || msg.length > 4500) return;
+    function prepare(){
+      var input = document.getElementById('chat-input');
+      if (!input) return;
+      input.value = msg;
+      input.dispatchEvent(new Event('input', {bubbles:true}));
+      input.focus();
+    }
+    if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',prepare);
+    else prepare();
+    // Ne laisse pas les données de consultation dans la barre d'adresse.
+    history.replaceState(null,'',window.location.pathname);
+  })();
+  </script>
 </body>
 </html>
