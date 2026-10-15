@@ -392,7 +392,8 @@ function decodeByteLevelText(input){
 }
 async function openrouter(env,messages,model){const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.OPENROUTER_API_KEY,'HTTP-Referer':'https://nyxia.top','X-Title':'NyXia Portail'},body:JSON.stringify({model:model||DEFAULT_MODEL,messages,max_tokens:900,temperature:.72})});if(!r.ok)throw Error('OpenRouter '+r.status);const d=await r.json();return decodeByteLevelText(d.choices?.[0]?.message?.content?.trim()||'')}
 async function chat(req,env){const b=await req.json().catch(()=>({})),s=await session(env,b.token);if(!s)return json({error:'Session expirée.'},401);const key=norm(b.agent),base=AGENTS[key],a=base?await nxPremiumAgent(env,key,base):null;if(!a||!ACTIVE.has(key))return json({error:'Personnage indisponible.'},403);
- const ft=await formationTurn(env,s,key,b.message||'',b.formationId||'',b.formationMode||'');if(ft)return json(ft);
+ const cardReading=key==='cassandre'&&b.intent==='card-reading';
+ const ft=cardReading?null:await formationTurn(env,s,key,b.message||'',b.formationId||'',b.formationMode||'');if(ft)return json(ft);
  const brain=await retrieve(env,a.vectorNamespace||key,b.message||'');let imageInfo='';if(b.attachment?.dataUrl)imageInfo='\nLa personne a joint une image nommée '+String(b.attachment.name||'image')+'.';
  const sys=`Tu es ${a.name||key}, personnage de l’univers NyXia dans le portail « ${PORTAL.title} ».
 Rôle : ${a.sub||a.visibleRole||''}

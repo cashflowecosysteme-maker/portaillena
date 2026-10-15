@@ -610,12 +610,7 @@ function nyxiaUserContextText() {
       removeTyping()
       if (!res.ok) throw new Error((res.data && res.data.error) || "Impossible de créer l'image pour le moment.")
       var reply = ((res.data && res.data.caption) || "Voici l'image que j'ai créée pour toi.") + '\n\n[IMAGE_URL: ' + (res.data.url || '') + '|' + promptText.replace(/\]/g, '') + ']'
-      if (data.formationId && !data.formationDone && !data.reviewDone) {
-        _selectedFormation = {id:data.formationId,mode:data.review ? 'review' : 'follow'}
-        nxRememberFormation()
-      }
       addBotMessage(reply)
-      if (data.formationId && !data.formationDone && !data.reviewDone) nxShowStepButton()
       chatHistories[requestAgent].push({ role: 'assistant', content: reply })
       saveChatToStorage()
       if (chatHistories[requestAgent].length > 20) chatHistories[requestAgent] = chatHistories[requestAgent].slice(-20)
@@ -744,7 +739,12 @@ function nyxiaUserContextText() {
     .then(function(data) {
       removeTyping()
       var reply = nxFormationText(data.content || 'Erreur inattendue — réessaie dans un instant 💜')
+      if (data.formationId && !data.formationDone && !data.reviewDone) {
+        _selectedFormation = {id:data.formationId,mode:data.review ? 'review' : 'follow'}
+        nxRememberFormation()
+      }
       addBotMessage(reply)
+      if (data.formationId && !data.formationDone && !data.reviewDone) nxShowStepButton()
       chatHistories[requestAgent].push({ role: 'assistant', content: reply })
       saveChatToStorage()
       if (chatHistories[requestAgent].length > 20) chatHistories[requestAgent] = chatHistories[requestAgent].slice(-20)

@@ -49,23 +49,5 @@
 
   <script src="/js/starry-bg.js" defer></script>
   <script src="/js/chat-cassandre.js"></script>
-
-  <script>
-  (function(){
-    var raw=sessionStorage.getItem('nyxia:cassandre:tirage-en-attente');
-    if(!raw)return;
-    var val;
-    try{val=JSON.parse(raw)}catch(e){sessionStorage.removeItem('nyxia:cassandre:tirage-en-attente');return;}
-    if(!val || !val.message || Date.now()-val.createdAt>120000){sessionStorage.removeItem('nyxia:cassandre:tirage-en-attente');return;}
-    var attempts=0;
-    var waiter=setInterval(function(){
-      attempts++;
-      if(typeof window.nyxiaEnvoyerTirageCassandre==='function' && window.nyxiaEnvoyerTirageCassandre(val.message)){
-        clearInterval(waiter);
-        sessionStorage.removeItem('nyxia:cassandre:tirage-en-attente');
-      } else if(attempts>=50){clearInterval(waiter);}
-    },250);
-  })();
-  </script>
 </body>
 </html>

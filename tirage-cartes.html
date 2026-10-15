@@ -62,8 +62,8 @@ function openCassandre(){
  const cards = picked.map((c,i) => (i+1)+'. '+labels[i]+' : '+c.name+(c.reversed?' (renversée)':' (droite)'));
  const message = 'Cassandre, interprète mon tirage ici dans notre conversation habituelle, sans ouvrir ni démarrer une formation. Analyse les significations, les associations et les combinaisons de cartes.\nJeu : '+game+'\nMéthode : '+method+'\nQuestion : '+(question||'(question générale)')+'\nCartes tirées dans l’ordre :\n'+cards.join('\n')+'\nDonne-moi une lecture personnalisée des positions, des associations et une synthèse cohérente.';
  // Même origine et même iframe dashboard : le chat est ouvert à la place du tirage.
- sessionStorage.setItem('nyxia:cassandre:tirage-en-attente',JSON.stringify({createdAt:Date.now(),message:message}));
- window.location.href='/chat-cassandre.html';
+ sessionStorage.setItem('nyxia:cassandre:tirage-en-attente',JSON.stringify({id:'cartes-'+Date.now()+'-'+Math.random().toString(36).slice(2),createdAt:Date.now(),message:message}));
+ window.location.href='/chat-cassandre.html?source=cartes';
 }
 const JOURNAL_KEY='nyxia:cartes:journal';
 function enregistrerTirage(){

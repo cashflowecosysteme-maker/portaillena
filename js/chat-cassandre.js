@@ -425,20 +425,8 @@ function nyxiaUserContextText() {
     }
 
 
-    // Tirage remis à Cassandre seulement une fois la conversation initialisée.
-    try {
-      var transferKey = 'nyxia:cassandre:tirage-en-attente';
-      var pending = sessionStorage.getItem(transferKey);
-      if (pending) {
-        var tirage = JSON.parse(pending);
-        if (tirage && typeof tirage.message === 'string' && tirage.message.trim() &&
-            Number.isFinite(tirage.createdAt) && Date.now() - tirage.createdAt < 600000) {
-          _selectedFormation = null;
-          sessionStorage.removeItem(transferKey);
-          setTimeout(function(){ sendMessageText(tirage.message, false, {}); }, 0);
-        } else sessionStorage.removeItem(transferKey);
-      }
-    } catch (err) { /* garder les données pour permettre un nouvel essai */ }
+    _cassandreReadingReady = true
+    nxConsumePendingCards()
 
     var chatInput = document.getElementById('chat-input')
     chatInput.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px' })
@@ -625,12 +613,7 @@ function nyxiaUserContextText() {
       removeTyping()
       if (!res.ok) throw new Error((res.data && res.data.error) || "Impossible de créer l'image pour le moment.")
       var reply = ((res.data && res.data.caption) || "Voici l'image que j'ai créée pour toi.") + '\n\n[IMAGE_URL: ' + (res.data.url || '') + '|' + promptText.replace(/\]/g, '') + ']'
-      if (data.formationId && !data.formationDone && !data.reviewDone) {
-        _selectedFormation = {id:data.formationId,mode:data.review ? 'review' : 'follow'}
-        nxRememberFormation()
-      }
       addBotMessage(reply)
-      if (data.formationId && !data.formationDone && !data.reviewDone) nxShowStepButton()
       chatHistories[requestAgent].push({ role: 'assistant', content: reply })
       saveChatToStorage()
       if (chatHistories[requestAgent].length > 20) chatHistories[requestAgent] = chatHistories[requestAgent].slice(-20)
@@ -713,16 +696,71 @@ function nyxiaUserContextText() {
     saveChatToStorage()
   }
 
-  // Entrée réservée au tirage : conversation ordinaire, jamais le mode formation.
-  window.nyxiaEnvoyerTirageCassandre = function(texte) {
-    if (!sessionToken || !texte || !document.getElementById('chat-input')) return false;
-    _selectedFormation = null;
-    var input = document.getElementById('chat-input');
-    input.value = texte;
-    input.dispatchEvent(new Event('input', {bubbles:true}));
-    sendMessage();
-    return true;
-  };
+  var _cassandreReadingReady = false
+  var _cassandreReadingInFlight = false
+  var _cassandreReadingId = ''
+  var CASSANDRE_READING_KEY = 'nyxia:cassandre:tirage-en-attente'
+
+  function nxReadPendingCards() {
+    try {
+      var raw = sessionStorage.getItem(CASSANDRE_READING_KEY)
+      if (!raw) return null
+      var reading = JSON.parse(raw)
+      if (!reading || typeof reading.message !== 'string' || !reading.message.trim() ||
+          !Number.isFinite(reading.createdAt) || Date.now() - reading.createdAt > 600000 || reading.createdAt > Date.now() + 60000) {
+        sessionStorage.removeItem(CASSANDRE_READING_KEY)
+        return null
+      }
+      reading.id = String(reading.id || reading.createdAt)
+      return reading
+    } catch (_) { return null }
+  }
+
+  function nxConsumePendingCards() {
+    var reading = nxReadPendingCards()
+    if (!reading) return false
+    return window.nyxiaEnvoyerTirageCassandre(reading.message, reading.id)
+  }
+
+  function nxCardReadingSucceeded(id) {
+    if (!id) return
+    var pending = nxReadPendingCards()
+    if (pending && pending.id === String(id)) sessionStorage.removeItem(CASSANDRE_READING_KEY)
+    _cassandreReadingInFlight = false
+    document.querySelectorAll('.nx-reading-retry').forEach(function(button) { button.remove() })
+  }
+
+  function nxCardReadingFailed() {
+    _cassandreReadingInFlight = false
+    _cassandreReadingId = ''
+    var messages = currentMsgsEl()
+    if (!messages) return
+    document.querySelectorAll('.nx-reading-retry').forEach(function(button) { button.remove() })
+    var button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'nx-reading-retry'
+    button.textContent = 'Demander à nouveau mon interprétation'
+    nxFormationButtonStyle(button)
+    button.addEventListener('click', function() { button.disabled = true; if (!nxConsumePendingCards()) button.disabled = false })
+    messages.appendChild(button)
+    messages.scrollTop = messages.scrollHeight
+  }
+
+  window.nyxiaEnvoyerTirageCassandre = function(texte, readingId) {
+    if (!_cassandreReadingReady || !sessionToken || !texte || _formationBusy) return false
+    var sendButton = document.getElementById('btn-send')
+    if (_cassandreReadingInFlight) return _cassandreReadingId === String(readingId || '')
+    if (sendButton && sendButton.disabled) return false
+    _cassandreReadingInFlight = true
+    _cassandreReadingId = String(readingId || Date.now())
+    _selectedFormation = null
+    nxRememberFormation()
+    nxForgetStepButtons()
+    var suggestions = document.getElementById('suggestions')
+    if (suggestions) suggestions.style.display = 'none'
+    sendMessageText(String(texte), false, {intent:'card-reading',readingId:_cassandreReadingId})
+    return true
+  }
 
   function sendMessage() {
     var input = document.getElementById('chat-input')
@@ -754,7 +792,7 @@ function nyxiaUserContextText() {
     var requestAgent = _currentAgent
     var opts = options || {}
     var requestedImagePrompt = ''
-    if (!attachmentToSend) requestedImagePrompt = String(opts.imagePrompt || (opts.forceImage ? String(text || '').replace(/^Créer une image\s*:\s*/i, '').trim() : detectImagePrompt(text)) || '').trim()
+    if (!attachmentToSend && opts.intent !== 'card-reading') requestedImagePrompt = String(opts.imagePrompt || (opts.forceImage ? String(text || '').replace(/^Créer une image\s*:\s*/i, '').trim() : detectImagePrompt(text)) || '').trim()
     btn.disabled = true
     addTyping()
     if (requestedImagePrompt) {
@@ -762,15 +800,21 @@ function nyxiaUserContextText() {
       return
     }
     nxFormationControls(true)
-    fetch('/api/chat', {
+    return fetch('/api/chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text, history: chatHistories[requestAgent].slice(-10), userName: clientName, agent: requestAgent, attachment: attachmentToSend, token: sessionToken, formationId:_selectedFormation&&_selectedFormation.id||'', formationMode:_selectedFormation&&_selectedFormation.mode||'' })
+      body: JSON.stringify({ message: text, history: chatHistories[requestAgent].slice(-10), userName: clientName, agent: requestAgent, attachment: attachmentToSend, token: sessionToken, formationId:_selectedFormation&&_selectedFormation.id||'', formationMode:_selectedFormation&&_selectedFormation.mode||'', intent:opts.intent||'' })
     })
-    .then(function(r){ return r.json() })
+    .then(function(r){ return r.json().then(function(data){ if (!r.ok || data.error || !data.content) throw new Error(data.error || 'Interprétation indisponible'); return data }) })
     .then(function(data) {
       removeTyping()
+      if (opts.intent === 'card-reading') nxCardReadingSucceeded(opts.readingId)
       var reply = nxFormationText(data.content || 'Erreur inattendue — réessaie dans un instant 💜')
+      if (data.formationId && !data.formationDone && !data.reviewDone) {
+        _selectedFormation = {id:data.formationId,mode:data.review ? 'review' : 'follow'}
+        nxRememberFormation()
+      }
       addBotMessage(reply)
+      if (data.formationId && !data.formationDone && !data.reviewDone) nxShowStepButton()
       chatHistories[requestAgent].push({ role: 'assistant', content: reply })
       saveChatToStorage()
       if (chatHistories[requestAgent].length > 20) chatHistories[requestAgent] = chatHistories[requestAgent].slice(-20)
@@ -793,7 +837,15 @@ function nyxiaUserContextText() {
       nxFormationControls(false)
       refreshLivingFormationButton()
     })
-    .catch(function(){ removeTyping(); addBotMessage('Petite interruption... réessaie dans un instant 💜'); btn.disabled = false; nxFormationControls(false) })
+    .catch(function(){
+      removeTyping()
+      btn.disabled = false
+      nxFormationControls(false)
+      if (opts.intent === 'card-reading') {
+        addBotMessage('Ton tirage est conservé. Clique sur « Demander à nouveau mon interprétation » pour que Cassandre le lise.')
+        nxCardReadingFailed()
+      } else addBotMessage('Petite interruption... réessaie dans un instant 💜')
+    })
   }
 
   function safeLivingVideoUrl(rawUrl) {
