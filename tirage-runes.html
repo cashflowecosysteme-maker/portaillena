@@ -42,6 +42,7 @@ h1{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,6vw,68px);line-he
 /* Identité visuelle : fond strictement identique aux chats Léna. */
 html,body{background-color:#0A1628!important;}
 #starry-canvas{background:transparent!important;opacity:1!important;visibility:visible!important;}
+.actions button:disabled{opacity:.55;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -65,14 +66,15 @@ html,body{background-color:#0A1628!important;}
 </div>
 <div class="question-row"><input id="question" type="text" maxlength="220" placeholder="Écris ta question ou laisse vide pour un message général…"><button class="draw-btn" id="drawBtn">✦ Tirer les runes</button></div></section>
 <section class="reading" id="reading"><div class="reading-empty" id="emptyState"><div><div class="symbol">ᚱ</div><strong>Ton tirage apparaîtra ici.</strong><div style="font-size:12px;margin-top:6px">Choisis un tirage puis clique sur « Tirer les runes ».</div></div></div>
-<div id="result" hidden><div class="cards-wrap" id="cardsWrap"></div><div class="actions">
-<button class="action-btn" id="revealAll">✨ Révéler toutes les cartes</button>
-<button class="action-btn" id="newDraw">↺ Nouveau tirage</button>
-<button class="action-btn" id="copyDraw">📋 Copier le tirage</button>
-<button class="action-btn gold" id="saveDraw">📖 Sauvegarder au Journal</button>
+<div id="result" hidden><div class="cards-wrap" id="cardsWrap"></div></div>
+<div class="actions" aria-label="Actions du tirage" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:20px">
+<button class="action-btn" id="revealAll" disabled>✨ Révéler toutes les cartes</button>
+<button class="action-btn" id="newDraw" disabled>↺ Nouveau tirage</button>
+<button class="action-btn" id="copyDraw" disabled>📋 Copier le tirage</button>
+<button class="action-btn gold" id="saveDraw" disabled>📖 Sauvegarder au Journal</button>
 <a class="action-btn" href="/journal-runes-app.html" style="text-decoration:none">📖 Ouvrir mon Journal</a>
-<button class="action-btn primary" id="askAletheia">ᚱ Interpréter avec Aletheia</button>
-</div></div></section>
+<button class="action-btn primary" id="askAletheia" disabled>ᚱ Interpréter avec Aletheia</button>
+</div></section>
 <section class="info-row"><article class="info-card"><h3>Avec Aletheia</h3><p>Le bouton d’interprétation transmet exactement les runes sorties, leur position et ta question au chat d’Aletheia.</p></article><article class="info-card"><h3>Ton journal</h3><p>Conserve tes tirages et retrouve-les en cliquant sur « Ouvrir mon Journal ».</p></article></section>
 </main></div><div class="toast" id="toast"></div>
 <script src="/js/starry-bg.js"></script>
@@ -114,7 +116,7 @@ spreadButtons.forEach(function(btn){btn.addEventListener('click',function(){spre
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
 function revealSlot(slot){var f=slot.querySelector('.flip');if(f.classList.contains('revealed'))return;f.classList.add('revealed');[].slice.call(slot.querySelectorAll('.card-name,.card-keywords,.card-message')).forEach(function(el){el.hidden=false})}
 function buildCard(r,l,i){var s=document.createElement('div');s.className='card-slot';s.innerHTML='<div class="card-position">'+l+'</div><div class="flip" data-index="'+i+'"><div class="face back"><img src="'+CARD_BACK+'" alt="Dos de carte"></div><div class="face front"><img src="'+r.img+'" alt="'+r.name+'"></div></div><div class="card-name" hidden>'+r.name+'</div><div class="card-keywords" hidden>'+r.keys+'</div><div class="card-message" hidden>'+r.msg+'</div>';s.querySelector('.flip').addEventListener('click',function(){revealSlot(s)});return s}
-function draw(){current=shuffle(RUNES).slice(0,selectedCount);var w=document.getElementById('cardsWrap');w.innerHTML='';var labels=positions[selectedSpread]||[];current.forEach(function(r,i){w.appendChild(buildCard(r,labels[i]||('Rune '+(i+1)),i))});document.getElementById('emptyState').hidden=true;document.getElementById('result').hidden=false;document.getElementById('reading').scrollIntoView({behavior:'smooth',block:'start'})}
+function draw(){current=shuffle(RUNES).slice(0,selectedCount);var w=document.getElementById('cardsWrap');w.innerHTML='';var labels=positions[selectedSpread]||[];current.forEach(function(r,i){w.appendChild(buildCard(r,labels[i]||('Rune '+(i+1)),i))});document.getElementById('emptyState').hidden=true;document.getElementById('result').hidden=false;['revealAll','newDraw','copyDraw','saveDraw','askAletheia'].forEach(function(id){document.getElementById(id).disabled=false});document.getElementById('reading').scrollIntoView({behavior:'smooth',block:'start'})}
 function payload(){var labels=positions[selectedSpread]||[];return{type:'runes',createdAt:new Date().toISOString(),spread:selectedSpread,question:document.getElementById('question').value.trim(),cards:current.map(function(r,i){return{id:r.id,name:r.name,image:r.img,position:labels[i]||('Rune '+(i+1)),keywords:r.keys,message:r.msg}})}}
 function format(p){var s='TIRAGE DE RUNES — ALETHEIA\\n';if(p.question)s+='Question : '+p.question+'\\n';s+='\\n'+p.cards.map(function(c){return c.position+' — '+c.name+'\\nMots-clés : '+c.keywords+'\\nMessage de la carte : '+c.message}).join('\\n\\n');return s}
 function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},1800)}
@@ -122,7 +124,7 @@ document.getElementById('drawBtn').addEventListener('click',draw);
 document.getElementById('revealAll').addEventListener('click',function(){[].slice.call(document.querySelectorAll('.card-slot')).forEach(revealSlot)});
 document.getElementById('newDraw').addEventListener('click',draw);
 document.getElementById('copyDraw').addEventListener('click',function(){if(!current.length)return;navigator.clipboard.writeText(format(payload())).then(function(){toast('Tirage copié')}).catch(function(){toast('Copie impossible')})});
-document.getElementById('saveDraw').addEventListener('click',function(){if(!current.length)return;var p=payload();var k='nyxia:runes:journal';var a=[];try{a=JSON.parse(localStorage.getItem(k)||'[]')}catch(e){}a.unshift(p);localStorage.setItem(k,JSON.stringify(a.slice(0,200)));toast('Tirage sauvegardé');});
+document.getElementById('saveDraw').addEventListener('click',function(){if(!current.length)return;var p=payload();var k='nyxia:runes:journal';var a=[];try{a=JSON.parse(localStorage.getItem(k)||'[]')}catch(e){}a.unshift(p);try{localStorage.setItem(k,JSON.stringify(a.slice(0,200)));toast('Tirage sauvegardé au Journal')}catch(e){toast('Sauvegarde impossible sur ce navigateur')}});
 document.getElementById('askAletheia').addEventListener('click',function(){if(!current.length)return;var p=payload();sessionStorage.setItem('nyxia:aletheia:rune-reading',JSON.stringify(p));window.location.href='/chat-aletheia.html?source=runes';});
 })();
 </script>
