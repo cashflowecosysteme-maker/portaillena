@@ -91,11 +91,15 @@ function nyxiaUserContextText() {
   }
 
   function nouveauChat() {
+    if (_formationBusy) return
     var name = (ALPHA_INFO[_currentAgent] && ALPHA_INFO[_currentAgent].name) || 'ce personnage'
     if (!confirm('Effacer la conversation avec ' + name + ' ?\n\nTu ne pourras pas la récupérer.')) return
     try { sessionStorage.removeItem(CHAT_STORAGE_KEY) } catch (e) {}
     clearVideoAutoplayed(_currentAgent)
     chatHistories[_currentAgent] = []
+    _selectedFormation = null
+    nxRememberFormation()
+    refreshLivingFormationButton()
     var msgs = document.getElementById('chat-messages-' + _currentAgent)
     if (msgs) msgs.innerHTML = ''
     var sug = document.getElementById('suggestions')
@@ -240,60 +244,159 @@ function nyxiaUserContextText() {
 
 
   var _livingFormationInfo = null
+  var _formationBusy = false
+  var _formationNeedsResume = false
+  var _formationChatReady = false
+  var _pendingFormationOpen = null
+
+  function nxFormationText(text) {
+    return String(text == null ? '' : text).replace(/\n\n— (?:Quand tu es prête, dis-moi « suite »\.|Dis-moi « suite » pour continuer ta révision\.)\s*$/, '')
+  }
+
+  function nxFormationButtonStyle(button) {
+    button.style.cssText = 'display:block;width:100%;margin-top:10px;padding:12px 16px;border:1px solid #e9cc80;border-radius:12px;background:linear-gradient(135deg,#e9cc80,#c49b48);color:#101525;font:inherit;cursor:pointer;box-shadow:0 0 16px rgba(233,204,128,.14)'
+  }
+
+  function nxFormationControls(disabled) {
+    document.querySelectorAll('#formation-launch-btn,.nx-formation-next').forEach(function(button) {
+      button.disabled = disabled
+      button.style.opacity = disabled ? '0.65' : '1'
+    })
+  }
+
+  function nxRememberFormation() {
+    try {
+      if (_selectedFormation) sessionStorage.setItem(CHAT_STORAGE_KEY + '_formation', JSON.stringify(_selectedFormation))
+      else sessionStorage.removeItem(CHAT_STORAGE_KEY + '_formation')
+    } catch (_) {}
+  }
+
+  function nxForgetStepButtons() {
+    document.querySelectorAll('.nx-formation-next').forEach(function(button) { button.remove() })
+  }
+
+  function nxShowStepButton() {
+    nxForgetStepButtons()
+    if (!_selectedFormation) return
+    var messages = currentMsgsEl()
+    var rows = messages && messages.querySelectorAll('.msg.bot')
+    var row = rows && rows[rows.length - 1]
+    if (!row) return
+    var button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'nx-formation-next'
+    button.textContent = _formationNeedsResume ? 'Reprendre ma formation' : (_selectedFormation.mode === 'review' ? 'Continuer la révision' : 'Continuer la formation')
+    nxFormationButtonStyle(button)
+    button.addEventListener('click', nxContinueFormation)
+    var host = row.lastElementChild || row
+    host.appendChild(button)
+    if (messages) messages.scrollTop = messages.scrollHeight
+  }
+
+  function nxReceiveFormation(data, requestedId) {
+    var content = nxFormationText(data.content || '')
+    if (data.formationDone || data.reviewDone) {
+      _selectedFormation = null
+      nxForgetStepButtons()
+    } else {
+      _selectedFormation = { id: data.formationId || requestedId, mode: data.mode || (data.review ? 'review' : 'follow') }
+    }
+    nxRememberFormation()
+    if (content) {
+      addBotMessage(content)
+      currentHistory().push({role:'assistant',content:content})
+      saveChatToStorage()
+      if (_selectedFormation) nxShowStepButton()
+    }
+    try { window.parent.postMessage({type:'nyxia_formation_progress_changed'}, '*') } catch (_) {}
+  }
 
   function refreshLivingFormationButton() {
     var wrap = document.getElementById('formation-launch-wrap')
     var btn = document.getElementById('formation-launch-btn')
-    if (!wrap || !btn || !sessionToken || !_currentAgent) return
-    wrap.style.display = 'none'
-    fetch('/api/formation/list?token=' + encodeURIComponent(sessionToken) + '&agent=' + encodeURIComponent(_currentAgent), { cache:'no-store' })
-      .then(function(r){ if(!r.ok) throw new Error('Formation indisponible'); return r.json() })
-      .then(function(data){
+    if (!wrap || !btn || !sessionToken || !_currentAgent) return Promise.resolve(null)
+    return fetch('/api/formation/list?token=' + encodeURIComponent(sessionToken) + '&agent=' + encodeURIComponent(_currentAgent), {cache:'no-store'})
+      .then(function(r) { if (!r.ok) throw new Error('Formation indisponible'); return r.json() })
+      .then(function(data) {
         var list = Array.isArray(data.formations) ? data.formations : []
-        if (!list.length) { _livingFormationInfo = null; wrap.style.display='none'; return }
-        _livingFormationInfo = { hasFormations:true }
-        btn.disabled = false
-        btn.textContent = '🎓 Suivre mon parcours'
-        btn.title = 'Voir mes formations dans Mon Parcours'
+        var current = data.currentFormation || list.find(function(f) { return f.status === 'active' }) || null
+        _livingFormationInfo = {current:current,formations:list}
+        // A completed formation opened for review remains in this chat.
+        if (_selectedFormation && _selectedFormation.mode === 'review') {
+          btn.textContent = 'Continuer la révision'
+        } else if (_selectedFormation && current && _selectedFormation.id === current.id) {
+          btn.textContent = 'Continuer la formation'
+        } else {
+          _selectedFormation = null
+          nxRememberFormation()
+          if (!current) { wrap.style.display = 'none'; return data }
+          btn.textContent = current.hasProgress ? 'Reprendre ma formation' : 'Commencer ma formation'
+        }
+        if (_formationNeedsResume && _selectedFormation) btn.textContent = 'Reprendre ma formation'
+        btn.title = current && current.titre || 'Poursuivre ici avec ton formateur'
+        nxFormationButtonStyle(btn)
         wrap.style.display = 'block'
+        btn.disabled = _formationBusy || !!(document.getElementById('btn-send') || {}).disabled
+        return data
       })
-      .catch(function(){ _livingFormationInfo=null; wrap.style.display='none' })
+      .catch(function() { return null })
+  }
+
+  function nxFormationRequest(formationId, advance) {
+    var sendButton = document.getElementById('btn-send')
+    if (_formationBusy || sendButton && sendButton.disabled) return Promise.resolve(false)
+    _formationBusy = true
+    nxFormationControls(true)
+    if (sendButton) sendButton.disabled = true
+    var suggestions = document.getElementById('suggestions')
+    if (suggestions) suggestions.style.display = 'none'
+    var request = advance
+      ? {token:sessionToken,agent:_currentAgent,message:'suite',history:currentHistory().slice(-10),formationId:formationId,formationMode:_selectedFormation && _selectedFormation.mode || 'follow'}
+      : {token:sessionToken,agent:_currentAgent,formationId:formationId}
+    return fetch(advance ? '/api/chat' : '/api/formation/open', {
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(request)
+    })
+      .then(function(r) { return r.json().then(function(data) { if (!r.ok) throw new Error(data.error || 'Formation indisponible.'); return data }) })
+      .then(function(data) { _formationNeedsResume = false; nxReceiveFormation(data,formationId); return true })
+      .catch(function(error) { _formationNeedsResume = true; document.querySelectorAll('.nx-formation-next').forEach(function(button) { button.textContent = 'Reprendre ma formation' }); addBotMessage('La formation n’a pas pu se charger. Clique sur « Reprendre ma formation » pour retrouver ton étape.'); return false })
+      .finally(function() {
+        return refreshLivingFormationButton().finally(function() {
+          _formationBusy = false
+          if (sendButton) sendButton.disabled = false
+          nxFormationControls(false)
+        })
+      })
+  }
+
+  function nxContinueFormation() {
+    if (!_selectedFormation) return launchLivingFormation()
+    return nxFormationRequest(_selectedFormation.id,!_formationNeedsResume)
   }
 
   function launchLivingFormation() {
-    if (!_livingFormationInfo) { refreshLivingFormationButton(); return }
-    try { window.parent.postMessage({type:'nyxia_open_parcours'}, '*') } catch (_) {}
+    if (_formationBusy) return Promise.resolve(false)
+    if (_selectedFormation) return nxContinueFormation()
+    if (_livingFormationInfo && _livingFormationInfo.current) return nxFormationRequest(_livingFormationInfo.current.id,false)
+    return refreshLivingFormationButton().then(function(data) {
+      if (_livingFormationInfo && _livingFormationInfo.current) return nxFormationRequest(_livingFormationInfo.current.id,false)
+      return false
+    })
   }
 
   function openFormationFromParcours(data) {
-    if (!data || String(data.agent||'') !== String(_currentAgent)) return
-    var formationId = String(data.formationId||'').trim()
-    if (!formationId) return
-    fetch('/api/formation/open', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token:sessionToken,agent:_currentAgent,formationId:formationId})
-    })
-    .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,data:d} }) })
-    .then(function(res){
-      if(!res.ok)throw new Error(res.data.error||'Formation indisponible.')
-      _selectedFormation={id:formationId,mode:res.data.mode||'follow'}
-      var content=res.data.content||''
-      if(content){
-        addBotMessage(content)
-        currentHistory().push({role:'assistant',content:content})
-        saveChatToStorage()
-      }
-    })
-    .catch(function(e){ addBotMessage('⚠ '+e.message) })
+    if (!data || String(data.agent || '') !== String(_currentAgent) || !data.formationId) return
+    if (!_formationChatReady) { _pendingFormationOpen = data; return }
+    return nxFormationRequest(String(data.formationId),false)
   }
 
-  window.addEventListener('message', function(e){
-    if(e.data&&e.data.type==='nyxia_open_formation')openFormationFromParcours(e.data)
+  window.addEventListener('message', function(e) {
+    if (e.source !== window.parent) return
+    if (e.data && e.data.type === 'nyxia_open_formation') openFormationFromParcours(e.data)
   })
 
   function init() {
     loadChatFromStorage()
+    try { _selectedFormation = JSON.parse(sessionStorage.getItem(CHAT_STORAGE_KEY + '_formation') || 'null') } catch (_) { _selectedFormation = null }
     document.getElementById('chat-header-name').textContent = ALPHA_INFO[_currentAgent].name
     document.getElementById('chat-header-sub').textContent = ALPHA_INFO[_currentAgent].sub
     updateHeaderAvatar(_currentAgent)
@@ -314,6 +417,28 @@ function nyxiaUserContextText() {
       if (!alreadyPlayed) markVideoAutoplayed(_currentAgent)
     }
     addWelcomeTextMessage(_currentAgent)
+    _formationChatReady = true
+    if (_pendingFormationOpen) {
+      var pendingFormation = _pendingFormationOpen
+      _pendingFormationOpen = null
+      openFormationFromParcours(pendingFormation)
+    }
+
+
+    // Tirage remis à Cassandre seulement une fois la conversation initialisée.
+    try {
+      var transferKey = 'nyxia:cassandre:tirage-en-attente';
+      var pending = sessionStorage.getItem(transferKey);
+      if (pending) {
+        var tirage = JSON.parse(pending);
+        if (tirage && typeof tirage.message === 'string' && tirage.message.trim() &&
+            Number.isFinite(tirage.createdAt) && Date.now() - tirage.createdAt < 600000) {
+          _selectedFormation = null;
+          sessionStorage.removeItem(transferKey);
+          setTimeout(function(){ sendMessageText(tirage.message, false, {}); }, 0);
+        } else sessionStorage.removeItem(transferKey);
+      }
+    } catch (err) { /* garder les données pour permettre un nouvel essai */ }
 
     var chatInput = document.getElementById('chat-input')
     chatInput.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px' })
@@ -500,7 +625,12 @@ function nyxiaUserContextText() {
       removeTyping()
       if (!res.ok) throw new Error((res.data && res.data.error) || "Impossible de créer l'image pour le moment.")
       var reply = ((res.data && res.data.caption) || "Voici l'image que j'ai créée pour toi.") + '\n\n[IMAGE_URL: ' + (res.data.url || '') + '|' + promptText.replace(/\]/g, '') + ']'
+      if (data.formationId && !data.formationDone && !data.reviewDone) {
+        _selectedFormation = {id:data.formationId,mode:data.review ? 'review' : 'follow'}
+        nxRememberFormation()
+      }
       addBotMessage(reply)
+      if (data.formationId && !data.formationDone && !data.reviewDone) nxShowStepButton()
       chatHistories[requestAgent].push({ role: 'assistant', content: reply })
       saveChatToStorage()
       if (chatHistories[requestAgent].length > 20) chatHistories[requestAgent] = chatHistories[requestAgent].slice(-20)
@@ -583,6 +713,17 @@ function nyxiaUserContextText() {
     saveChatToStorage()
   }
 
+  // Entrée réservée au tirage : conversation ordinaire, jamais le mode formation.
+  window.nyxiaEnvoyerTirageCassandre = function(texte) {
+    if (!sessionToken || !texte || !document.getElementById('chat-input')) return false;
+    _selectedFormation = null;
+    var input = document.getElementById('chat-input');
+    input.value = texte;
+    input.dispatchEvent(new Event('input', {bubbles:true}));
+    sendMessage();
+    return true;
+  };
+
   function sendMessage() {
     var input = document.getElementById('chat-input')
     var text = input.value.trim()
@@ -594,6 +735,7 @@ function nyxiaUserContextText() {
   }
 
   function sendMessageText(text, fromVoice, options) {
+    if (_formationBusy) return
     _inputWasVoice = !!fromVoice
     var attachmentToSend = _currentAttachment ? JSON.parse(JSON.stringify(_currentAttachment)) : null
     var displayText = text
@@ -619,6 +761,7 @@ function nyxiaUserContextText() {
       requestImageGeneration(requestedImagePrompt, requestAgent, btn)
       return
     }
+    nxFormationControls(true)
     fetch('/api/chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: text, history: chatHistories[requestAgent].slice(-10), userName: clientName, agent: requestAgent, attachment: attachmentToSend, token: sessionToken, formationId:_selectedFormation&&_selectedFormation.id||'', formationMode:_selectedFormation&&_selectedFormation.mode||'' })
@@ -626,7 +769,7 @@ function nyxiaUserContextText() {
     .then(function(r){ return r.json() })
     .then(function(data) {
       removeTyping()
-      var reply = data.content || 'Erreur inattendue — réessaie dans un instant 💜'
+      var reply = nxFormationText(data.content || 'Erreur inattendue — réessaie dans un instant 💜')
       addBotMessage(reply)
       chatHistories[requestAgent].push({ role: 'assistant', content: reply })
       saveChatToStorage()
@@ -641,13 +784,16 @@ function nyxiaUserContextText() {
       }
       if (data.formationDone || data.reviewDone) {
         _selectedFormation = null
+        nxRememberFormation()
+        nxForgetStepButtons()
         try { window.parent.postMessage({type:'nyxia_formation_progress_changed'}, '*') } catch (_) {}
       }
       _inputWasVoice = false
       btn.disabled = false
+      nxFormationControls(false)
       refreshLivingFormationButton()
     })
-    .catch(function(){ removeTyping(); addBotMessage('Petite interruption... réessaie dans un instant 💜'); btn.disabled = false })
+    .catch(function(){ removeTyping(); addBotMessage('Petite interruption... réessaie dans un instant 💜'); btn.disabled = false; nxFormationControls(false) })
   }
 
   function safeLivingVideoUrl(rawUrl) {
@@ -805,7 +951,7 @@ function nyxiaUserContextText() {
   }
 
   function addBotMessage(text) {
-    text = nxPersonalizeText(text)
+    text = nxPersonalizeText(nxFormationText(text))
     var parsedLinks = extractResourceLinks(text)
     text = parsedLinks.text
     var msgAgent = _currentAgent
@@ -1188,7 +1334,7 @@ function nyxiaUserContextText() {
   }
 
   function cleanForSpeech(str) {
-    return nxPersonalizeText(str)
+    return nxPersonalizeText(nxFormationText(str))
       .replace(/__([^\n]+?)__/g, '$1')
       .replace(/(^|[^\w])_([^_\n]+?)_(?!\w)/g, '$1$2')
       .replace(/\*\*(.*?)\*\*/g, '$1')

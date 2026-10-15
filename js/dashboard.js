@@ -599,21 +599,27 @@ var PORTAL_AGENT_META = {"nyxia":{"key":"nyxia","name":"NyXia","sub":"Assistante
         var base = page + (page.indexOf('?') >= 0 ? '&' : '?') + 't=' + encodeURIComponent(tok)
         // Recharge seulement si on change de personnage (conserve mieux le cache navigateur)
         var current = iframe.getAttribute('data-agent') || ''
+        if (pendingMessage) iframe._nyxiaPendingMessage = pendingMessage
         if (current !== key) {
           iframe.setAttribute('data-agent', key)
+          iframe._nyxiaChatLoaded = false
           iframe.onload = function() {
+            iframe._nyxiaChatLoaded = true
             try {
               iframe.contentWindow.postMessage({
                 type:'nyxia_user_context',
                 firstname: clientName || '',
                 email: clientEmail || ''
               }, '*')
-              if (pendingMessage) iframe.contentWindow.postMessage(pendingMessage, '*')
+              if (iframe._nyxiaPendingMessage) {
+                iframe.contentWindow.postMessage(iframe._nyxiaPendingMessage, '*')
+                iframe._nyxiaPendingMessage = null
+              }
             } catch (_) {}
           }
           iframe.src = base + '&_=' + Date.now()
-        } else if (pendingMessage && iframe.contentWindow) {
-          try { iframe.contentWindow.postMessage(pendingMessage, '*') } catch (_) {}
+        } else if (pendingMessage && iframe.contentWindow && iframe._nyxiaChatLoaded) {
+          try { iframe.contentWindow.postMessage(iframe._nyxiaPendingMessage, '*'); iframe._nyxiaPendingMessage = null } catch (_) {}
         }
       }
 

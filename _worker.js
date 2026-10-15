@@ -229,8 +229,7 @@ function formationContent(f,pos,first,review=false){
  const header=showHeader
   ? (review?'🔁 **Révision · ':'🎓 **')+(f.titre||'Formation')+' — Module '+(pos.m.numero||pos.mi+1)+' · '+(pos.m.titre||'')+'**\n\n'
   : '';
- return header+body+
-   (review?'\n\n— Dis-moi « suite » pour continuer ta révision.':'\n\n— Quand tu es prête, dis-moi « suite ».');
+ return header+body;
 }
 
 function formationControl(message){
@@ -276,7 +275,7 @@ async function formationTurn(env,s,agent,msg,requestedId='',requestedMode=''){
   delete st.progress[f.id];
   const next=firstIncompleteFormation(fs,st);
   await saveFormationProgressState(env,state.key,st);
-  if(next)return{content:'✅ **'+(f.titre||'Formation')+' terminée.**\n\n🎓 La prochaine étape de ton parcours est maintenant **'+(next.titre||'la formation suivante')+'**. Tu peux la retrouver dans **Mon Parcours**.',formationDone:true,formationId:f.id,nextFormationId:next.id};
+  if(next)return{content:'✅ **'+(f.titre||'Formation')+' terminée.**\n\n🎓 La prochaine étape de ton parcours est maintenant **'+(next.titre||'la formation suivante')+'**. Clique sur **Commencer ma formation** pour poursuivre ici.',formationDone:true,formationId:f.id,nextFormationId:next.id};
   return{content:'🏆 **'+(f.titre||'Formation')+' terminée.**\n\n✨ Tu as terminé toutes les formations actuellement disponibles dans ce parcours.',formationDone:true,formationId:f.id,allCompleted:true};
  }
  p.mi=pos.mi;p.bi=pos.bi;p.started=true;st.progress[f.id]=p;
@@ -303,7 +302,7 @@ async function formationOpen(req,env){
   st.completed[f.id]={completedAt:new Date().toISOString(),titre:f.titre||f.id};
   delete st.progress[f.id];
   await saveFormationProgressState(env,state.key,st);
-  return json({content:'✅ **'+(f.titre||'Formation')+' terminée.** Retourne dans Mon Parcours pour poursuivre.',mode:'follow',formationId:f.id,status:'completed',formationDone:true});
+  return json({content:'✅ **'+(f.titre||'Formation')+' terminée.** Clique sur « Commencer ma formation » pour poursuivre ici.',mode:'follow',formationId:f.id,status:'completed',formationDone:true});
  }
  p.mi=pos.mi;p.bi=pos.bi;st.progress[f.id]=p;
  await saveFormationProgressState(env,state.key,st);
