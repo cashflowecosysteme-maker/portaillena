@@ -579,7 +579,6 @@ var PORTAL_AGENT_META = {"nyxia":{"key":"nyxia","name":"NyXia","sub":"Assistante
     // Chaque personnage a sa propre page, chargée dans l'iframe du tableau de bord.
     var AGENT_PAGES = {"nyxia":"/chat-nyxia.html","diane":"/chat-diane.html","lena":"/chat-lena.html","aletheia":"/chat-aletheia.html","aurelie":"/chat-aurelie.html","cassandre":"/chat-cassandre.html","celeste":"/chat-celeste.html","chloe":"/chat-chloe.html","dylan":"/chat-dylan.html","julianna":"/chat-julianna.html","keven":"/chat-keven.html","mathieu":"/chat-mathieu.html","mikael":"/chat-mikael.html","sabrina":"/chat-sabrina.html","sophia":"/chat-sophia.html","eric":"/chat-eric.html","tool-c6a62d3c179b":"/ovilus.html","tool-44a39e7935e2":"/tirage-runes.html","tool-551d6e1f606c":"/journal-runes.html","tool-396f607b6cf3":"/tirage-cartes.html","tool-ec66e9b11530":"/tirage-tarots.html"}
 
-    AGENT_PAGES['journal-cartes'] = '/journal-cartes.html';
     function openAgentTab(key, pendingMessage) {
       // Affiche le panel chat
       document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active') })
@@ -681,6 +680,7 @@ var PORTAL_AGENT_META = {"nyxia":{"key":"nyxia","name":"NyXia","sub":"Assistante
 
     /* ═══════ MESSAGES & IMAGES ═══════ */
     function addBotMessage(text) {
+    text = nxPersonalizeText(text)
       var msgAgent = _currentAgent
       var msgs = document.getElementById('chat-messages-' + msgAgent)
       var div = document.createElement('div'); div.className = 'msg bot'
@@ -951,11 +951,22 @@ var PORTAL_AGENT_META = {"nyxia":{"key":"nyxia","name":"NyXia","sub":"Assistante
       chatInput.addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } })
     }
 
-    function cleanMarkdown(str) {
+    function nxPersonalizeText(value) {
+    var first = typeof clientName === 'string' ? clientName.trim() : ''
+    return String(value == null ? '' : value).replace(/\{prenom\}/gi, function() { return first || 'toi' })
+  }
+
+  function cleanMarkdown(str) {
       return str
         .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:#c4b5fd;text-decoration:underline">$1</a>')
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '$1')
+        .replace(/&lt;(\/?)(strong|em|b|i)&gt;/gi, function(_, close, tag) { return '<' + close + (/^(strong|b)$/i.test(tag) ? 'strong' : 'em') + '>' })
+      .replace(/&lt;br\s*\/?&gt;/gi, '\n')
+      .replace(/&lt;\/?p&gt;/gi, '\n')
+      .replace(/\*\*\*([^\n]+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+      .replace(/\*\*([^\n]+?)\*\*(?!\*)/g, '<strong>$1</strong>')
+      .replace(/__([^\n]+?)__/g, '<strong>$1</strong>')
+      .replace(/(^|[^*])\*([^*\n]+?)\*(?!\*)/g, '$1<em>$2</em>')
+      .replace(/(^|[^\w])_([^_\n]+?)_(?!\w)/g, '$1<em>$2</em>')
         .replace(/^---+$/gm, '')
         .replace(/^#{1,6}\s+/gm, '')
         .replace(/^[-*]\s+/gm, '')
@@ -964,7 +975,9 @@ var PORTAL_AGENT_META = {"nyxia":{"key":"nyxia","name":"NyXia","sub":"Assistante
         .trim()
     }
     function cleanForSpeech(str) {
-      return str
+      return nxPersonalizeText(str)
+      .replace(/__([^\n]+?)__/g, '$1')
+      .replace(/(^|[^\w])_([^_\n]+?)_(?!\w)/g, '$1$2')
         .replace(/\*\*(.*?)\*\*/g, '$1')
         .replace(/\*(.*?)\*/g, '$1')
         .replace(/---+/g, '')
