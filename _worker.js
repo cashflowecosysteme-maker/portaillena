@@ -1,3 +1,4 @@
+import { handleOvilusPremium } from './ovilus/engine.js';
 // Accès NyXia commun : comptes et droits existants conservés.
 const NX_ACCESS_ID='lena',NX_ACCESS_HOST='portaillena.nyxia.top',NX_ACCESS_ALIASES=["lena", "portaillena", "lena-decouvrir-dons"],NX_ACCESS_SESSION_PREFIX='portal:session:';
 const nxNorm=v=>String(v||'').trim().toLowerCase();
@@ -730,7 +731,15 @@ async function handleOvilusCast(request, env) {
   return json({ defunts });
 }
 
+function ovilusDefaultConfig(){return{startMin:3,startMax:5,rareMin:6,rareMax:7,rareChance:10,gapMin:3,gapMax:5,minTurns:3,triggers:[{id:'message',label:'Message pour une personne',questions:['As-tu un message pour quelqu’un ce soir ?','As-tu un message pour quelqu’un ?','Pour qui est ton message ?','À qui veux-tu parler ?'],category:'prenoms',query:'Banque de prénoms féminins et masculins. Personnes à appeler pour transmettre un message.',instructions:'Tu peux demander si une personne portant un prénom de la banque est présente, puis développer un message symbolique autorisé selon les questions posées. Tu peux aussi ne pas avoir de message. Conserve le prénom et le fil du message pendant cet échange.',active:true}]}}
+function ovilusNormalizeConfig(raw={}){const d=ovilusDefaultConfig();const num=(v,f)=>Math.min(20,Math.max(1,Math.floor(Number(v)||f)));const gapMin=num(raw.gapMin,d.gapMin);return{startMin:num(raw.startMin,d.startMin),startMax:Math.max(num(raw.startMin,d.startMin),num(raw.startMax,d.startMax)),rareMin:num(raw.rareMin,d.rareMin),rareMax:Math.max(num(raw.rareMin,d.rareMin),num(raw.rareMax,d.rareMax)),rareChance:Math.max(0,Math.min(100,Number(raw.rareChance??d.rareChance)||0)),gapMin,gapMax:Math.max(gapMin,num(raw.gapMax,d.gapMax)),minTurns:num(raw.minTurns,d.minTurns),triggers:(Array.isArray(raw.triggers)?raw.triggers:d.triggers).slice(0,40).map((t,i)=>({id:String(t.id||'trigger-'+i).slice(0,80),label:String(t.label||'Déclencheur').slice(0,160),questions:(Array.isArray(t.questions)?t.questions:String(t.questions||'').split('\n')).map(x=>String(x).trim().slice(0,600)).filter(Boolean).slice(0,30),category:['general','prenoms','epoque','identite'].includes(t.category)?t.category:'general',query:String(t.query||'').slice(0,3000),instructions:String(t.instructions||'').slice(0,6000),active:t.active!==false}))}}
+
 async function handleOvilusConsult(request, env) {
+ const b=await request.clone().json().catch(()=>({}));
+ if(b.mode&&b.mode!=='fluide')return handleOvilusLegacyConsult(request,env);
+ return handleOvilusPremium(request,env,{session,profile:nxPremiumRead,cast:loadDefuntCast,config:ovilusNormalizeConfig,json});
+}
+async function handleOvilusLegacyConsult(request, env) {
   const { question, mode, token, history, phase, newEntity, newSeance } = await request.json();
   const session = await getSessionFromToken(env, token);
   const ovStateRaw = await env.SPIRITUEL_KV.get(`ovilus_state:${token}`);
