@@ -254,7 +254,7 @@ function nyxiaUserContextText() {
   }
 
   function nxFormationButtonStyle(button) {
-    button.style.cssText = 'display:block;width:100%;margin-top:10px;padding:12px 16px;border:1px solid #e9cc80;border-radius:12px;background:linear-gradient(135deg,#e9cc80,#c49b48);color:#101525;font:inherit;cursor:pointer;box-shadow:0 0 16px rgba(233,204,128,.14)'
+    button.style.cssText = 'display:inline-block;width:auto;max-width:100%;margin-top:10px;padding:8px 14px;border:1px solid rgba(233,204,128,.4);border-radius:10px;background:rgba(6,10,24,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#e9cc80;font:inherit;font-weight:400;line-height:1.4;cursor:pointer;box-shadow:0 0 10px rgba(233,204,128,.06)'
   }
 
   function nxFormationControls(disabled) {
@@ -290,6 +290,8 @@ function nyxiaUserContextText() {
     button.addEventListener('click', nxContinueFormation)
     var host = row.lastElementChild || row
     host.appendChild(button)
+    var launchWrap = document.getElementById('formation-launch-wrap')
+    if (launchWrap) launchWrap.style.display = 'none'
     if (messages) messages.scrollTop = messages.scrollHeight
   }
 
@@ -335,7 +337,7 @@ function nyxiaUserContextText() {
         if (_formationNeedsResume && _selectedFormation) btn.textContent = 'Reprendre ma formation'
         btn.title = current && current.titre || 'Poursuivre ici avec ton formateur'
         nxFormationButtonStyle(btn)
-        wrap.style.display = 'block'
+        wrap.style.display = document.querySelector('.nx-formation-next') ? 'none' : 'block'
         btn.disabled = _formationBusy || !!(document.getElementById('btn-send') || {}).disabled
         return data
       })
