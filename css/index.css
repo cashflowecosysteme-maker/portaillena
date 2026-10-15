@@ -330,3 +330,8 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none;color:inherit
   color: var(--primary-light);
   font-weight: 600;
 }
+
+/* Référence visuelle officielle : fond des chats /css/chat.css. */
+html,body{background-color:#0A1628!important;}
+#starry-canvas{background:transparent!important;opacity:1!important;visibility:visible!important;}
+body{background-image:none!important;}
