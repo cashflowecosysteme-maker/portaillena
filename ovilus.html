@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<script src="/js/starry-bg.js" defer></script>
 <script>
 (function(){
   var q = new URLSearchParams(location.search);
@@ -31,14 +32,7 @@ body.seance-on{background:#0a1028}
 button{font-family:'Space Grotesk',sans-serif;cursor:pointer}
 input{font-family:'Outfit',sans-serif}
 canvas#starry-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
-body::before{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 60% 50% at 30% 20%, rgba(123,92,255,0.13) 0%, transparent 65%),
-    radial-gradient(ellipse 50% 40% at 70% 80%, rgba(79,163,255,0.07) 0%, transparent 60%);
-  transition:opacity .8s;
-}
-body.seance-on::before{opacity:.45}
+
 
 header{
   position:relative;z-index:20;height:56px;flex-shrink:0;
@@ -254,27 +248,6 @@ body.embedded header .btn-back{display:none}
 </div>
 
 <script>
-(function(){
-  var c = document.getElementById('starry-canvas');
-  if(!c) return;
-  var ctx = c.getContext('2d'), stars = [];
-  function resize(){
-    c.width = innerWidth; c.height = innerHeight; stars = [];
-    var n = Math.min(160, Math.floor(c.width * c.height / 9000));
-    for(var i=0;i<n;i++) stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.4+.2,a:Math.random(),s:Math.random()*.012+.003});
-  }
-  addEventListener('resize', resize); resize();
-  (function tick(){
-    ctx.clearRect(0,0,c.width,c.height);
-    for(var i=0;i<stars.length;i++){
-      var st=stars[i]; st.a+=st.s;
-      ctx.beginPath(); ctx.fillStyle='rgba(210,220,255,'+(0.25+Math.abs(Math.sin(st.a))*0.7)+')';
-      ctx.arc(st.x,st.y,st.r,0,Math.PI*2); ctx.fill();
-    }
-    requestAnimationFrame(tick);
-  })();
-})();
-
 var params = new URLSearchParams(location.search);
 var token = params.get('t') || params.get('token') || sessionStorage.getItem('nyxia_token') || '';
 var username = localStorage.getItem('nyxia_username') || '';
