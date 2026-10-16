@@ -291,7 +291,7 @@ async function formationOpen(req,env){
  if(!f)return json({error:'Formation introuvable.'},404);
  const status=formationStatus(fs,st,f.id);
  if(status==='locked')return json({error:'Cette formation n’est pas encore débloquée.'},403);
- if(status==='completed'){
+ if(status==='completed'||b.restart===true){
   st.review=st.review&&typeof st.review==='object'?st.review:{};
   st.review[f.id]={mi:0,bi:0,started:true};
   const pos=blockAtFormation(f,st.review[f.id]);

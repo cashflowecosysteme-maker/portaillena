@@ -370,7 +370,7 @@ function nyxiaUserContextText() {
       .catch(function() { return null })
   }
 
-  function nxFormationRequest(formationId, advance) {
+  function nxFormationRequest(formationId, advance, restart) {
     var sendButton = document.getElementById('btn-send')
     if (_formationBusy || sendButton && sendButton.disabled) return Promise.resolve(false)
     _formationBusy = true
@@ -380,7 +380,7 @@ function nyxiaUserContextText() {
     if (suggestions) suggestions.style.display = 'none'
     var request = advance
       ? {token:sessionToken,agent:_currentAgent,message:'suite',history:currentHistory().slice(-10),formationId:formationId,formationMode:_selectedFormation && _selectedFormation.mode || 'follow'}
-      : {token:sessionToken,agent:_currentAgent,formationId:formationId}
+      : {token:sessionToken,agent:_currentAgent,formationId:formationId,restart:!!restart}
     return fetch(advance ? '/api/chat' : '/api/formation/open', {
       method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(request)
     })
@@ -832,12 +832,38 @@ function nyxiaUserContextText() {
         return p
       }).catch(function(){return null}).finally(function(){nxLiveRefreshPromise=null})
   }
+
+  function nxNamedFormation(text, list) {
+    var clean=function(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
+    var n=clean(text)
+    if(!/\b(?:formation|cours)\b/.test(n)||! /\b(?:veux|voudrais|souhaite|aimerais|faire|refaire|revoir|recommencer|reprendre|commencer|demarrer|debuter|lancer)\b/.test(n))return null
+    if(/\b(?:ne veux pas|veux pas|ne souhaite pas|souhaite pas)\b/.test(n))return null
+    var stop=['formation','formations','cours','de','du','des','la','le','les','a','au','aux','en','et','un','une','vivante']
+    var matches=(list||[]).map(function(f){var words=clean(f.titre).split(' ').filter(function(w){return w&&stop.indexOf(w)<0});var score=words.length&&words.every(function(w){return (' '+n+' ').indexOf(' '+w+' ')>=0})?words.join(' ').length:0;return {formation:f,score:score}}).filter(function(x){return x.score}).sort(function(a,b){return b.score-a.score})
+    if(!matches.length||matches[1]&&matches[1].score===matches[0].score)return null
+    return {formation:matches[0].formation,restart:/\b(?:refaire|revoir|recommencer)\b/.test(n)}
+  }
+  function nxTryNamedFormation(text,options) {
+    if(options&&options.intent==='card-reading'||typeof _currentAttachment!=='undefined'&&_currentAttachment)return Promise.resolve(false)
+    if(!/\b(?:formation|cours)\b/i.test(String(text||'')))return Promise.resolve(false)
+    return fetch('/api/formation/list?token='+encodeURIComponent(sessionToken)+'&agent='+encodeURIComponent(_currentAgent),{cache:'no-store'}).then(function(r){if(!r.ok)throw Error('Formation indisponible');return r.json()}).then(function(data){
+      var match=nxNamedFormation(text,data.formations||[])
+      if(!match)return false
+      if(match.formation.status==='locked'){addBotMessage('Cette formation n’est pas encore débloquée.');return true}
+      addUserMessage(text)
+      currentHistory().push({role:'user',content:text})
+      saveChatToStorage()
+      nxLivePendingPhrase=''
+      return nxFormationRequest(match.formation.id,false,match.restart||match.formation.status==='completed').then(function(){return true})
+    }).catch(function(){return false})
+  }
+
   function sendMessageText(text, fromVoice, options) {
     if (nxLiveSending) return
     nxLiveSending = true
     if (document.getElementById('btn-send') && document.getElementById('btn-send').disabled) {nxLiveSending=false;return}
     nxLivePendingPhrase=text
-    return nxLiveRefresh().then(function(){nxLiveSending=false;return nxSendMessageTextOriginal(text,fromVoice,options)})
+    return nxLiveRefresh().then(function(){return nxTryNamedFormation(text,options)}).then(function(handled){nxLiveSending=false;if(!handled)return nxSendMessageTextOriginal(text,fromVoice,options)}).finally(function(){nxLiveSending=false})
   }
   function nxLiveOffer(host,text) {
     if(nxRenderingStored)return
