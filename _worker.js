@@ -189,7 +189,7 @@ async function formations(env,agent){
  out.sort((a,b)=>(a.ordre||0)-(b.ordre||0)||String(a.titre||'').localeCompare(String(b.titre||'')));
  return out;
 }
-function renderBlock(b,first){const t=String(b?.type||'texte').toLowerCase();if(t==='texte'||t==='intervention')return String(b.contenu||'').replace(/\{prenom\}/gi,first||'toi');if(t==='exercice')return['🎯 '+(b.objectif||''),b.consigne||''].filter(Boolean).join('\n\n');if(t==='image')return (b.legende?b.legende+'\n':'')+'[IMAGE: '+b.url+']';if(t==='audio')return (b.intro?b.intro+'\n':'')+'[AUDIO: '+b.url+']';if(t==='video'||t==='vidéo')return (b.intro?b.intro+'\n':'')+'[VIDEO: '+b.url+']';if(t==='lien')return (b.intro?b.intro+'\n':'')+'[LINK: '+b.url+'|'+(b.titre||'Ouvrir')+']';return''}
+function renderBlock(b,first){const t=String(b?.type||'texte').toLowerCase();if(t==='texte'||t==='intervention')return String(b.contenu||'').replace(/\{prenom\}/gi,first||'toi');if(t==='exercice')return['🎯 '+(b.objectif||''),b.consigne||''].filter(Boolean).join('\n\n');if(t==='image')return (b.legende?b.legende+'\n':'')+'[IMAGE_URL: '+b.url+']';if(t==='audio')return (b.intro?b.intro+'\n':'')+'[AUDIO: '+b.url+']';if(t==='video'||t==='vidéo')return (b.intro?b.intro+'\n':'')+'[VIDEO: '+b.url+']';if(t==='lien')return (b.intro?b.intro+'\n':'')+'[LINK: '+b.url+'|'+(b.titre||'Ouvrir')+']';return''}
 function formationProgressKey(s,agent){return'formation-progress:'+PORTAL.id+':'+norm(s?.email)+':'+norm(agent)}
 async function readFormationProgress(env,s,agent,fs){
  const key=formationProgressKey(s,agent);
@@ -1315,3 +1315,4 @@ async function nxLiveApi(request,env,ctx){
  const result=await NX_LIVE_OPEN(env,s,agent,id);
  return result?json(result):json({error:'Formation introuvable.'},404);
 }
+
