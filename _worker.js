@@ -1,3 +1,4 @@
+function nxModuleHeading(m,index){const title=String(m?.titre||'');const mode=m?.prefixMode||'none';const prefix=mode==='none'?'':mode==='custom'?String(m?.prefixText||''):'Module '+(m?.numero||index+1)+' ·';return[prefix,title].filter(Boolean).join(' ')}
 import { handleOvilusPremium } from './ovilus/engine.js';
 // Accès NyXia commun : comptes et droits existants conservés.
 const NX_ACCESS_ID='lena',NX_ACCESS_HOST='portaillena.nyxia.top',NX_ACCESS_ALIASES=["lena", "portaillena", "lena-decouvrir-dons"],NX_ACCESS_SESSION_PREFIX='portal:session:';
@@ -229,7 +230,7 @@ function formationContent(f,pos,first,review=false){
  const body=renderBlock(pos.b,first);
  const showHeader=Number(pos.bi||0)===0;
  const header=showHeader
-  ? (review?'🔁 **Révision · ':'🎓 **')+(f.titre||'Formation')+' — Module '+(pos.m.numero||pos.mi+1)+' · '+(pos.m.titre||'')+'**\n\n'
+  ? (review?'🔁 **Révision · ':'🎓 **')+(f.titre||'Formation')+' — '+nxModuleHeading(pos.m,pos.mi)+'**\n\n'
   : '';
  return header+body;
 }
@@ -1311,5 +1312,6 @@ async function nxLiveApi(request,env,ctx){
  const result=await NX_LIVE_OPEN(env,s,agent,id);
  return result?json(result):json({error:'Formation introuvable.'},404);
 }
+
 
 
