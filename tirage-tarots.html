@@ -19,7 +19,6 @@
     h1,h2,h3,p,figure{margin:0}
     h1,h2,h3{font-weight:400}
     .hero{min-height:680px;min-height:min(800px,95svh);padding:90px 0 72px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative}
-    .hero::before{content:"";position:absolute;inset:12% 14%;z-index:-1;background:radial-gradient(ellipse,rgba(32,61,111,.2),transparent 68%);pointer-events:none}
     .coming{display:inline-flex;align-items:center;gap:13px;color:var(--gold);font-size:13px;letter-spacing:.19em;border:1px solid var(--line);background:rgba(9,17,34,.58);backdrop-filter:blur(12px);border-radius:999px;padding:12px 23px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
     .coming::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px rgba(230,204,146,.6)}
     .ornament{display:flex;align-items:center;gap:18px;justify-content:center;color:var(--gold);font:22px Georgia,serif;margin:30px 0 16px;opacity:.8}
@@ -68,59 +67,114 @@
     @media(max-width:780px){main{padding:0 25px}.hero{min-height:620px;padding:70px 0 60px}.resource{gap:36px;padding:44px 0 60px;min-height:390px}.book{max-width:245px!important}.resource--left .book{margin-left:0}.resource--right .book{margin-right:0}.resource--right .resource-copy{padding-left:0}.resource--inset{padding-left:0;padding-right:0}.resource--inset .resource-copy{padding-top:0}.resource h3{font-size:35px}.resource--wide h3{font-size:38px}}
     @media(max-width:540px){main{padding:0 23px}.hero{min-height:560px;min-height:86svh}.coming{font-size:12px;padding:10px 19px}h1{font-size:68px}.hero-lines{font-size:15px;max-width:310px}.course-intro{padding:12px 0 35px}.resource,.resource--wide{display:flex;flex-direction:column;gap:30px;padding:42px 0 55px;min-height:0}.resource .book{width:71%;max-width:265px!important;margin:0!important;align-self:center}.resource-copy,.resource--right .resource-copy{align-self:center;text-align:center;width:100%;max-width:340px}.resource h3,.resource--wide h3{font-size:37px}.resource-copy::before{margin-bottom:10px}.resource h3 span{font-size:14px;margin-top:11px}.personal{padding:48px 0 60px}.resource--right .book{order:0}.resource--right .resource-copy{order:1}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.book img{animation:none;will-change:auto}}
+
+    .hero{display:grid;grid-template-columns:1.1fr .9fr;text-align:left;gap:40px;min-height:650px;padding:65px 0 55px;align-items:center}
+    .hero-copy{position:relative;z-index:2}.hero .coming{margin-bottom:26px}.hero h1{font-size:clamp(64px,7vw,96px);line-height:1.02}.hero h1 span{font-size:1em;margin:0;color:#f3ede0}
+    .invitation{font-size:18px;line-height:1.85;color:#d0d5e2;max-width:490px;margin-top:26px}
+    .hero-art{position:relative;height:480px;isolation:isolate}.hero-art img{position:absolute;width:53%;height:auto;max-height:360px;object-fit:contain;box-shadow:0 20px 36px #0008;animation:float 9s ease-in-out infinite}
+    .hero-art::before{content:"";position:absolute;inset:22% 0 12%;z-index:-1;background:radial-gradient(ellipse,rgba(177,139,74,.18),transparent 65%);filter:blur(28px)}
+    .hero-art img:nth-child(1){left:0;top:80px;rotate:-12deg;animation-delay:-2s}.hero-art img:nth-child(2){right:0;top:55px;rotate:12deg;animation-delay:-5s}.hero-art img:nth-child(3){left:24%;top:110px;width:56%;rotate:-2deg}
+    .experience{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;padding:25px 0 65px;border-bottom:1px solid var(--line)}
+    .experience article{padding:0 8px}.step{font:400 15px Montserrat,sans-serif;color:var(--gold);letter-spacing:.15em}.experience h2{font:400 31px/1.2 'Cormorant Garamond',Georgia,serif;color:#f0e6d3;margin:14px 0 12px}.experience p,.resource-description{font-size:16px;line-height:1.85;color:#bec7d9}
+    .course-intro{padding:75px 0 35px}.course-intro::before{display:none}.course-intro p{font-size:17px;line-height:1.8;color:#bec7d9;max-width:650px;margin:22px auto 0}.resource-description{margin-top:24px;max-width:380px}.personal p{font-size:17px;line-height:1.85;color:#bec7d9;max-width:590px;margin:24px auto 0}.closing{font-size:13px;letter-spacing:.14em;color:var(--gold);text-align:center;margin:0 0 45px}
+    @media(max-width:780px){.hero{gap:15px;min-height:580px}.hero h1{font-size:62px}.hero-art{height:360px}.hero-art img{max-height:280px}.invitation{font-size:16px}.experience{gap:18px}.experience h2{font-size:27px}}
+    @media(max-width:540px){.hero{display:flex;flex-direction:column;text-align:center;min-height:0;padding:40px 0 25px;gap:0}.hero h1{font-size:65px}.invitation{font-size:17px}.hero-art{width:100%;max-width:360px;height:355px;margin-top:0}.hero-art img{max-height:265px}.hero-art img:nth-child(1){top:50px}.hero-art img:nth-child(2){top:35px}.hero-art img:nth-child(3){top:75px}.experience{grid-template-columns:1fr;gap:28px;padding:10px 0 40px}.experience article{padding:0}.experience h2{font-size:31px;margin:9px 0}.course-intro{padding:45px 0 10px}.resource-description{margin-top:16px}}
+    @media(prefers-reduced-motion:reduce){.hero-art img{animation:none}}
+
+    /* Même barre de défilement que le menu du portail Léna. */
+    html,body{scrollbar-width:thin;scrollbar-color:rgba(123,92,255,.25) transparent}
+    html::-webkit-scrollbar,body::-webkit-scrollbar{width:6px;height:6px}
+    html::-webkit-scrollbar-track,body::-webkit-scrollbar-track{background:transparent}
+    html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb{background:rgba(123,92,255,.25);border-radius:10px}
+    html::-webkit-scrollbar-thumb:hover,body::-webkit-scrollbar-thumb:hover{background:rgba(123,92,255,.45)}
+    html::-webkit-scrollbar-corner,body::-webkit-scrollbar-corner{background:transparent}
+
+    /* Présentation compacte : aucune introduction haute d’un écran. */
+    .hero{min-height:0;padding:28px 0 22px;gap:30px}
+    .hero h1{font-size:clamp(48px,5vw,72px);line-height:1.03}
+    .hero .coming{margin-bottom:15px;padding:8px 17px}
+    .invitation{margin-top:18px;font-size:17px;line-height:1.65}
+    .hero-art{height:300px}
+    .hero-art img{max-height:245px;width:46%}
+    .hero-art img:nth-child(1){top:23px;left:5%}
+    .hero-art img:nth-child(2){top:15px;right:4%}
+    .hero-art img:nth-child(3){top:40px;left:29%;width:47%}
+    .experience{padding:15px 0 28px;gap:25px}
+    .experience h2{margin:9px 0;font-size:28px}
+    .experience p{font-size:15px;line-height:1.65}
+    .course-intro{padding:30px 0 12px}
+    .course-intro h2{font-size:clamp(32px,3.5vw,44px)}
+    .course-intro p{margin:14px auto 0;font-size:16px;line-height:1.65}
+    .resource,.resource--wide,.resource--final{min-height:0;padding:28px 20px 34px}
+    .resource .book{max-width:245px}
+    .resource h3,.resource--wide h3{font-size:clamp(32px,3.5vw,44px)}
+    .resource--inset .resource-copy{padding-top:0}
+    .resource-description{margin-top:16px;line-height:1.7}
+    .personal{padding:32px 20px 36px}.personal::before{margin-bottom:12px}.personal p{margin-top:16px}
+    .closing{margin-bottom:24px}.end-mark{margin-bottom:25px}
+    @media(max-width:780px){.hero{gap:20px;padding-top:24px}.hero-art{height:255px}.hero-art img{max-height:215px}.hero h1{font-size:52px}.experience{gap:18px}.resource,.resource--wide,.resource--final{padding:25px 0 30px}.resource .book{max-width:220px!important}}
+    @media(max-width:540px){.hero{display:grid;grid-template-columns:1fr;gap:14px;padding:24px 0 18px}.hero h1{font-size:51px}.hero h1 br{display:none}.hero h1 span{display:inline}.hero-copy .invitation{font-size:16px;margin-top:14px}.hero-art{height:210px;max-width:300px;margin:0 auto}.hero-art img{max-height:180px}.hero-art img:nth-child(1){top:8px}.hero-art img:nth-child(2){top:5px}.hero-art img:nth-child(3){top:22px}.experience{gap:20px;padding:8px 0 24px}.experience h2{font-size:27px;margin:6px 0}.experience p{font-size:15px;line-height:1.6}.course-intro{padding:26px 0 8px}.resource,.resource--wide,.resource--final{gap:20px;padding:25px 0 28px}.resource .book{max-width:210px!important}.resource h3,.resource--wide h3{font-size:33px}.resource-description{font-size:15px;margin-top:12px}}
   </style>
 </head>
 <body>
   <canvas id="starry-canvas" aria-hidden="true"></canvas>
   <main>
     <header class="hero">
-      <p class="coming">À venir !</p>
-      <div class="ornament" aria-hidden="true">✦</div>
-      <h1>Tirage <span>de Tarot</span></h1>
-      <div class="hero-lines">
-        <p>Journal de Tarot</p>
-        <span class="divider" aria-hidden="true"></span>
-        <p>Discussion avec Cassandre<br>de ton tirage&nbsp;!</p>
+      <div class="hero-copy">
+        <p class="coming">À venir !</p>
+        <h1>Entre dans<br>l’univers <span>du Tarot.</span></h1>
+        <p class="invitation">Un tirage pour explorer ta question. Un journal pour garder tes découvertes. Cassandre pour t’accompagner dans ta lecture.</p>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <img src="images/tarot-a-venir/100-tirages.png" alt="" width="592" height="839">
+        <img src="images/tarot-a-venir/tarot-intuitif.png" alt="" width="598" height="844">
+        <img src="images/tarot-a-venir/tarot-revele.png" alt="" width="613" height="818">
       </div>
     </header>
+    <section class="experience" aria-label="Ton futur espace Tarot">
+      <article><span class="step">01 · EXPLORER</span><h2>Tirage de Tarot</h2><p>Pose ta question, découvre les cartes et prends le temps d’écouter ce qu’elles éveillent en toi.</p></article>
+      <article><span class="step">02 · CONSERVER</span><h2>Journal de Tarot</h2><p>Garde une trace de tes tirages, de tes impressions et des liens que tu découvres au fil du temps.</p></article>
+      <article><span class="step">03 · APPROFONDIR</span><h2>Discussion avec Cassandre</h2><p>Reviens sur ton tirage avec Cassandre pour explorer les symboles et enrichir ton interprétation.</p></article>
+    </section>
 
     <section aria-labelledby="formation-title">
       <header class="course-intro">
-        <h2 id="formation-title">Formation complète<span>avec Cassandre</span></h2>
+        <h2 id="formation-title">Formation complète<span>avec Cassandre</span></h2><p>Des premières cartes à une lecture plus personnelle, découvre des ressources pour apprendre, pratiquer et développer ta confiance.</p>
       </header>
 
       <article class="resource resource--left">
         <figure class="book"><img src="images/tarot-a-venir/200-questions-puissantes.png" width="592" height="846" alt="Couverture : 200 Questions puissantes pour consulter le Tarot" decoding="async"></figure>
-        <div class="resource-copy"><h3>200 Questions<br>Puissantes<span>Tarot</span></h3></div>
+        <div class="resource-copy"><h3>200 Questions<br>Puissantes<span>Tarot</span></h3><p class="resource-description">La qualité d’un tirage commence par la question. Explore de nouvelles pistes pour aller au-delà d’un simple oui ou non.</p></div>
       </article>
 
       <article class="resource resource--right">
         <figure class="book"><img src="images/tarot-a-venir/tarot-a-imprimer.png" width="596" height="842" alt="Couverture : Cartes de Tarot à imprimer" loading="lazy" decoding="async"></figure>
-        <div class="resource-copy"><h3>Cartes de Tarot<span>à imprimer</span></h3></div>
+        <div class="resource-copy"><h3>Cartes de Tarot<span>à imprimer</span></h3><p class="resource-description">Le plaisir de manipuler tes cartes, de les observer et de pratiquer à ton rythme, avec un jeu à imprimer.</p></div>
       </article>
 
       <article class="resource resource--left resource--inset">
         <figure class="book"><img src="images/tarot-a-venir/100-tirages.png" width="592" height="839" alt="Couverture : Les 100 tirages les plus puissants du Tarot" loading="lazy" decoding="async"></figure>
-        <div class="resource-copy"><h3>Les 100 tirages<br>de Tarot<span>les plus puissants</span></h3></div>
+        <div class="resource-copy"><h3>Les 100 tirages<br>de Tarot<span>les plus puissants</span></h3><p class="resource-description">Varie tes lectures et découvre différentes façons de disposer les cartes selon la question que tu souhaites explorer.</p></div>
       </article>
 
       <article class="resource resource--right resource--wide">
         <figure class="book"><img src="images/tarot-a-venir/tarot-debutant-expert.png" width="594" height="841" alt="Couverture du guide Tarot pour débutants" loading="lazy" decoding="async"></figure>
-        <div class="resource-copy"><h3>Tarot<span>pour débutants à experts</span></h3></div>
+        <div class="resource-copy"><h3>Tarot<span>pour débutants à experts</span></h3><p class="resource-description">Avance pas à pas : pose tes bases, prends tes repères et approfondis ta pratique au fil de ton apprentissage.</p></div>
       </article>
 
       <article class="resource resource--left">
         <figure class="book"><img src="images/tarot-a-venir/tarot-revele.png" width="613" height="818" alt="Couverture : Tarot Révélé, 78 cartes expliquées" loading="lazy" decoding="async"></figure>
-        <div class="resource-copy"><h3>Tarot Révélé<span>78 cartes</span></h3></div>
+        <div class="resource-copy"><h3>Tarot Révélé<span>78 cartes</span></h3><p class="resource-description">Prends le temps de rencontrer chaque carte, ses symboles et les nuances qu’elle peut apporter à une lecture.</p></div>
       </article>
 
       <article class="resource resource--right resource--inset resource--final">
         <figure class="book"><img src="images/tarot-a-venir/tarot-intuitif.png" width="598" height="844" alt="Couverture : Tarot Intuitif, manuel de lecture et d’orientation" loading="lazy" decoding="async"></figure>
-        <div class="resource-copy"><h3>Tarot intuitif<span>Manuel de lecture<br>et d’orientation</span></h3></div>
+        <div class="resource-copy"><h3>Tarot intuitif<span>Manuel de lecture<br>et d’orientation</span></h3><p class="resource-description">Laisse une place à ton ressenti et apprends à le relier aux images pour construire ta propre façon de lire le Tarot.</p></div>
       </article>
 
-      <div class="personal"><h3>Apprendre à créer<br><span>ton Tarot ou Oracle personnel</span></h3></div>
+      <div class="personal"><h3>Apprendre à créer<br><span>ton Tarot ou Oracle personnel</span></h3><p>Donne une forme à ton univers, à tes symboles et à ta sensibilité en imaginant un jeu qui te ressemble.</p></div>
     </section>
+    <p class="closing">TON ESPACE TAROT · À VENIR</p>
     <div class="end-mark" aria-hidden="true"></div>
   </main>
   <script src="/js/starry-bg.js" defer></script>
