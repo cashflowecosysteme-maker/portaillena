@@ -460,17 +460,14 @@ function ovilusConsult(){
         document.getElementById('ovilusStatus').textContent = data.error;
         return;
       }
-      if(ovilusMode==='fluide'&&(!data||!data.response)){document.getElementById('ovilusStatus').textContent='Le voile est trouble, réessaie.';return;}
-      var txt = (data && data.response) ? compactSpirit(data.response) : localOvilusReply(lastAsked);
+      if(!data||!data.response){document.getElementById('ovilusStatus').textContent='Le voile est trouble, réessaie.';return;}
+      var txt = compactSpirit(data.response);
       if((!data || !data.response)&&ovilusMode!=='fluide') document.getElementById('demoBanner').style.display='block';
       showOvilusAnswer(txt, null);
     })
     .catch(function(){
       ovilusBusy = false;
-      if(ovilusMode==='fluide'){document.getElementById('ovilusStatus').textContent='Le voile est trouble, réessaie.';return;}
-      document.getElementById('demoBanner').style.display='block';
-      showOvilusAnswer(localOvilusReply(lastAsked));
-      pickNextVeilMood();
+      document.getElementById('ovilusStatus').textContent='Le voile est trouble, réessaie.';
     });
   }, thinkDelay);
 }
