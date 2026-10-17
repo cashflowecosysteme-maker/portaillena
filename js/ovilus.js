@@ -391,7 +391,10 @@ function typeOnScreen(text, done){
   }, 38 + Math.random()*50);
 }
 
+function ovilusIsSilentReply(value){return !String(value||'').trim()||/^\s*(?:pas de r[eé]ponse|aucune r[eé]ponse|silence)[.!?…\s]*$/i.test(String(value))}
+function clearOvilusSilentReply(){document.getElementById('ovilusScreen').textContent='';document.getElementById('ovilusScreen').classList.remove('lit');document.getElementById('ovilusStatus').textContent=''}
 function showOvilusAnswer(response, extra){
+  if(ovilusIsSilentReply(response)){clearOvilusSilentReply();return;}
   lastAsked = lastAsked || '(voix)';
   extra = null; // Léna-Ovilus : aucune interruption hostile ou voix surprise.
   if(ovilusMode==='fluide'){
@@ -446,11 +449,11 @@ function ovilusConsult(){
     .then(function(data){
       ovilusBusy = false;
       if(data && !data.error)ovilusPendingRequest=null;
-      if(data && data.silence){
+      if(data && (data.silence || !data.error && typeof data.response==='string' && ovilusIsSilentReply(data.response))){
         // Un silence de manifestation n'est pas une réponse : écran vide, aucune entrée dans le journal.
         document.getElementById('ovilusScreen').textContent = '';
         document.getElementById('ovilusScreen').classList.remove('lit');
-        document.getElementById('ovilusStatus').textContent = data.status || 'Aucune réponse.';
+        document.getElementById('ovilusStatus').textContent = '';
         return;
       }
       if(data && data.error){
@@ -575,3 +578,4 @@ document.getElementById('ovilusTypedQuestion').addEventListener('keydown', funct
   var isPhone = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || (navigator.maxTouchPoints>1 && screen.width<900);
   setOvilusDeviceType(isPhone?'phone':'computer');
 })();
+
