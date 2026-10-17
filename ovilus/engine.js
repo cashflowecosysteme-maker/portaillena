@@ -11,7 +11,8 @@ export function compatibleResource(meta,identity,kind){if(kind&&meta.ovilus_kind
 export async function knowledge(env,namespace,query,kind,identity){if(!query||!env.AI||!env.VECTORIZE_INDEX)return'';try{const e=await env.AI.run('@cf/baai/bge-m3',{text:[query]});const options={topK:50,returnMetadata:'all',namespace};const r=await env.VECTORIZE_INDEX.query(e.data[0],options);const passages=[];for(const m of r.matches||[]){const meta=m.metadata||{};if(m.score!=null&&m.score<.3||!compatibleResource(meta,identity,kind))continue;const full=meta.has_full==='1'&&m.id?await env.CASHFLOW_KV.get('brain_text:'+namespace+':'+m.id):null;const body=full||meta.texte_original||'';if(body)passages.push('SOURCE '+text(meta.source)+' | '+text(meta.ovilus_region)+' | '+text(meta.ovilus_from)+'–'+text(meta.ovilus_to)+'\n'+String(body).slice(0,5000))}return passages.join('\n\n').slice(0,18000)}catch(_){return''}}
 function replyObject(raw){let s=text(raw).replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');const o=parse(s,null);if(o&&typeof o==='object'&&typeof o.response==='string')return{response:text(o.response),depart:o.depart===true,prenom:text(o.prenom),fil:text(o.fil)};return{response:s,depart:/^(?:au revoir|je (?:vous |te )?quitte|je dois (?:vous |te )?laisser|je m en vais)/i.test(norm(s))}}
 function participantFirstname(session){return text(session?.firstname||session?.firstName||session?.first_name||session?.prenom).slice(0,100)}
-function personalizeParticipant(response,firstname){return String(response||'').replace(/\[\s*pr[eé]nom\s*\]|\{\s*(?:pr[eé]nom|first_name)\s*\}/gi,()=>firstname||'toi')}
+function validAddressee(value){const n=norm(value);return n&&!['prenom','prenom kv','prenom vectorise','prenom vectorisee','initiale'].includes(n)&&!/[\[\]{}]/.test(String(value))?text(value):''}
+function personalizeParticipant(response,firstname,addressee=''){return String(response||'').replace(/\[\s*pr[eé]nom\s*\]|\{\s*(?:pr[eé]nom|first_name)\s*\}/gi,()=>firstname||'toi').replace(/\[\s*pr[eé]nom[ _-]*(?:kv|vectoris[eé]e?)\s*\]|\{\s*pr[eé]nom[ _-]*(?:kv|vectoris[eé]e?)\s*\}/gi,()=>validAddressee(addressee)||'cette personne')}
 export async function handleOvilusPremium(request,env,h){
  const b=await request.json().catch(()=>({}));const session=await h.session(env,b.token);if(!session)return h.json({error:'Session expirée. Reconnecte-toi.'},401);if(!text(b.question))return h.json({error:'Question vide.'},400);
  const participantName=participantFirstname(session);
@@ -45,7 +46,7 @@ export async function handleOvilusPremium(request,env,h){
   knowledge(env,namespace,query,'identite',identity)
  ]);
  let targeted='';if(active)targeted=await knowledge(env,namespace,text(active.query)||active.questions.join(' '),active.category,identity);
- const nameKnowledge=active?.category==='prenoms'?targeted:(state.spokenTurns===0?await knowledge(env,namespace,'Banque de prénoms féminins masculins pour un appel spontané','prenoms',identity):'');
+ let nameKnowledge=active?.category==='prenoms'?targeted:(state.spokenTurns===0?await knowledge(env,namespace,'Banque de prénoms féminins masculins pour un appel spontané','prenoms',identity):'');
  const directives=profileInstructions(profile);
  const explicitBye=/^(merci )?(au revoir|bonne nuit|tu peux partir|vous pouvez partir|fin de seance)[ .!?]*$/.test(norm(question));
  const mayLeave=state.spokenTurns>=cfg.minTurns||explicitBye;
@@ -81,12 +82,28 @@ Réponse orale concise, environ 200 caractères, sans balises, sans liste techni
   try{output=await generate(candidate);break}catch(error){const failure={model:candidate,status:error.status||null,code:error.code||'network_error',finishReason:error.finishReason||null};failures.push(failure);console.error('OVILUS_GENERATION_FAILED',JSON.stringify(failure))}
  }
  if(!output)return h.json({error:'Le voile est trouble, réessaie.',errorCode:failures.some(f=>f.code==='missing_api_key')?'missing_api_key':'generation_failed'},502);
- output.response=personalizeParticipant(output.response,participantName);
- if(output.prenom&&!state.addressee&&nameKnowledge&&norm(nameKnowledge).includes(norm(output.prenom)))state.addressee=output.prenom.slice(0,100);
+ state.addressee=validAddressee(state.addressee);
+ const needsRecipient=/[\[{]\s*pr[eé]nom[ _-]*(?:kv|vectoris[eé]e?)\s*[\]}]/i.test(output.response);
+ if(needsRecipient&&!state.addressee){
+  if(!nameKnowledge)nameKnowledge=await knowledge(env,namespace,'Banque de prénoms féminins et masculins. Choisir un prénom pour un destinataire.','prenoms',identity);
+  const inBank=value=>{const name=validAddressee(value);return name&&nameKnowledge&&(' '+norm(nameKnowledge)+' ').includes(' '+norm(name)+' ')?name:''};
+  const proposed=inBank(output.prenom);
+  if(proposed)state.addressee=proposed.slice(0,100);
+  else if(nameKnowledge){
+   messages.push({role:'user',content:'Sélection du destinataire : choisis UN véritable prénom parmi la banque ci-dessous. Ne réponds pas par un marqueur, un titre ou un numéro. Le prénom du compte connecté ne sert pas à ce choix. Retourne uniquement {"response":"le prénom choisi","depart":false,"prenom":"le prénom choisi","fil":""}.\nBANQUE RÉCUPÉRÉE :\n'+nameKnowledge});
+   for(const candidate of [...new Set([model,text(profile.modelFallback)||'mistralai/mistral-small-3.2-24b-instruct'])]){
+    try{const selected=await generate(candidate);const name=inBank(selected.prenom)||inBank(selected.response);if(name){state.addressee=name.slice(0,100);break}}catch(_){}
+   }
+  }
+ }
+ const proposedName=validAddressee(output.prenom);
+ if(proposedName&&!state.addressee&&nameKnowledge&&(' '+norm(nameKnowledge)+' ').includes(' '+norm(proposedName)+' '))state.addressee=proposedName.slice(0,100);
+ output.response=personalizeParticipant(output.response,participantName,state.addressee);
  if(output.fil)state.fil=output.fil.slice(0,500);
  state.turns.push({role:'user',content:question},{role:'assistant',content:output.response});state.turns=state.turns.slice(-20);state.spokenTurns++;
  const departed=!!output.depart;
  if(departed){state.lastEntity=identity.id;state.entity=null;state.phase='between';state.silentLeft=cfg.gapMin+Math.floor(Math.random()*(cfg.gapMax-cfg.gapMin+1));state.turns=[];state.trigger=null;state.addressee='';state.fil='';}
  return finish({response:output.response,mode:'fluide',persona:identity.prenom||identity.name||'Présence',personaId:identity.id,departed,interrupt:null});
 }
+
 
